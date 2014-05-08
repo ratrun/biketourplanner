@@ -59,10 +59,10 @@ public abstract class AbstractBikeFlagEncoderTester
         return encoder.getSpeed(flags);
     }
 
-    protected String getWayTypeFromFlags( OSMWay way )
+    protected String getWayTypeFromFlags( OSMWay way, long relflags)
     {
         long allowed = encoder.acceptBit;
-        long flags = encoder.handleWayTags(way, allowed, 0);
+        long flags = encoder.handleWayTags(way, allowed, relflags);
         Translation enMap = SINGLETON.getWithFallBack(Locale.UK);
         return encoder.getAnnotation(flags, enMap).getMessage();
     }
@@ -227,49 +227,49 @@ public abstract class AbstractBikeFlagEncoderTester
         String wayType;
 
         way.setTag("highway", "steps");
-        wayType = getWayTypeFromFlags(way);
+        wayType = getWayTypeFromFlags(way, 0);
         assertEquals("pushing section", wayType);
 
         way.setTag("highway", "footway");
-        wayType = getWayTypeFromFlags(way);
+        wayType = getWayTypeFromFlags(way, 0);
         assertEquals("pushing section", wayType);
 
         way.setTag("highway", "footway");
         way.setTag("surface", "pebblestone");
-        wayType = getWayTypeFromFlags(way);
+        wayType = getWayTypeFromFlags(way, 0);
         assertEquals("pushing section", wayType);
 
         way.setTag("highway", "residential");
-        wayType = getWayTypeFromFlags(way);
+        wayType = getWayTypeFromFlags(way, 0);
         assertEquals("", wayType);
         assertPriority(PREFER.getValue(), way);
 
         way.clearTags();
         way.setTag("highway", "cycleway");
-        wayType = getWayTypeFromFlags(way);
+        wayType = getWayTypeFromFlags(way, 0);
         assertEquals("cycleway", wayType);
         assertPriority(VERY_NICE.getValue(), way);
 
         way.setTag("surface", "grass");
-        wayType = getWayTypeFromFlags(way);
+        wayType = getWayTypeFromFlags(way, 0);
         assertEquals("cycleway, unpaved", wayType);
 
         way.setTag("surface", "asphalt");
-        wayType = getWayTypeFromFlags(way);
+        wayType = getWayTypeFromFlags(way, 0);
         assertEquals("cycleway", wayType);
         assertPriority(VERY_NICE.getValue(), way);
 
         way.setTag("highway", "footway");
         way.setTag("bicycle", "yes");
         way.setTag("surface", "grass");
-        wayType = getWayTypeFromFlags(way);
+        wayType = getWayTypeFromFlags(way, 0);
         assertEquals("cycleway, unpaved", wayType);
 
         way.clearTags();
         way.setTag("highway", "footway");
         way.setTag("bicycle", "yes");
         way.setTag("surface", "grass");
-        wayType = getWayTypeFromFlags(way);
+        wayType = getWayTypeFromFlags(way, 0);
         assertEquals("cycleway, unpaved", wayType);
     }
 
