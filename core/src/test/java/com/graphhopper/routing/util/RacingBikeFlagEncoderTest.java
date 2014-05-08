@@ -107,7 +107,7 @@ public class RacingBikeFlagEncoderTest extends AbstractBikeFlagEncoderTester
         assertEquals(2, encoder.getSpeed(flags), 1e-1);
         assertPriority(AVOID_AT_ALL_COSTS.getValue(), osmWay, relFlags);
         // TODO unpaved if tracktype == null?
-        assertEquals("pushing section", getWayTypeFromFlags(osmWay, relFlags));
+        assertEquals("pushing section", getWayTypeFromFlags(osmWay));
 
         // relation code is OUTSTANDING NICE but as unpaved, the speed is still PUSHING_SECTION_SPEED/2
         osmRel.setTag("network", "icn");

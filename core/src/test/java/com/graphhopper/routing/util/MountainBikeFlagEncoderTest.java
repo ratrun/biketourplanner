@@ -89,24 +89,24 @@ public class MountainBikeFlagEncoderTest extends AbstractBikeFlagEncoderTester
         String wayType;
 
         way.setTag("highway", "track");
-        wayType = getWayTypeFromFlags(way, 0);
+        wayType = getWayTypeFromFlags(way);
         assertEquals("", wayType);
 
         way.clearTags();
         way.setTag("highway", "path");
-        wayType = getWayTypeFromFlags(way, 0);
+        wayType = getWayTypeFromFlags(way);
         assertEquals("way, unpaved", wayType);
 
         way.clearTags();
         way.setTag("highway", "path");
         way.setTag("surface", "grass");
-        wayType = getWayTypeFromFlags(way, 0);
+        wayType = getWayTypeFromFlags(way);
         assertEquals("way, unpaved", wayType);
 
         way.clearTags();
         way.setTag("highway", "path");
         way.setTag("surface", "concrete");
-        wayType = getWayTypeFromFlags(way, 0);
+        wayType = getWayTypeFromFlags(way);
         assertEquals("", wayType);
 
         way.clearTags();
@@ -114,7 +114,7 @@ public class MountainBikeFlagEncoderTest extends AbstractBikeFlagEncoderTester
         way.setTag("foot", "yes");
         way.setTag("surface", "paved");
         way.setTag("tracktype", "grade1");
-        wayType = getWayTypeFromFlags(way, 0);
+        wayType = getWayTypeFromFlags(way);
         assertEquals("", wayType);
 
         way.clearTags();
@@ -122,12 +122,12 @@ public class MountainBikeFlagEncoderTest extends AbstractBikeFlagEncoderTester
         way.setTag("foot", "yes");
         way.setTag("surface", "paved");
         way.setTag("tracktype", "grade2");
-        wayType = getWayTypeFromFlags(way, 0);
+        wayType = getWayTypeFromFlags(way);
         assertEquals("way, unpaved", wayType);
 
         way.clearTags();
         way.setTag("highway", "pedestrian");
-        wayType = getWayTypeFromFlags(way, 0);
+        wayType = getWayTypeFromFlags(way);
         assertEquals("pushing section", wayType);
     }
 
@@ -144,7 +144,7 @@ public class MountainBikeFlagEncoderTest extends AbstractBikeFlagEncoderTester
         long flags = encoder.handleWayTags(osmWay, allowed, relFlags);
         assertEquals(18, encoder.getSpeed(flags), 1e-1);
         assertPriority(PriorityCode.PREFER.getValue(), osmWay);
-        assertEquals("", getWayTypeFromFlags(osmWay, relFlags));
+        assertEquals("", getWayTypeFromFlags(osmWay));
 
         // relation code is PREFER
         osmRel.setTag("route", "bicycle");
@@ -153,7 +153,7 @@ public class MountainBikeFlagEncoderTest extends AbstractBikeFlagEncoderTester
         flags = encoder.handleWayTags(osmWay, allowed, relFlags);
         assertEquals(18, encoder.getSpeed(flags), 1e-1);
         assertPriority(PriorityCode.PREFER.getValue(), osmWay);
-        assertEquals("", getWayTypeFromFlags(osmWay, relFlags));
+        assertEquals("", getWayTypeFromFlags(osmWay));
 
         // relation code is PREFER
         osmRel.setTag("network", "rcn");
@@ -180,6 +180,6 @@ public class MountainBikeFlagEncoderTest extends AbstractBikeFlagEncoderTester
         flags = encoder.handleWayTags(osmWay, allowed, relFlags);
         assertEquals(18, encoder.getSpeed(flags), 1e-1);
         assertPriority(PriorityCode.PREFER.getValue(), osmWay);
-        assertEquals("", getWayTypeFromFlags(osmWay, relFlags));
+        assertEquals("", getWayTypeFromFlags(osmWay));
     }
 }

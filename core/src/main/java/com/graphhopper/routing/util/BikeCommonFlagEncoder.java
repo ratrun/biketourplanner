@@ -361,7 +361,7 @@ public class BikeCommonFlagEncoder extends AbstractFlagEncoder
             }
         }
 
-        // Until now we assumed that the way is no pushing section
+        // Until now we assumed that the way is no pusing section
         // Now we check, but only in case that our speed is bigger compared to the PUSHING_SECTION_SPEED
         if ((speed > PUSHING_SECTION_SPEED)
                 && (!way.hasTag("bicycle", intendedValues) && way.hasTag("highway", pushingSections)))
