@@ -517,6 +517,7 @@ public class BikeCommonFlagEncoder extends AbstractFlagEncoder
             wayType = WayType.PUSHING_SECTION;
 
         if ("track".equals(highway) && trackType != null && !"grade1".equals(trackType)
+                || ("track".equals(highway) && trackType == null )
                 || (surfaceTag == null && way.hasTag("highway", "path"))
                 || unpavedSurfaceTags.contains(surfaceTag))
         {
