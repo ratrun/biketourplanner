@@ -41,6 +41,6 @@ public class PriorityWeighting extends FastestWeighting
         double weight = super.calcWeight(edge, reverse);
         if (Double.isInfinite(weight))
             return Double.POSITIVE_INFINITY;
-        return weight / (0.5 + encoder.getPriority(edge.getFlags()));
+        return weight * (encoder.getWeigthedPreference(edge.getFlags()));
     }
 }

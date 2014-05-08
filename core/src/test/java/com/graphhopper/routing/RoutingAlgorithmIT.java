@@ -263,7 +263,7 @@ public class RoutingAlgorithmIT
     {
         List<OneRun> list = new ArrayList<OneRun>();
         list.add(new OneRun(48.409523, 15.602394, 48.375466, 15.72916, 12491, 159));
-        list.add(new OneRun(48.410061, 15.63951, 48.411386, 15.604899, 3113, 87));
+        list.add(new OneRun(48.410061, 15.63951, 48.411386, 15.604899, 3091, 92));
         list.add(new OneRun(48.412294, 15.62007, 48.398306, 15.609667, 3965, 94));
 
         runAlgo(testCollector, "files/krems.osm.gz", "target/krems-gh",
@@ -279,8 +279,8 @@ public class RoutingAlgorithmIT
     public void testKremsMountainBikeRelation()
     {
         List<OneRun> list = new ArrayList<OneRun>();
-        list.add(new OneRun(48.409523, 15.602394, 48.375466, 15.72916, 12480, 156));
-        list.add(new OneRun(48.410061, 15.63951, 48.411386, 15.604899, 3113, 87));
+        list.add(new OneRun(48.409523, 15.602394, 48.375466, 15.72916, 12573, 169));
+        list.add(new OneRun(48.410061, 15.63951, 48.411386, 15.604899, 3101, 94));
         list.add(new OneRun(48.412294, 15.62007, 48.398306, 15.609667, 3965, 95));
 
         runAlgo(testCollector, "files/krems.osm.gz", "target/krems-gh",

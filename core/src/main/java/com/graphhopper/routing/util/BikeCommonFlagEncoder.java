@@ -425,8 +425,7 @@ public class BikeCommonFlagEncoder extends AbstractFlagEncoder
     }
 
     /**
-     * Returns a double value in [0, 1] to identify ways as good or bad regarding safety or other
-     * preferences.
+     * Returns a double value in [0, 1] to identify the priority of a way
      */
     public double getPriority( long flags )
     {
@@ -437,6 +436,16 @@ public class BikeCommonFlagEncoder extends AbstractFlagEncoder
         return prio / BEST.getValue();
     }
 
+    /**
+     * Returns a double value in [0, 1] to identify ways as good or bad regarding safety or other
+     * preferences.
+     */
+    public double getWeigthedPreference( long flags )
+    {
+        double nicelevelpreference = 0.6d;  // value in between [0,1.0]: a value of 0 produces the fastest routes, and a level of 1.0 produces the nicest routes
+        return (1 - nicelevelpreference / 2) + (nicelevelpreference / 2) * ( (double) UNCHANGED.getValue() / BEST.getValue() - getPriority(flags));
+    }
+    
     /**
      * In this method we prefer cycleways or roads with designated bike access and avoid big roads
      * or roads with trams or pedestrian.
