@@ -114,8 +114,15 @@ public class InstructionList implements Iterable<Instruction>
 
             InstructionAnnotation ia = instruction.getAnnotation();
             String str = instruction.getTurnDescription(tr);
-            if (Helper.isEmpty(str))
-                str = ia.getMessage();
+
+            if (!Helper.isEmpty(ia.getMessage()))
+            {
+                if (Helper.isEmpty(str))
+                    str = ia.getMessage();
+                else
+                    str= str + ", " + ia.getMessage();
+            }
+            
             instrJson.put("text", Helper.firstBig(str));
             if (!ia.isEmpty())
             {
