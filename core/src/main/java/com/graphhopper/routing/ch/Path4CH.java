@@ -1,3 +1,4 @@
+//line Endings
 /*
  *  Licensed to GraphHopper and Peter Karich under one or more contributor
  *  license agreements. See the NOTICE file distributed with this work for 
