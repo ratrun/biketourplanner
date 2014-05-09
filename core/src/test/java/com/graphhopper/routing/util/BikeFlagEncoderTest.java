@@ -320,4 +320,3 @@ public class BikeFlagEncoderTest extends AbstractBikeFlagEncoderTester
     }
 }
 
-//Hallo Test Windows Line Ending
