@@ -319,3 +319,5 @@ public class BikeFlagEncoderTest extends AbstractBikeFlagEncoderTester
         assertFalse(encoder.isTurnRestricted(flags_220));
     }
 }
+
+//Hallo Test Windows Line Ending
