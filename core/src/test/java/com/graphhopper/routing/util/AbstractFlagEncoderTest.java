@@ -52,10 +52,29 @@ public class AbstractFlagEncoderTest
     {
         assertEquals(10, AbstractFlagEncoder.parseDuration("00:10"));
         assertEquals(70, AbstractFlagEncoder.parseDuration("01:10"));
-        assertEquals(0, AbstractFlagEncoder.parseDuration("oh"));
         assertEquals(0, AbstractFlagEncoder.parseDuration(null));
         assertEquals(60 * 20, AbstractFlagEncoder.parseDuration("20:00"));
         assertEquals(20, AbstractFlagEncoder.parseDuration("0:20:00"));
         assertEquals(60 * 2 + 20, AbstractFlagEncoder.parseDuration("02:20:02"));
+        assertEquals(87900, AbstractFlagEncoder.parseDuration("P2M"));
+        assertEquals(2, AbstractFlagEncoder.parseDuration("PT2M"));
+        assertEquals(5 * 60 + 12, AbstractFlagEncoder.parseDuration("PT5H12M36S"));
+    }
+
+    @Test 
+    public void testParseIngWrongDurationFormats()
+    {
+     try {
+            AbstractFlagEncoder.parseDuration("PT5h12m36s");
+            fail( "parseDuration didn't throw when I expected it to" );
+         } catch (IllegalArgumentException expectedException) {
+            assertEquals(expectedException.getMessage(), "Cannot parse duration tag value: PT5h12m36s");
+         }
+     try {
+            AbstractFlagEncoder.parseDuration("oh");
+            fail( "parseDuration didn't throw when I expected it to" );
+         } catch (IllegalArgumentException expectedException) {
+            assertEquals(expectedException.getMessage(), "Cannot parse duration tag value: oh");
+         }
     }
 }

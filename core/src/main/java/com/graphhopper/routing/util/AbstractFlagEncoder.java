@@ -26,6 +26,7 @@ import com.graphhopper.reader.OSMRelation;
 import com.graphhopper.util.*;
 
 import java.util.*;
+import javax.xml.datatype.*;
 
 /**
  * Abstract class which handles flag decoding and encoding. Every encoder should be registered to a
@@ -462,25 +463,36 @@ public abstract class AbstractFlagEncoder implements FlagEncoder, TurnCostEncode
     }
 
     /**
-     * This method parses a string ala 'hh:mm', format for hours and minutes 'mm', 'hh:mm' or 'hh:mm:ss'
-     * FIXME: Add support for ISO_8601 
+     * This method parses a string ala 'hh:mm', format for hours and minutes 'mm', 'hh:mm' or 'hh:mm:ss', or ISO_8601
      * <p>
      * @return duration value in minutes
+     *  Parser according to http://wiki.openstreetmap.org/wiki/Key:duration
      */
-    protected static int parseDuration( String str )
+    protected static long parseDuration( String str )
     {
-        int minutes = 0;
+        long minutes = 0;
         if (str == null)
             return 0;
 
+            // Check for ISO_8601 format
+            if (str.startsWith("P"))
+            {
+                // A common mistake is the the minutes format is intended but month format specified 
+                // e.g. one month "P1M" is set, but on minute "PT1M" is meant.
+                Duration dur;
+                try
+                {
+                   dur = DatatypeFactory.newInstance().newDuration(str);
+                   minutes = dur.getTimeInMillis(new Date())/1000/60;
+                } catch (Exception ex)
+                {
+                   throw new IllegalArgumentException("Cannot parse duration tag value: " + str, ex);
+                }
+                return minutes;
+            }
+
         try
         {
-            // for now ignore this special duration notation
-            // because P1M != PT1M but there are wrong edits in OSM! e.g. http://www.openstreetmap.org/way/24791405
-            // http://wiki.openstreetmap.org/wiki/Key:duration
-            if (str.startsWith("P"))
-                return minutes;
-
             int index = str.indexOf(":");
             if (index > 0)
             {
@@ -498,11 +510,11 @@ public abstract class AbstractFlagEncoder implements FlagEncoder, TurnCostEncode
                 return minutes;
             } else
             {
-                return Integer.parseInt(str);
+                minutes = Integer.parseInt(str);
             }
         } catch (Exception ex)
         {
-            logger.warn("Cannot parse " + str + " using 0 minutes");
+            throw new IllegalArgumentException("Cannot parse duration tag value: " + str, ex);
         }
         return minutes;
     }
@@ -520,11 +532,21 @@ public abstract class AbstractFlagEncoder implements FlagEncoder, TurnCostEncode
      */
     protected long handleFerryTags( OSMWay way, double unknownSpeed, double shortTripsSpeed, double longTripsSpeed )
     {
+        double duration = 0;
+        try
+        {
+            duration = parseDuration(way.getTag("duration"));
+        }
+        catch(Exception ex)
+        {
+            logger.warn("Parsing error in way with OSMID=" + way.getId() + " : " + ex.getMessage());
+        } 
         // to hours
-        double durationInHours = parseDuration(way.getTag("duration")) / 60d;
+        double durationInHours = duration / 60d;
         if (durationInHours > 0)
             try
             {
+                // Check if our graphhopper specific artificially created estimated_distance way tag is present
                 Number estimatedLength = way.getTag("estimated_distance", null);
                 if (estimatedLength != null)
                 {
@@ -533,9 +555,18 @@ public abstract class AbstractFlagEncoder implements FlagEncoder, TurnCostEncode
                     // If duration AND distance is available we can calculate the speed more precisely
                     // and set both speed to the same value. Factor 1.4 slower because of waiting time!
                     shortTripsSpeed = Math.round(val / durationInHours / 1.4);
-                    if (shortTripsSpeed > getMaxSpeed())
-                        shortTripsSpeed = getMaxSpeed();
-                    longTripsSpeed = shortTripsSpeed;
+                    // Plausibility check especially for the case of wongly used PxM format with the intension to 
+                    // specify the duration in minutes, but actually using months
+                    if (shortTripsSpeed>0.1d)
+                    {
+                        if (shortTripsSpeed > getMaxSpeed())
+                            shortTripsSpeed = getMaxSpeed();
+                        longTripsSpeed = shortTripsSpeed;
+                    }
+                    else
+                    {
+                        logger.warn("Unrealistic long duration detected in way with OSMID=" + way.getId() + " , duration tag value="+ way.getTag("duration"));
+                    }
                 }
             } catch (Exception ex)
             {
