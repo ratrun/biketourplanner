@@ -1,6 +1,6 @@
 #!/bin/bash
 
-JAVA_HOME=~/jdk1.8.0_66/
+export JAVA_HOME=~/jdk1.8.0_66/
 GH_CLASS=com.graphhopper.tools.Import
 GH_HOME=$(dirname "$0")
 JAVA=$JAVA_HOME/bin/java
@@ -267,7 +267,7 @@ elif [ "$ACTION" = "miniui" ]; then
 
 
 elif [ "$ACTION" = "measurement" ]; then
- ARGS="config=$CONFIG graph.location=$GRAPH osmreader.osm=$OSM_FILE prepare.chWeighting=elevation graph.flagEncoders=bike"
+ ARGS="config=$CONFIG graph.location=$GRAPH osmreader.osm=$OSM_FILE prepare.chWeighting=elevation graph.flagEncoders=bike measurement.count=50000"
  echo -e "\ncreate graph via $ARGS, $JAR"
  START=$(date +%s)
  # avoid islands for measurement at all costs

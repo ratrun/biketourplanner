@@ -33,6 +33,7 @@ public class EleWeighting extends PriorityWeighting
     {
         super(flagEncoder, pMap);
         this.superWeighting = new PriorityWeighting(flagEncoder, pMap);
+        //ascendAvoidance = pMap.getDouble("ascendAvoidance", 0.0);
         ascendAvoidance = pMap.getDouble("ascendAvoidance", 1.0);
         
         this.flagEncoder = flagEncoder;
@@ -155,28 +156,21 @@ public class EleWeighting extends PriorityWeighting
             if (!reverse)
             {
                 // use weighted mean so that longer incline infuences speed more than shorter
-                //double speed = getSpeed(flags);
                 double fwdFaster = 1 + 2 * com.graphhopper.util.Helper.keepIn(fwdDecline, 0, 0.2);
                 fwdFaster = fwdFaster * fwdFaster;
                 double fwdSlower = 1 - 4 * ascendAvoidance * com.graphhopper.util.Helper.keepIn(fwdIncline, 0, 0.2);
                 fwdSlower = fwdSlower * fwdSlower;
-                // speed = speed * (fwdSlower * incDist2DSum + fwdFaster * decDist2DSum + 1 * restDist2D) / fullDist2D;
                 elefactor = (fwdSlower * incDist2DSum + fwdFaster * decDist2DSum + 1 * restDist2D) / fullDist2D;
-                elefactor = com.graphhopper.util.Helper.keepIn(1.0 / elefactor , 1.0/10.0, 10.0);
-                return weight * elefactor;
-                // flags = this.setSpeed(flags, com.graphhopper.util.Helper.keepIn(speed, PUSHING_SECTION_SPEED / 2, flatSpeed));
+                return weight * com.graphhopper.util.Helper.keepIn(1.0 / elefactor , 1.0/10.0, 10.0);
             }
             else
             {               
-                //double speedReverse = getReverseSpeed(flags);
                 double bwFaster = 1 + 2 * com.graphhopper.util.Helper.keepIn(fwdIncline, 0, 0.2);
                 bwFaster = bwFaster * bwFaster;
                 double bwSlower = 1 - 4 * ascendAvoidance * com.graphhopper.util.Helper.keepIn(fwdDecline, 0, 0.2);
                 bwSlower = bwSlower * bwSlower;
-                // speedReverse = speedReverse * (bwFaster * incDist2DSum + bwSlower * decDist2DSum + 1 * restDist2D) / fullDist2D;
                 elefactor = (bwFaster * incDist2DSum + bwSlower * decDist2DSum + 1 * restDist2D) / fullDist2D;
-                return weight * elefactor;
-                //flags = this.setReverseSpeed(flags, keepIn(speedReverse, PUSHING_SECTION_SPEED / 2, flatSpeed));
+                return weight * com.graphhopper.util.Helper.keepIn(1.0 / elefactor , 1.0/10.0, 10.0);
             }
     }
     
