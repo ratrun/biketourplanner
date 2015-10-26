@@ -112,6 +112,7 @@ public class Measurement
 
         MeasureHopper hopper = new MeasureHopper();
         hopper.forDesktop();
+        hopper.setElevation(true);
         if (!hopper.load(graphLocation))
             throw new IllegalStateException("Cannot load existing graph at " + graphLocation);
 
@@ -119,8 +120,8 @@ public class Measurement
         if ("true".equals(g.getProperties().get("prepare.done")))
             throw new IllegalStateException("Graph has to be unprepared but wasn't!");
 
-        String chWeighting = args.get("prepare.chWeighting", "fastest");
-        String vehicleStr = args.get("graph.flagEncoders", "car");
+        String chWeighting = args.get("prepare.chWeighting", "elevation");
+        String vehicleStr = args.get("graph.flagEncoders", "bike");
         FlagEncoder encoder = hopper.getEncodingManager().getEncoder(vehicleStr);
         Weighting weighting = hopper.getWeightingForCH(new WeightingMap(chWeighting), encoder);
         StopWatch sw = new StopWatch().start();
@@ -337,7 +338,7 @@ public class Measurement
                 double toLat = na.getLatitude(to);
                 double toLon = na.getLongitude(to);
                 GHRequest req = new GHRequest(fromLat, fromLon, toLat, toLon).
-                        setWeighting("fastest").
+                        setWeighting("elevation").
                         setVehicle(vehicle).
                         setAlgorithm(algo);
                 

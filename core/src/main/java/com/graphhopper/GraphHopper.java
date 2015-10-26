@@ -949,6 +949,12 @@ public class GraphHopper implements GraphHopperAPI
                 return new CurvatureWeighting(encoder, weightingMap, ghStorage);
             else
                 return new FastestWeighting(encoder, weightingMap);
+        } else if ("elevation".equalsIgnoreCase(weighting))
+        {
+            if (encoder.supports(EleWeighting.class))
+                return new EleWeighting(encoder, weightingMap);
+            else
+                return new FastestWeighting(encoder, weightingMap);
         }
 
         throw new UnsupportedOperationException("weighting " + weighting + " not supported");

@@ -232,6 +232,7 @@ public class Path
      * Calculates the time in millis for the specified distance in meter and speed (in km/h) via
      * flags.
      */
+    // FIXME: How to adopt the speed from ele difference dynamically? : Provide the edge as well and a put EdgeIteratorState to encoder.getSpeed ?? Note: elevation aware speed is independent from the eleAvoidance parameter, but requires the flatSpeed and the physical parameters as input!
     protected long calcMillis( double distance, long flags, boolean revert )
     {
         if (revert && !encoder.isBackward(flags)

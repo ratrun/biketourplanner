@@ -463,7 +463,7 @@ public abstract class AbstractFlagEncoder implements FlagEncoder, TurnCostEncode
 
     /**
      * Second parsing step. Invoked after splitting the edges. Currently used to offer a hook to
-     * calculate precise speed values based on elevation data stored in the specified edge.
+     * calculate adopted speed values based on elevation data stored in the specified edge.
      */
     public void applyWayTags( OSMWay way, EdgeIteratorState edge )
     {
