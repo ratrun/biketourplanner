@@ -1,5 +1,6 @@
 #!/bin/bash
 
+JAVA_HOME=~/jdk1.8.0_66/
 GH_CLASS=com.graphhopper.tools.Import
 GH_HOME=$(dirname "$0")
 JAVA=$JAVA_HOME/bin/java

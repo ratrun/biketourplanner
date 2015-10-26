@@ -112,7 +112,9 @@ public class Measurement
 
         MeasureHopper hopper = new MeasureHopper();
         hopper.forDesktop();
+        hopper.setCHEnable(false);
         hopper.setElevation(true);
+//        hopper.setCHWeighting("elevation");
         if (!hopper.load(graphLocation))
             throw new IllegalStateException("Cannot load existing graph at " + graphLocation);
 
@@ -120,10 +122,14 @@ public class Measurement
         if ("true".equals(g.getProperties().get("prepare.done")))
             throw new IllegalStateException("Graph has to be unprepared but wasn't!");
 
+
         String chWeighting = args.get("prepare.chWeighting", "elevation");
         String vehicleStr = args.get("graph.flagEncoders", "bike");
+        chWeighting = "elevation";
+        vehicleStr = "bike";
         FlagEncoder encoder = hopper.getEncodingManager().getEncoder(vehicleStr);
-        Weighting weighting = hopper.getWeightingForCH(new WeightingMap(chWeighting), encoder);
+        //Weighting weighting = hopper.getWeightingForCH(new WeightingMap(chWeighting), encoder);
+        Weighting weighting = hopper.createWeighting(new WeightingMap(chWeighting), encoder);
         StopWatch sw = new StopWatch().start();
         try
         {
@@ -140,7 +146,8 @@ public class Measurement
 
             System.gc();
 
-            // route via CH. do preparation before                        
+            // route via CH. do preparation before
+/*            
             hopper.setCHEnable(true);
             hopper.doPostProcessing(weighting);
             CHGraph lg = g.getGraph(CHGraph.class, weighting);
@@ -148,6 +155,7 @@ public class Measurement
             printMiscUnitPerfTests(true, lg, encoder, count * 100, allowedEdges);
             printTimeOfRouteQuery(hopper, count, "routingCH", vehicleStr, true);
             printTimeOfRouteQuery(hopper, count, "routingCH_no_instr", vehicleStr, false);
+*/        
             logger.info("store into " + propLocation);
         } catch (Exception ex)
         {
