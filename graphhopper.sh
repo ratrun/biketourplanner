@@ -267,7 +267,7 @@ elif [ "$ACTION" = "miniui" ]; then
 
 
 elif [ "$ACTION" = "measurement" ]; then
- ARGS="config=$CONFIG graph.location=$GRAPH osmreader.osm=$OSM_FILE prepare.chWeighting=elevation graph.flagEncoders=bike measurement.count=50000"
+ ARGS="config=$CONFIG graph.location=$GRAPH osmreader.osm=$OSM_FILE prepare.chWeighting=elevation graph.flagEncoders=bike"
  echo -e "\ncreate graph via $ARGS, $JAR"
  START=$(date +%s)
  # avoid islands for measurement at all costs
@@ -276,7 +276,7 @@ elif [ "$ACTION" = "measurement" ]; then
  IMPORT_TIME=$(($END - $START))
 
  function startMeasurement {
-    COUNT=5000
+    COUNT=50000
     commit_info=$(git log -n 1 --pretty=oneline)
     echo -e "\nperform measurement via jar=> $JAR and ARGS=> $ARGS"
     "$JAVA" $JAVA_OPTS -cp "$JAR" com.graphhopper.tools.Measurement $ARGS measurement.count=$COUNT measurement.location="$M_FILE_NAME" \
