@@ -1,13 +1,12 @@
 package com.graphhopper.routing.util;
 
-import com.graphhopper.storage.GraphHopperStorage;
 import com.graphhopper.util.DistanceCalc;
 import com.graphhopper.util.EdgeIteratorState;
+import com.graphhopper.storage.NodeAccess;
 import com.graphhopper.util.Helper;
 import com.graphhopper.util.PMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.graphhopper.util.PointList;
 
 /**
  * This Class uses edge elevation difference for edge avoidence or for edge preference.
@@ -19,6 +18,8 @@ public class EleWeighting extends PriorityWeighting
 
     private final FlagEncoder flagEncoder;
     
+    private final NodeAccess nodeAccess;
+    
     private final Weighting superWeighting;    
 
     private final DistanceCalc distCalc = Helper.DIST_EARTH;
@@ -29,14 +30,15 @@ public class EleWeighting extends PriorityWeighting
 
     private double ascendAvoidance;
 
-    public EleWeighting( FlagEncoder flagEncoder, PMap pMap )
+    public EleWeighting( FlagEncoder flagEncoder, PMap pMap, NodeAccess nodeAccess)
     {
         super(flagEncoder, pMap);
         this.superWeighting = new PriorityWeighting(flagEncoder, pMap);
-        //ascendAvoidance = pMap.getDouble("ascendAvoidance", 0.0);
-        ascendAvoidance = pMap.getDouble("ascendAvoidance", 1.0);
+        ascendAvoidance = pMap.getDouble("ascendAvoidance", 0.0);
+        //ascendAvoidance = pMap.getDouble("ascendAvoidance", 1.0);
         
         this.flagEncoder = flagEncoder;
+        this.nodeAccess = nodeAccess;
     }
     
     @Override
@@ -86,20 +88,21 @@ public class EleWeighting extends PriorityWeighting
     // Adopts weight 
     private double applyEle( EdgeIteratorState edge, double weight, boolean reverse )
     {
-        PointList pl = edge.fetchWayGeometry(3);
+        /* PointList pl = edge.fetchWayGeometry(3);
         if (!pl.is3D())
             throw new IllegalStateException("To support speed calculation based on elevation data it is necessary to enable import of it.");
+        */
 
         long flags = edge.getFlags();
-
-    
             // Decrease the speed for ele increase (incline), and decrease the speed for ele decrease (decline). The speed-decrease 
             // has to be bigger (compared to the speed-increase) for the same elevation difference to simulate loosing energy and avoiding hills.
             // For the reverse speed this has to be the opposite but again keeping in mind that up+down difference.
             double incEleSum = 0, incDist2DSum = 0;
             double decEleSum = 0, decDist2DSum = 0;
             // double prevLat = pl.getLatitude(0), prevLon = pl.getLongitude(0);
-            double prevEle = pl.getElevation(0);
+            //double prevEle = pl.getElevation(0);
+            double prevEle = nodeAccess.getElevation(edge.getAdjNode());
+
             double fullDist2D = edge.getDistance();
 
             if (Double.isInfinite(fullDist2D))
@@ -111,7 +114,8 @@ public class EleWeighting extends PriorityWeighting
             if (fullDist2D < 1)
                 return weight;
 
-            double eleDelta = pl.getElevation(pl.size() - 1) - prevEle;
+            // double eleDelta = pl.getElevation(pl.size() - 1) - prevEle;
+            double eleDelta = nodeAccess.getElevation(edge.getBaseNode()) - prevEle;
             if (eleDelta > 0.1)
             {
                 incEleSum = eleDelta;

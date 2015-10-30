@@ -267,7 +267,7 @@ elif [ "$ACTION" = "miniui" ]; then
 
 
 elif [ "$ACTION" = "measurement" ]; then
- ARGS="config=$CONFIG graph.location=$GRAPH osmreader.osm=$OSM_FILE prepare.chWeighting=elevation graph.flagEncoders=bike"
+ ARGS="config=$CONFIG graph.location=$GRAPH osmreader.osm=$OSM_FILE prepare.chWeighting=elevation graph.flagEncoders=bike graph.elevation.dataaccess=RAM_STORE"
  echo -e "\ncreate graph via $ARGS, $JAR"
  START=$(date +%s)
  # avoid islands for measurement at all costs

@@ -952,7 +952,7 @@ public class GraphHopper implements GraphHopperAPI
         } else if ("elevation".equalsIgnoreCase(weighting))
         {
             if (encoder.supports(EleWeighting.class))
-                return new EleWeighting(encoder, weightingMap);
+                return new EleWeighting(encoder, weightingMap, ghStorage.getNodeAccess());
             else
                 return new FastestWeighting(encoder, weightingMap);
         }

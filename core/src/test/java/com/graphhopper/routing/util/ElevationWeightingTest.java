@@ -18,6 +18,7 @@
 package com.graphhopper.routing.util;
 
 import com.graphhopper.routing.VirtualEdgeIteratorState;
+import com.graphhopper.storage.NodeAccess;
 import com.graphhopper.util.EdgeIterator;
 import com.graphhopper.util.GHUtility;
 import com.graphhopper.util.Helper;
@@ -41,17 +42,17 @@ public class ElevationWeightingTest
         PriorityWeighting prioinstance = new PriorityWeighting(encoder);
         double originaltime = prioinstance.calcWeight(virtEdge, false, 0);        
 
-        EleWeighting eleinstance = new EleWeighting(encoder, new PMap().put("weighthing", "elevation").put("ascendAvoidance","1.0"));
+        EleWeighting eleinstance = new EleWeighting(encoder, new PMap().put("weighthing", "elevation").put("ascendAvoidance","1.0"), null);
         assertEquals(originaltime, eleinstance.calcWeight(virtEdge, false, 0), 1e-8);
         
         virtEdge = new VirtualEdgeIteratorState(0, 1, 1, 2, 10,
                 encoder.setProperties(10, true, true), "test", Helper.createPointList3D(51, 0, 100, 51, 1, 300));
         assertEquals(originaltime * 10.0, eleinstance.calcWeight(virtEdge, false, 0), 1e-8);
         
-        eleinstance = new EleWeighting(encoder, new PMap().put("weighthing", "elevation").put("ascendAvoidance","0.0"));
+        eleinstance = new EleWeighting(encoder, new PMap().put("weighthing", "elevation").put("ascendAvoidance","0.0"), null);
         assertEquals(originaltime, eleinstance.calcWeight(virtEdge, false, 0), 1e-8);
 
-        eleinstance = new EleWeighting(encoder, new PMap().put("weighthing", "elevation").put("ascendAvoidance","-1.0"));
+        eleinstance = new EleWeighting(encoder, new PMap().put("weighthing", "elevation").put("ascendAvoidance","-1.0"), null);
         assertEquals(originaltime / 10, eleinstance.calcWeight(virtEdge, false, 0), 1e-8);
         
     }
