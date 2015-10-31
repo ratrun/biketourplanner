@@ -101,7 +101,7 @@ public class EleWeighting extends PriorityWeighting
             double decEleSum = 0, decDist2DSum = 0;
             // double prevLat = pl.getLatitude(0), prevLon = pl.getLongitude(0);
             //double prevEle = pl.getElevation(0);
-            double prevEle = nodeAccess.getElevation(edge.getAdjNode());
+            double prevEle = nodeAccess.getElevation(edge.getBaseNode());
 
             double fullDist2D = edge.getDistance();
 
@@ -115,7 +115,7 @@ public class EleWeighting extends PriorityWeighting
                 return weight;
 
             // double eleDelta = pl.getElevation(pl.size() - 1) - prevEle;
-            double eleDelta = nodeAccess.getElevation(edge.getBaseNode()) - prevEle;
+            double eleDelta = nodeAccess.getElevation(edge.getAdjNode()) - prevEle;
             if (eleDelta > 0.1)
             {
                 incEleSum = eleDelta;

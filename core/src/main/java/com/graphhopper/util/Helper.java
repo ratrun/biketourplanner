@@ -352,6 +352,7 @@ public class Helper
         {
             res.add(list[3 * i], list[3 * i + 1], list[3 * i + 2]);
         }
+        res.is3D = true;
         return res;
     }
 

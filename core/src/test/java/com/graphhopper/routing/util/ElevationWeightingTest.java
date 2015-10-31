@@ -18,67 +18,73 @@
 package com.graphhopper.routing.util;
 
 import com.graphhopper.routing.VirtualEdgeIteratorState;
-import com.graphhopper.storage.NodeAccess;
-import com.graphhopper.util.EdgeIterator;
-import com.graphhopper.util.GHUtility;
-import com.graphhopper.util.Helper;
-import com.graphhopper.util.PMap;
+import com.graphhopper.storage.*;
+import com.graphhopper.util.*;
+import org.junit.After;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import org.junit.Before;
 
 /**
  * @author Peter Karich
  */
 public class ElevationWeightingTest
 {
-    private final FlagEncoder encoder = new EncodingManager("bike").getEncoder("bike");
+    private EncodingManager encodingManager;
+    private FlagEncoder encoder;
+    private GraphHopperStorage g;
+    EdgeIteratorState flatEdge, eleEdge;
+
+    @Before
+    public void setUp()
+    {
+        encoder = new BikeFlagEncoder();
+        encodingManager = new EncodingManager(encoder);
+        g = new GraphHopperStorage(new RAMDirectory(), encodingManager, true, new GraphExtension.NoOpExtension()).create(100);
+    }
+
+    @After
+    public void tearDown()
+    {
+        g.close();
+    }
+
+    void initGraph( Graph g )
+    {
+        //
+        //  /*-*\
+        // 0     1
+        // |
+        // 2
+        NodeAccess na = g.getNodeAccess();
+        
+        na.setNode(0, 51, 0, 100);
+        na.setNode(1, 51, 1, 100);
+        na.setNode(2, 51, 0, 100);
+        na.setNode(3, 51, 1, 300);
+        
+        flatEdge = g.edge(0, 1, 10, true).setWayGeometry(Helper.createPointList3D(51, 0, 100, 51, 1, 100));
+        eleEdge =  g.edge(2, 3, 10, true).setWayGeometry(Helper.createPointList3D(51, 0, 100, 51, 1, 300));
+    }
+    
 
     @Test
     public void testWeightWrongHeading()
     {
-        VirtualEdgeIteratorState virtEdge = new VirtualEdgeIteratorState(0, 1, 1, 2, 10,
-                encoder.setProperties(10, true, true), "test", Helper.createPointList3D(51, 0, 100, 51, 1, 100));
+        initGraph(g);
         PriorityWeighting prioinstance = new PriorityWeighting(encoder);
-        double originaltime = prioinstance.calcWeight(virtEdge, false, 0);        
+        double originaltime = prioinstance.calcWeight(flatEdge, false, 0);        
 
-        EleWeighting eleinstance = new EleWeighting(encoder, new PMap().put("weighthing", "elevation").put("ascendAvoidance","1.0"), null);
-        assertEquals(originaltime, eleinstance.calcWeight(virtEdge, false, 0), 1e-8);
-        
-        virtEdge = new VirtualEdgeIteratorState(0, 1, 1, 2, 10,
-                encoder.setProperties(10, true, true), "test", Helper.createPointList3D(51, 0, 100, 51, 1, 300));
-        assertEquals(originaltime * 10.0, eleinstance.calcWeight(virtEdge, false, 0), 1e-8);
-        
-        eleinstance = new EleWeighting(encoder, new PMap().put("weighthing", "elevation").put("ascendAvoidance","0.0"), null);
-        assertEquals(originaltime, eleinstance.calcWeight(virtEdge, false, 0), 1e-8);
+        EleWeighting eleinstance = new EleWeighting(encoder, new PMap().put("weighthing", "elevation").put("ascendAvoidance","1.0"), g.getNodeAccess());
+        assertEquals(originaltime, eleinstance.calcWeight(flatEdge, false, 0), 1e-8);
 
-        eleinstance = new EleWeighting(encoder, new PMap().put("weighthing", "elevation").put("ascendAvoidance","-1.0"), null);
-        assertEquals(originaltime / 10, eleinstance.calcWeight(virtEdge, false, 0), 1e-8);
+        eleinstance = new EleWeighting(encoder, new PMap().put("weighthing", "elevation").put("ascendAvoidance","1.0"), g.getNodeAccess());        
+        assertEquals(originaltime * 10.0, eleinstance.calcWeight(eleEdge, false, 0), 1e-8);
+
+        eleinstance = new EleWeighting(encoder, new PMap().put("weighthing", "elevation").put("ascendAvoidance","-1.0"), g.getNodeAccess());
+        assertEquals(1.234567901, eleinstance.calcWeight(eleEdge, false, 0), 1e-8);
         
     }
 
-
-    EdgeIterator createEdge( final double distance, final long flags )
-    {
-        return new GHUtility.DisabledEdgeIterator()
-        {
-            @Override
-            public double getDistance()
-            {
-                return distance;
-            }
-
-            @Override
-            public long getFlags()
-            {
-                return flags;
-            }
-
-            @Override
-            public boolean getBoolean( int key, boolean reverse, boolean _default )
-            {
-                return _default;
-            }
-        };
-    }
 }
