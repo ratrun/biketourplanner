@@ -289,6 +289,20 @@ $(document).ready(function (e) {
     checkInput();
 });
 
+$(function() {
+    $( "#slider-range-max" ).slider({
+      range: "max",
+      min: -1.0,
+      max: 1.0,
+      step: 0.1,
+      value: 1.0,
+      slide: function( event, ui ) {
+        $( "#ascendAvoidance" ).val( ui.value );
+      }
+    });
+    $( "#ascendAvoidance" ).val( $( "#slider-range-max" ).slider( "value" ) );
+});
+
 function getSortedVehicleKeys(vehicleHashMap, prefer) {
     var keys = Object.keys(vehicleHashMap);
 

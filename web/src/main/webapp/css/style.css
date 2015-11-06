@@ -326,3 +326,8 @@ td img.pic {
     padding: 10px;
     background: #00cc33;
 }
+
+.input-w label {
+    display: inline-block;
+    vertical-align: middle;
+}
