@@ -331,3 +331,7 @@ td img.pic {
     display: inline-block;
     vertical-align: middle;
 }
+
+.ui-slider-range { 
+    background: transparent; 
+}

@@ -295,9 +295,11 @@ $(function() {
       min: -1.0,
       max: 1.0,
       step: 0.1,
-      value: 1.0,
       slide: function( event, ui ) {
         $( "#ascendAvoidance" ).val( ui.value );
+        ghRequest.api_params.ascendAvoidance = ui.value;
+        ghRequest.api_params.weighting = "elevation";
+        routeLatLng(ghRequest, false);
       }
     });
     $( "#ascendAvoidance" ).val( $( "#slider-range-max" ).slider( "value" ) );
