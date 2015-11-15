@@ -1,5 +1,6 @@
 package com.graphhopper.routing.util;
 
+import com.graphhopper.coll.GHBitSet;
 import com.graphhopper.coll.GHBitSetImpl;
 import com.graphhopper.storage.GraphHopperStorage;
 import com.graphhopper.util.EdgeIterator;
@@ -12,25 +13,26 @@ import java.util.Stack;
 
 /**
  * Implementation of Tarjan's algorithm using an explicit stack. The traditional recursive approach
- * runs into stack overflow pretty quickly. Used for finding strongly connected components to detect
- * dead-ends.
+ * runs into stack overflow pretty quickly. The algorithm is used within GraphHopper to find
+ * strongly connected components to detect dead-ends leading to routes not found.
  * <p>
  * See http://en.wikipedia.org/wiki/Tarjan's_strongly_connected_components_algorithm. See
  * http://www.timl.id.au/?p=327 and http://homepages.ecs.vuw.ac.nz/~djp/files/P05.pdf
  */
-public class TarjansStronglyConnectedComponentsAlgorithm
+public class TarjansSCCAlgorithm
 {
+    private final ArrayList<TIntArrayList> components = new ArrayList<TIntArrayList>();
     private final GraphHopperStorage graph;
     private final TIntArrayStack nodeStack;
-    private final GHBitSetImpl onStack;
+    private final GHBitSet onStack;
+    private final GHBitSet ignoreSet;
     private final int[] nodeIndex;
     private final int[] nodeLowLink;
-    private final ArrayList<TIntArrayList> components = new ArrayList<TIntArrayList>();
-
     private int index = 1;
     private final EdgeFilter edgeFilter;
 
-    public TarjansStronglyConnectedComponentsAlgorithm( GraphHopperStorage graph, final EdgeFilter edgeFilter )
+    public TarjansSCCAlgorithm( GraphHopperStorage graph, GHBitSet ignoreSet,
+                                final EdgeFilter edgeFilter )
     {
         this.graph = graph;
         this.nodeStack = new TIntArrayStack();
@@ -38,6 +40,7 @@ public class TarjansStronglyConnectedComponentsAlgorithm
         this.nodeIndex = new int[graph.getNodes()];
         this.nodeLowLink = new int[graph.getNodes()];
         this.edgeFilter = edgeFilter;
+        this.ignoreSet = ignoreSet;
     }
 
     /**
@@ -48,16 +51,20 @@ public class TarjansStronglyConnectedComponentsAlgorithm
         int nodes = graph.getNodes();
         for (int start = 0; start < nodes; start++)
         {
-            if (nodeIndex[start] == 0 && !graph.isNodeRemoved(start))
-            {
+            if (nodeIndex[start] == 0
+                    && !ignoreSet.contains(start)
+                    && !graph.isNodeRemoved(start))
                 strongConnect(start);
-            }
         }
 
         return components;
     }
 
-    // Find all components reachable from firstNode, add them to 'components'
+    /**
+     * Find all components reachable from firstNode, add them to 'components'
+     * <p>
+     * @param firstNode start search of SCC at this node
+     */
     private void strongConnect( int firstNode )
     {
         final Stack<TarjanState> stateStack = new Stack<TarjanState>();
@@ -79,13 +86,12 @@ public class TarjansStronglyConnectedComponentsAlgorithm
                 nodeLowLink[start] = index;
                 index++;
                 nodeStack.push(start);
-                onStack.set(start);
+                onStack.add(start);
 
                 iter = graph.createEdgeExplorer(edgeFilter).setBaseNode(start);
 
             } else
-            { // if (state.isResume()) {
-
+            {
                 // We're resuming iteration over the next child of 'start', set lowLink as appropriate.
                 iter = state.iter;
 
@@ -98,6 +104,9 @@ public class TarjansStronglyConnectedComponentsAlgorithm
             while (iter.next())
             {
                 int connectedId = iter.getAdjNode();
+                if (ignoreSet.contains(start))
+                    continue;
+
                 if (nodeIndex[connectedId] == 0)
                 {
                     // Push resume and start states onto state stack to continue our DFS through the graph after the jump.
@@ -120,19 +129,21 @@ public class TarjansStronglyConnectedComponentsAlgorithm
                 while ((node = nodeStack.pop()) != start)
                 {
                     component.add(node);
-                    onStack.clear(node);
+                    onStack.remove(node);
                 }
                 component.add(start);
                 component.trimToSize();
-                onStack.clear(start);
-
+                onStack.remove(start);
                 components.add(component);
             }
         }
     }
 
-    // Internal stack state of algorithm, used to avoid recursive function calls and hitting stack overflow exceptions.
-    // State is either 'start' for new nodes or 'resume' for partially traversed nodes.
+    /**
+     * Internal stack state of algorithm, used to avoid recursive function calls and hitting stack
+     * overflow exceptions. State is either 'start' for new nodes or 'resume' for partially
+     * traversed nodes.
+     */
     private static class TarjanState
     {
         final int start;
