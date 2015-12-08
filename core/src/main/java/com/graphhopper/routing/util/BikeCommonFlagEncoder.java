@@ -319,6 +319,26 @@ public class BikeCommonFlagEncoder extends AbstractFlagEncoder
         return oldRelationFlags;
     }
 
+    /**
+     * @param way: needed to retrieve OSM tags
+     * @param speed: speed guessed e.g. from the road type or other tags
+     * @return The assumed speed. If the maxspeed tag is available then normally it decreases the speed guessed from the road type (if maxspeed < speed).
+     * We allow us to go maxSpeedIgnoranceFactor faster compared to the speed limit, see issue #597
+     */
+    @Override    
+    protected double applyMaxSpeed( OSMWay way, double speed)
+    {
+        double maxSpeed = getMaxSpeed(way);
+        double maxSpeedIgnoranceFactor = 1.0;
+        // We obay speed limits
+        if (maxSpeed >= 0)
+        {
+            if ( maxSpeed * maxSpeedIgnoranceFactor < speed )
+                return maxSpeed * maxSpeedIgnoranceFactor ;
+        }
+        return speed;
+    }
+    
     @Override
     public long handleWayTags( OSMWay way, long allowed, long relationFlags )
     {
@@ -330,8 +350,7 @@ public class BikeCommonFlagEncoder extends AbstractFlagEncoder
         {
             double speed = getSpeed(way);
 
-            // bike maxspeed handling is different from car as we don't increase speed
-            speed = applyMaxSpeed(way, speed, false);
+            speed = applyMaxSpeed(way, speed);
             encoded = handleSpeed(way, speed, encoded);
             encoded = handleBikeRelated(way, encoded, relationFlags > UNCHANGED.getValue());
 

@@ -791,16 +791,17 @@ public abstract class AbstractFlagEncoder implements FlagEncoder, TurnCostEncode
     }
 
     /**
-     * @param force should be false if speed should be changed only if it is bigger than maxspeed.
+     * @param way: needed to retrieve OSM tags
+     * @param speed: speed guessed e.g. from the road type or other tags
+     * @return The assumed speed. 
      */
-    protected double applyMaxSpeed( OSMWay way, double speed, boolean force )
+    protected double applyMaxSpeed( OSMWay way, double speed )
     {
         double maxSpeed = getMaxSpeed(way);
-        // apply only if smaller maxSpeed
+        // We obay speed limits
         if (maxSpeed >= 0)
         {
-            if (force || maxSpeed < speed)
-                return maxSpeed * 0.9;
+                return maxSpeed *0.9;
         }
         return speed;
     }
