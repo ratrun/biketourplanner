@@ -422,7 +422,7 @@ public class BikeFlagEncoderTest extends AbstractBikeFlagEncoderTester
         way.setTag("maxspeed", "10");
         long allowed = encoder.acceptWay(way);
         long encoded = encoder.handleWayTags(way, allowed, 0);
-        assertEquals(10, encoder.getSpeed(encoded), 1e-1);
+        assertEquals(14, encoder.getSpeed(encoded), 1e-1);
         assertPriority(PREFER.getValue(), way);
 
         way = new OSMWay(1);
@@ -440,10 +440,10 @@ public class BikeFlagEncoderTest extends AbstractBikeFlagEncoderTester
         way = new OSMWay(1);
         way.setTag("highway", "residential");
         way.setTag("maxspeed", "15");
-        assertEquals(15, encoder.getSpeed(encoder.setSpeed(0, encoder.applyMaxSpeed(way, 18))), 1.0);
+        assertEquals(18, encoder.getSpeed(encoder.setSpeed(0, encoder.applyMaxSpeed(way, 18))), 1.0);
         allowed = encoder.acceptWay(way);
         encoded = encoder.handleWayTags(way, allowed, 0);
-        assertEquals(15, encoder.getSpeed(encoded), 1.0);
+        assertEquals(18, encoder.getSpeed(encoded), 1.0);
         assertPriority(PREFER.getValue(), way);
 
     }

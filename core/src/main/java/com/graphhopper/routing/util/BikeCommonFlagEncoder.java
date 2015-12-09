@@ -322,19 +322,28 @@ public class BikeCommonFlagEncoder extends AbstractFlagEncoder
     /**
      * @param way: needed to retrieve OSM tags
      * @param speed: speed guessed e.g. from the road type or other tags
-     * @return The assumed speed. If the maxspeed tag is available then normally it decreases the speed guessed from the road type (if maxspeed < speed).
-     * We allow us to go maxSpeedIgnoranceFactor faster compared to the speed limit, see issue #597
+     * @return The assumed speed. If the maxspeed tag is available then normally it decreases the speed guessed from the road type, but
+     *         we allow us to go maxSpeedIgnoranceFactor faster compared to the speed limit. 
      */
     @Override    
     protected double applyMaxSpeed( OSMWay way, double speed)
     {
         double maxSpeed = getMaxSpeed(way);
-        double maxSpeedIgnoranceFactor = 1.0;
-        // We obay speed limits
+        final double maxSpeedIgnoranceFactor = 1.3;
+        // Generally we obay speed limits
         if (maxSpeed >= 0)
         {
             if ( maxSpeed * maxSpeedIgnoranceFactor < speed )
-                return maxSpeed * maxSpeedIgnoranceFactor ;
+            {
+                // We do not obay low speed limits. An resonable excuse is that a bike doesn't automatically come with a speedometer and therefore we
+                // cannot now if we are exeeding a low limit.
+                if (maxSpeed * maxSpeedIgnoranceFactor <= 30)
+                    return maxSpeed * maxSpeedIgnoranceFactor ;
+                else
+                    // This is for the future in the unlikely case that a customized racebike profile 
+                    // for professional riders assume an average road speed >= 30km/h
+                    return maxSpeed;
+            }
         }
         return speed;
     }

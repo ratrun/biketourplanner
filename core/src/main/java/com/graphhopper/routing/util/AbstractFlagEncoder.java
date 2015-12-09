@@ -801,7 +801,8 @@ public abstract class AbstractFlagEncoder implements FlagEncoder, TurnCostEncode
         // We obay speed limits
         if (maxSpeed >= 0)
         {
-                return maxSpeed *0.9;
+            // We assume that the average speed is 90% of the allowed maximum
+            return maxSpeed * 0.9;
         }
         return speed;
     }
