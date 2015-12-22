@@ -201,8 +201,8 @@ public class GraphHopperIT
         req.getHints().put("heading_penalty", "300");
         GHResponse rsp = hopper.route(req);
 
-        assertEquals(874., rsp.getDistance(), 10.);
-        assertEquals(33, rsp.getPoints().getSize());
+        assertEquals(921.8, rsp.getDistance(), 10.);
+        assertEquals(38, rsp.getPoints().getSize());
     }
 
     @Test
@@ -398,8 +398,8 @@ public class GraphHopperIT
         rsp = tmpHopper.route(new GHRequest(43.73005, 7.415707, 43.741522, 7.42826)
                 .setVehicle("bike"));
         assertFalse("bike routing for " + str + " should not have errors:" + rsp.getErrors(), rsp.hasErrors());
-        assertEquals(494, rsp.getTime() / 1000f, 1);
-        assertEquals(2192, rsp.getDistance(), 1);
+        assertEquals(529.4, rsp.getTime() / 1000f, 1);
+        assertEquals(2523.1, rsp.getDistance(), 1);
 
         rsp = tmpHopper.route(new GHRequest(43.73005, 7.415707, 43.741522, 7.42826)
                 .setVehicle("foot"));
