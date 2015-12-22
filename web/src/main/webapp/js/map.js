@@ -1,5 +1,6 @@
 var mainTemplate = require('./main-template.js');
 var tileLayers = require('./config/tileLayers.js');
+require("./unterkunft.js");
 
 var routingLayer;
 var map;
@@ -116,6 +117,9 @@ function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selec
 
     //if (isProduction())
     //    map.setView(new L.LatLng(0, 0), 2);
+    
+    map.on('moveend',function(){Moveaufruf(map);});
+     Moveaufruf(map);
 
     map.attributionControl.setPrefix('');
 
