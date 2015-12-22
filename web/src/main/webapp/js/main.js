@@ -291,7 +291,7 @@ $(document).ready(function (e) {
 });
 
 $(function() {
-    $( "#slider-range-max" ).slider({
+    $( "#slider-range-ascend" ).slider({
       range: "max",
       min: -1.0,
       max: 1.0,
@@ -303,7 +303,24 @@ $(function() {
         routeLatLng(ghRequest, false);
       }
     });
-    $( "#ascendAvoidance" ).val( $( "#slider-range-max" ).slider( "value" ) );
+    $( "#ascendAvoidance" ).val( $( "#slider-range-ascend" ).slider( "value" ) );
+});
+
+$(function() {
+    var boostValues = [1/4.0, 1/3.0, 1/2.0, 1.0, 2.0, 3.0, 4.0];
+    $( "#slider-range-niceLevel" ).slider({
+      range: "max",
+      min: 0.0,
+      value: 3.0,  //->BoostLevel=1.0
+      max: 6.0,
+      step: 1.0,
+      slide: function( event, ui ) {
+        $( "#niceLevel" ).val( ui.value );
+        ghRequest.api_params.niceLevel = boostValues[ui.value];
+        routeLatLng(ghRequest, false);
+      }
+    });
+    $( "#niceLevel" ).val( $( "#slider-range-niceLevel" ).slider( "value" ) );
 });
 
 function getSortedVehicleKeys(vehicleHashMap, prefer) {

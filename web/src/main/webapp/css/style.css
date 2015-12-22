@@ -332,11 +332,11 @@ td img.pic {
     background: #00cc33;
 }
 
-.input-w label {
+.input-ascend .input-niceLevel label {
     display: inline-block;
     vertical-align: middle;
 }
 
-.ui-slider-range { 
+.ui-slider-ascend .ui-slider-niceLevel { 
     background: transparent; 
 }

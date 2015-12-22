@@ -48,7 +48,7 @@ GHRequest = function (host) {
     // use jsonp here if host allows CORS
     this.dataType = "json";
 
-    this.api_params = {"locale": "en", "vehicle": "car", "weighting": "fastest", "elevation": false, "ascendAvoidance": 0.0};
+    this.api_params = {"locale": "en", "vehicle": "car", "weighting": "fastest", "elevation": false, "ascendAvoidance": 0.0, "niceLevel": 3.0};
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // We know that you love 'free', we love it too :)! And so our entire software stack is free and even Open Source!      
