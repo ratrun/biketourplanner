@@ -1,30 +1,5 @@
 package com.graphhopper.android;
 
-import java.io.File;
-import java.io.FilenameFilter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
-import org.mapsforge.core.graphics.Bitmap;
-import org.mapsforge.core.graphics.Paint;
-import org.mapsforge.core.graphics.Style;
-import org.mapsforge.core.model.LatLong;
-import org.mapsforge.core.model.MapPosition;
-import org.mapsforge.core.model.Point;
-import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
-import org.mapsforge.map.android.util.AndroidUtil;
-import org.mapsforge.map.android.view.MapView;
-import org.mapsforge.map.layer.Layers;
-import org.mapsforge.map.layer.cache.TileCache;
-import org.mapsforge.map.layer.overlay.Marker;
-import org.mapsforge.map.layer.overlay.Polyline;
-import org.mapsforge.map.layer.renderer.TileRendererLayer;
-import org.mapsforge.map.reader.MapDataStore;
-import org.mapsforge.map.reader.MapFile;
-import org.mapsforge.map.rendertheme.InternalRenderTheme;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -59,6 +34,31 @@ import com.graphhopper.util.PointList;
 import com.graphhopper.util.ProgressListener;
 import com.graphhopper.util.StopWatch;
 
+import org.mapsforge.core.graphics.Bitmap;
+import org.mapsforge.core.graphics.Paint;
+import org.mapsforge.core.graphics.Style;
+import org.mapsforge.core.model.LatLong;
+import org.mapsforge.core.model.MapPosition;
+import org.mapsforge.core.model.Point;
+import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
+import org.mapsforge.map.android.util.AndroidUtil;
+import org.mapsforge.map.android.view.MapView;
+import org.mapsforge.map.datastore.MapDataStore;
+import org.mapsforge.map.layer.Layers;
+import org.mapsforge.map.layer.cache.TileCache;
+import org.mapsforge.map.layer.overlay.Marker;
+import org.mapsforge.map.layer.overlay.Polyline;
+import org.mapsforge.map.layer.renderer.TileRendererLayer;
+import org.mapsforge.map.reader.MapFile;
+import org.mapsforge.map.rendertheme.InternalRenderTheme;
+
+import java.io.File;
+import java.io.FilenameFilter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
 public class MainActivity extends Activity
 {
     private MapView mapView;
@@ -72,7 +72,7 @@ public class MainActivity extends Activity
     private volatile boolean prepareInProgress = false;
     private volatile boolean shortestPathRunning = false;
     private String currentArea = "berlin";
-    private String fileListURL = "https://graphhopper.com/public/maps/0.6/";
+    private String fileListURL = "http://download2.graphhopper.com/public/maps/0.6/";
     private String prefixURL = fileListURL;
     private String downloadURL;
     private File mapsFolder;
@@ -265,17 +265,18 @@ public class MainActivity extends Activity
             @Override
             protected void onPostExecute( List<String> nameList )
             {
-                if (nameList.isEmpty())
-                {
-                    logUser("No maps created for your version!? " + fileListURL);
-                    return;
-                } else if (hasError())
+                if (hasError())
                 {
                     getError().printStackTrace();
                     logUser("Are you connected to the internet? Problem while fetching remote area list: "
                             + getErrorMessage());
                     return;
+                } else if (nameList == null || nameList.isEmpty())
+                {
+                    logUser("No maps created for your version!? " + fileListURL);
+                    return;
                 }
+
                 MySpinnerListener spinnerListener = new MySpinnerListener()
                 {
                     @Override
@@ -409,13 +410,13 @@ public class MainActivity extends Activity
 
         tileRendererLayer = new TileRendererLayer(tileCache, mapDataStore,
                 mapView.getModel().mapViewPosition, false, true, AndroidGraphicFactory.INSTANCE)
-        {
-            @Override
-            public boolean onLongPress( LatLong tapLatLong, Point layerXY, Point tapXY )
-            {
-                return onMapTap(tapLatLong, layerXY, tapXY);
-            }
-        };
+                {
+                    @Override
+                    public boolean onLongPress( LatLong tapLatLong, Point layerXY, Point tapXY )
+                    {
+                        return onMapTap(tapLatLong, layerXY, tapXY);
+                    }
+                };
         tileRendererLayer.setTextScale(1.5f);
         tileRendererLayer.setXmlRenderTheme(InternalRenderTheme.OSMARENDER);
         mapView.getModel().mapViewPosition.setMapPosition(new MapPosition(mapDataStore.boundingBox().getCenterPoint(), (byte) 15));
@@ -466,9 +467,9 @@ public class MainActivity extends Activity
         paintStroke.setStyle(Style.STROKE);
         paintStroke.setColor(Color.argb(128, 0, 0xCC, 0x33));
         paintStroke.setDashPathEffect(new float[]
-                {
-                        25, 15
-                });
+        {
+            25, 15
+        });
         paintStroke.setStrokeWidth(8);
 
         Polyline line = new Polyline((org.mapsforge.core.graphics.Paint) paintStroke, AndroidGraphicFactory.INSTANCE);
