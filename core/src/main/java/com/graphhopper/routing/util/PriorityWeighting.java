@@ -43,9 +43,9 @@ public class PriorityWeighting extends FastestWeighting
     public PriorityWeighting( FlagEncoder encoder, PMap pMap )
     {
         super(encoder, pMap);
-        prioBoost = pMap.getDouble("niceLevel", 1.0);
+        prioBoost = 2 * pMap.getDouble("niceLevel", 1.0);
         double maxPriority = 1; // BEST / BEST
-        minFactor = 1 / ( 0.5/prioBoost + prioBoost * maxPriority);
+        minFactor = 1 / ( 0.5 / prioBoost + prioBoost * maxPriority);
     }
 
     @Override
