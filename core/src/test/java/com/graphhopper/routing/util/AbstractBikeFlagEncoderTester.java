@@ -56,7 +56,7 @@ public abstract class AbstractBikeFlagEncoderTester
 
     protected void assertPriority( int expectedPrio, OSMWay way, long relationFlags )
     {
-        assertEquals(expectedPrio, encoder.handlePriority(way, (int) encoder.relationCodeEncoder.getValue(relationFlags)));
+        assertEquals(expectedPrio, encoder.handlePriority(way, 18, (int) encoder.relationCodeEncoder.getValue(relationFlags)));
     }
 
     protected double getSpeedFromFlags( OSMWay way )
