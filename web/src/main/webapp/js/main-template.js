@@ -598,12 +598,12 @@ $(function() {
 });
 
 $(function() {
-    var boostValues = [1/3.0, 1/2.5, 1/2.0, 1/1.5, 1.0, 1.5, 2.0, 2.5, 3.0];
+    var boostValues = [1/4, 1/3.5, 1/3.0, 1/2.5, 1/2.0, 1/1.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4];
     $( "#slider-range-niceLevel" ).slider({
       range: "max",
       min: 0.0,
-      value: 4.0,  //->niceLevel=1.0
-      max: 8.0,
+      value: 6.0,  //->niceLevel=1.0
+      max: 12.0,
       step: 1.0,
       slide: function( event, ui ) {
         $( "#niceLevel" ).val( ui.value );
