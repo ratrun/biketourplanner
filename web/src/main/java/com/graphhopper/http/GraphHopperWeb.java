@@ -184,7 +184,7 @@ public class GraphHopperWeb implements GraphHopperAPI
                     InstructionAnnotation ia = InstructionAnnotation.EMPTY;
                     if (jsonObj.has("annotation_importance") && jsonObj.has("annotation_text"))
                     {
-                        ia = new InstructionAnnotation(jsonObj.getInt("annotation_importance"), jsonObj.getString("annotation_text"));
+                        ia = new InstructionAnnotation(jsonObj.getInt("annotation_importance"), jsonObj.getString("annotation_text"), 0, false);
                     }
 
                     Instruction instr;

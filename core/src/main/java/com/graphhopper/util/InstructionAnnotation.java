@@ -27,13 +27,15 @@ public class InstructionAnnotation
     private boolean empty;
     private int importance;
     private String message;
+    private int waytype;
+    private boolean paved;
 
     private InstructionAnnotation()
     {
         setEmpty();
     }
 
-    public InstructionAnnotation( int importance, String message )
+    public InstructionAnnotation( int importance, String message, int waytype, boolean paved )
     {
         if (message.isEmpty() && importance == 0)
         {
@@ -44,6 +46,8 @@ public class InstructionAnnotation
             this.importance = importance;
             this.message = message;
         }
+        this.waytype = waytype;
+        this.paved = paved;
     }
 
     private void setEmpty()
@@ -51,6 +55,8 @@ public class InstructionAnnotation
         this.empty = true;
         this.importance = 0;
         this.message = "";
+        this.waytype = 0;
+        this.paved = true;
     }
 
     public boolean isEmpty()
@@ -66,6 +72,16 @@ public class InstructionAnnotation
     public String getMessage()
     {
         return message;
+    }
+
+    public int getWayType()
+    {
+        return waytype;
+    }
+
+    public boolean getPaved()
+    {
+        return paved;
     }
 
     @Override

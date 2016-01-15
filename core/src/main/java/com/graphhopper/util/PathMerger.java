@@ -179,6 +179,7 @@ public class PathMerger
         if (enableInstructions)
         {
             rsp.setInstructions(fullInstructions);
+            rsp.setWayTypeInfo(calcWayTypeInfo(paths,tr));
         }
 
         if (!allFound)
@@ -218,4 +219,19 @@ public class PathMerger
         this.enableInstructions = enableInstructions;
         return this;
     }
+
+    public WayTypeInfo calcWayTypeInfo(List<Path> pathList, Translation tr)
+    {
+        WayTypeInfo res = new WayTypeInfo();
+        for (Path path : pathList)
+        {
+            if (path.getDistance()!=0)
+            {
+               WayTypeInfo segment = path.calcWayTypeInfo(tr);
+               res.addDistances(segment);
+            }
+        }
+        return res;
+    }
+
 }

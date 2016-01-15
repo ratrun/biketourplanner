@@ -19,10 +19,12 @@ package com.graphhopper.routing;
 
 import com.graphhopper.routing.util.DefaultEdgeFilter;
 import com.graphhopper.routing.util.FlagEncoder;
+import com.graphhopper.routing.util.BikeCommonFlagEncoder;
 import com.graphhopper.storage.EdgeEntry;
 import com.graphhopper.storage.Graph;
 import com.graphhopper.storage.NodeAccess;
 import com.graphhopper.util.*;
+import com.graphhopper.util.WayTypeInfo;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 
@@ -55,6 +57,7 @@ public class Path
     private TIntList edgeIds;
     private double weight;
     private NodeAccess nodeAccess;
+    private WayTypeInfo wayTypeInfo = new WayTypeInfo();
 
     public Path( Graph graph, FlagEncoder encoder )
     {
@@ -627,6 +630,22 @@ public class Path
 
         return ways;
     }
+
+     /**
+      * @return an overview information for the distances on the used way types
+     */
+     public WayTypeInfo calcWayTypeInfo(final Translation tr )
+     {
+         forEveryEdge(new EdgeVisitor()
+         {
+             @Override
+             public void next( EdgeIteratorState eb, int i )
+             {
+                 wayTypeInfo.classifyDistance(encoder.getAnnotation(eb.getFlags(), tr), eb.getDistance());
+             }
+         });
+         return wayTypeInfo;
+     }
 
     @Override
     public String toString()

@@ -445,7 +445,12 @@ public class BikeCommonFlagEncoder extends AbstractFlagEncoder
 
         int wayType = (int) wayTypeEncoder.getValue(flags);
         String wayName = getWayName(paveType, wayType, tr);
-        return new InstructionAnnotation(0, wayName);
+        return new InstructionAnnotation(0, wayName, wayType, paveType==0);
+    }
+
+    public boolean isPaved( long flags)
+    {
+        return ((flags & unpavedBit) != 0);
     }
 
     String getWayName( int pavementType, int wayType, Translation tr )

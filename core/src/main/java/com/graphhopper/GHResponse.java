@@ -21,6 +21,7 @@ import com.graphhopper.util.InstructionList;
 import com.graphhopper.util.PMap;
 import com.graphhopper.util.PointList;
 import com.graphhopper.util.shapes.BBox;
+import com.graphhopper.util.WayTypeInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +43,7 @@ public class GHResponse
     private long time;
     private InstructionList instructions;
     private final PMap hintsMap = new PMap();
+    private WayTypeInfo wayTypeInfo;
 
     public GHResponse()
     {
@@ -247,6 +249,16 @@ public class GHResponse
     public void setInstructions( InstructionList instructions )
     {
         this.instructions = instructions;
+    }
+
+    public void setWayTypeInfo(WayTypeInfo wayTypeInfo)
+    {
+        this.wayTypeInfo = wayTypeInfo;
+    }
+    
+    public WayTypeInfo getWayTypeInfo()
+    {
+        return wayTypeInfo;
     }
 
     public InstructionList getInstructions()

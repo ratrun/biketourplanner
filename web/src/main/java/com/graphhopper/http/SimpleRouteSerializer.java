@@ -22,6 +22,7 @@ import com.graphhopper.util.Helper;
 import com.graphhopper.util.InstructionList;
 import com.graphhopper.util.PointList;
 import com.graphhopper.util.shapes.BBox;
+import com.graphhopper.util.WayTypeInfo;
 import java.util.*;
 
 /**
@@ -84,6 +85,15 @@ public class SimpleRouteSerializer implements RouteSerializer
                 {
                     InstructionList instructions = rsp.getInstructions();
                     jsonPath.put("instructions", instructions.createJson());
+                    WayTypeInfo waytypeinfo = rsp.getWayTypeInfo();
+                    if (waytypeinfo != null)
+                    {   jsonPath.put("haswaytypeinfo", (waytypeinfo != null) ? "yes" : "no");
+                        jsonPath.put("unpavedDistance", waytypeinfo.getUnpavedDistance());
+                        jsonPath.put("cyclewayDistance", waytypeinfo.getCyclewayDistance());
+                        jsonPath.put("pushingSectionDistance", waytypeinfo.getPushingSectionDistance());
+                        jsonPath.put("roadDistance", waytypeinfo.getRoadDistance());
+                        jsonPath.put("unspecificWayDistance", waytypeinfo.getUnspecificWayDistance());
+                    }
                 }
 
                 jsonPath.put("ascend", rsp.getAscend());

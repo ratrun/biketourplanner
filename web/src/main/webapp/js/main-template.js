@@ -10,6 +10,7 @@ global.$ = global.jQuery;
 require('./lib/jquery-ui-custom-1.11.4.min.js');
 require('./lib/jquery.history.js');
 require('./lib/jquery.autocomplete.js');
+var mathTools = require('./tools/math.js');
 
 var ghenv = require("./options.js").options;
 console.log(ghenv.environment);
@@ -513,12 +514,26 @@ function routeLatLng(request, doQuery) {
 
         var tmpTime = translate.createTimeString(path.time);
         var tmpDist = translate.createDistanceString(path.distance);
+
+        var tmpwaytype="";
+        
+        if (path.haswaytypeinfo === "yes")
+        {
+            tmpwaytype += "<br/>Unpaved:" + translate.createDistanceString(path.unpavedDistance);
+            tmpwaytype += "<br/>Cycleway:" + translate.createDistanceString(path.cyclewayDistance);
+            tmpwaytype += "<br/>PushingSection:" + translate.createDistanceString(path.pushingSectionDistance);
+            tmpwaytype += "<br/>Road:" + translate.createDistanceString(path.roadDistance);
+            tmpwaytype += "<br/>Unspecific:" + translate.createDistanceString(path.unspecificWayDistance);
+        }
+
         var tmpEleInfoStr = "";
         if (request.hasElevation())
             tmpEleInfoStr = translate.createEleInfoString(path.ascend, path.descend);
 
         descriptionDiv.append(translate.tr("routeInfo", [tmpDist, tmpTime]));
         descriptionDiv.append(tmpEleInfoStr);
+        descriptionDiv.append(tmpwaytype);
+        descriptionDiv.append("<br/>Weight:" + mathTools.round(path.weight,1));
 
         $('.defaulting').each(function (index, element) {
             $(element).css("color", "black");

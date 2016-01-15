@@ -95,6 +95,14 @@ public class GraphHopperIT
         assertEquals(13, il.size());
 
         List<Map<String, Object>> resultJson = il.createJson();
+
+        WayTypeInfo wayTypeIno = rsp.getWayTypeInfo();
+        assertEquals(0 , wayTypeIno.getCyclewayDistance(), .1);
+        assertEquals(0 , wayTypeIno.getUnpavedDistance(), .1);
+        assertEquals(0 , wayTypeIno.getPushingSectionDistance(), .1);
+        assertEquals(0 , wayTypeIno.getUnspecificWayDistance(), .1);
+        assertEquals(3437.6 , wayTypeIno.getRoadDistance(), .1);
+
         // TODO roundabout fine tuning -> enter + leave roundabout (+ two rounabouts -> is it necessary if we do not leave the street?)
         assertEquals("Continue onto Avenue des Guelfes", resultJson.get(0).get("text"));
         assertEquals("Continue onto Avenue des Papalins", resultJson.get(1).get("text"));
@@ -300,6 +308,13 @@ public class GraphHopperIT
         InstructionList il = rsp.getInstructions();
         assertEquals(19, il.size());
         List<Map<String, Object>> resultJson = il.createJson();
+
+        WayTypeInfo wayTypeIno = rsp.getWayTypeInfo();
+        assertEquals(4460.8 , wayTypeIno.getCyclewayDistance(), .1);
+        assertEquals(1551.2 , wayTypeIno.getUnpavedDistance(), .1);
+        assertEquals(111.9 , wayTypeIno.getPushingSectionDistance(), .1);
+        assertEquals(1618.3 , wayTypeIno.getUnspecificWayDistance(), .1);
+        assertEquals(741.3 , wayTypeIno.getRoadDistance(), .1);
 
         assertEquals("Continue onto Obere Landstraße", resultJson.get(0).get("text"));
         assertEquals("get off the bike", resultJson.get(0).get("annotation_text"));

@@ -340,6 +340,14 @@ public abstract class AbstractBikeFlagEncoderTester
         way.setTag("railway", "platform");
         wayType = getWayTypeFromFlags(way);
         assertEquals("get off the bike, unpaved", wayType);
+
+        way.clearTags();
+        way.setTag("highway", "residential");
+        way.setTag("oneway", "yes");
+        way.setTag("cycleway", "opposite_lane");
+        wayType = getWayTypeFromFlags(way);
+        assertEquals("cycleway", wayType);
+
     }
 
     @Test
