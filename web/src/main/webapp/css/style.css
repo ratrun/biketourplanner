@@ -349,11 +349,24 @@ td img.pic {
     cursor: pointer;
     float: left;
 }
+
 .input-ascend .input-niceLevel label {
     display: inline-block;
     vertical-align: middle;
 }
 
 .ui-slider-ascend .ui-slider-niceLevel { 
-    background: transparent; 
+    background: transparent;
 }
+
+#ascendcontrol{
+    display: none;
+    visibility: hidden;
+}
+
+/* FIXME: Signal availability to WEB UI
+#niceLevelcontrol{
+    display: none;
+    visibility: hidden;
+}
+*/

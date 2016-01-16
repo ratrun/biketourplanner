@@ -125,8 +125,11 @@ GHRequest.prototype.initVehicle = function (vehicle) {
     this.api_params.vehicle = vehicle;
     var featureSet = this.features[vehicle];
 
-    if (featureSet && featureSet.elevation)
+    if (featureSet && featureSet.elevation) {
         this.api_params.elevation = true;
+        $('#ascendcontrol').show();
+        $("#ascendcontrol").css("visibility","visible");
+    }
     else
         this.api_params.elevation = false;
 };

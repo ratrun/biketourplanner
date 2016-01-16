@@ -519,11 +519,16 @@ function routeLatLng(request, doQuery) {
         
         if (path.haswaytypeinfo === "yes")
         {
-            tmpwaytype += "<br/>Unpaved:" + translate.createDistanceString(path.unpavedDistance);
-            tmpwaytype += "<br/>Cycleway:" + translate.createDistanceString(path.cyclewayDistance);
-            tmpwaytype += "<br/>PushingSection:" + translate.createDistanceString(path.pushingSectionDistance);
-            tmpwaytype += "<br/>Road:" + translate.createDistanceString(path.roadDistance);
-            tmpwaytype += "<br/>Unspecific:" + translate.createDistanceString(path.unspecificWayDistance);
+            if (path.unpavedDistance !== 0)
+                tmpwaytype += "<br/>Unpaved:" + translate.createDistanceString(path.unpavedDistance);
+            if (path.cyclewayDistance !== 0 )
+                tmpwaytype += "<br/>Cycleway:" + translate.createDistanceString(path.cyclewayDistance);
+            if (path.pushingSectionDistance !== 0)
+                tmpwaytype += "<br/>Pushing:" + translate.createDistanceString(path.pushingSectionDistance);
+            if (path.roadDistance !== 0)
+                tmpwaytype += "<br/>Road:" + translate.createDistanceString(path.roadDistance);
+            if (path.unspecificWayDistance !== 0)
+                tmpwaytype += "<br/>Unspecific:" + translate.createDistanceString(path.unspecificWayDistance);
         }
 
         var tmpEleInfoStr = "";
@@ -628,7 +633,6 @@ $(function() {
     });
     $( "#niceLevel" ).val( $( "#slider-range-niceLevel" ).slider( "value" ) );
 });
-
 
 function isProduction() {
     return host.indexOf("graphhopper.com") > 0;
