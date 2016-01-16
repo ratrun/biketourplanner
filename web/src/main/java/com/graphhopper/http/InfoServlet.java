@@ -62,6 +62,7 @@ public class InfoServlet extends GHBaseServlet
         {
             JSONObject perVehicleJson = new JSONObject();
             perVehicleJson.put("elevation", hopper.hasElevation());
+            perVehicleJson.put("CHEnabled", hopper.isCHEnabled());
             features.put(v, perVehicleJson);
         }
         json.put("features", features);

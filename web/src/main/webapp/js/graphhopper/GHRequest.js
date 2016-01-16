@@ -92,6 +92,13 @@ GHRequest.prototype.init = function (params) {
         else
             this.api_params.elevation = true;
     }
+    this.api_params.CHEnabled =false;
+    if (featureSet && featureSet.CHEnabled) {
+        if ('CHEnabled' in params)
+            this.api_params.CHEnabled = params.CHEnabled;
+        else
+            this.api_params.CHEnabled = true;
+    }
 
     if (params.q) {
         var qStr = params.q;
@@ -132,6 +139,19 @@ GHRequest.prototype.initVehicle = function (vehicle) {
     }
     else
         this.api_params.elevation = false;
+    
+    if (featureSet && !featureSet.CHEnabled) {
+        this.api_params.CHEnabled = false;
+        $('#niceLevelcontrol').show();
+        $("#niceLevelcontrol").css("visibility","visible");
+    }
+    else
+        this.api_params.CHEnabled = true;
+   
+};
+
+GHRequest.prototype.hasCHEnabled = function () {
+    return this.api_params.CHEnabled;
 };
 
 GHRequest.prototype.hasElevation = function () {
