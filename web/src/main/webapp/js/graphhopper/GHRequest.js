@@ -132,14 +132,6 @@ GHRequest.prototype.initVehicle = function (vehicle) {
     this.api_params.vehicle = vehicle;
     var featureSet = this.features[vehicle];
 
-    if (featureSet && featureSet.elevation) {
-        this.api_params.elevation = true;
-        $('#ascendcontrol').show();
-        $("#ascendcontrol").css("visibility","visible");
-    }
-    else
-        this.api_params.elevation = false;
-    
     if (featureSet && !featureSet.CHEnabled) {
         this.api_params.CHEnabled = false;
         $('#niceLevelcontrol').show();
@@ -147,6 +139,17 @@ GHRequest.prototype.initVehicle = function (vehicle) {
     }
     else
         this.api_params.CHEnabled = true;
+
+    if (featureSet && featureSet.elevation) {
+        this.api_params.elevation = true;
+        if (this.api_params.CHEnabled)
+        {
+            $('#ascendcontrol').show();
+            $("#ascendcontrol").css("visibility","visible");
+        }
+    }
+    else
+        this.api_params.elevation = false;
    
 };
 
