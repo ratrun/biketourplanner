@@ -142,7 +142,7 @@ GHRequest.prototype.initVehicle = function (vehicle) {
 
     if (featureSet && featureSet.elevation) {
         this.api_params.elevation = true;
-        if (this.api_params.CHEnabled)
+        if (!this.api_params.CHEnabled)
         {
             $('#ascendcontrol').show();
             $("#ascendcontrol").css("visibility","visible");

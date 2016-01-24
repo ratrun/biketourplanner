@@ -60,6 +60,6 @@ public class PriorityWeighting extends FastestWeighting
         double weight = super.calcWeight(edgeState, reverse, prevOrNextEdgeId);
         if (Double.isInfinite(weight))
             return Double.POSITIVE_INFINITY;
-        return weight / ( 0.5/prioBoost + prioBoost * flagEncoder.getDouble(edgeState.getFlags(), KEY));
+        return weight / ( 0.5 / prioBoost + prioBoost * flagEncoder.getDouble(edgeState.getFlags(), KEY));
     }
 }

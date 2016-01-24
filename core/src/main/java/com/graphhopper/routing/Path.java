@@ -19,8 +19,8 @@ package com.graphhopper.routing;
 
 import com.graphhopper.routing.util.DefaultEdgeFilter;
 import com.graphhopper.routing.util.FlagEncoder;
+import com.graphhopper.storage.SPTEntry;
 import com.graphhopper.routing.util.BikeCommonFlagEncoder;
-import com.graphhopper.storage.EdgeEntry;
 import com.graphhopper.storage.Graph;
 import com.graphhopper.storage.NodeAccess;
 import com.graphhopper.util.*;
@@ -29,6 +29,7 @@ import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -43,6 +44,7 @@ import java.util.List;
 public class Path
 {
     private static final AngleCalc ac = new AngleCalc();
+    private List<String> description;
     protected Graph graph;
     private FlagEncoder encoder;
     protected double distance;
@@ -50,7 +52,7 @@ public class Path
     protected boolean reverseOrder = true;
     protected long time;
     private boolean found;
-    protected EdgeEntry edgeEntry;
+    protected SPTEntry edgeEntry;
     final StopWatch extractSW = new StopWatch("extract");
     private int fromNode = -1;
     protected int endNode = -1;
@@ -79,7 +81,24 @@ public class Path
         edgeEntry = p.edgeEntry;
     }
 
-    public Path setEdgeEntry( EdgeEntry edgeEntry )
+    /**
+     * @return the description of this route alternative to make it meaningful for the user e.g. it
+     * displays one or two main roads of the route.
+     */
+    public List<String> getDescription()
+    {
+        if (description == null)
+            return Collections.emptyList();
+        return description;
+    }
+
+    public Path setDescription( List<String> description )
+    {
+        this.description = description;
+        return this;
+    }
+
+    public Path setEdgeEntry( SPTEntry edgeEntry )
     {
         this.edgeEntry = edgeEntry;
         return this;
@@ -146,15 +165,6 @@ public class Path
 
     /**
      * @return time in millis
-     * @deprecated use getTime instead
-     */
-    public long getMillis()
-    {
-        return time;
-    }
-
-    /**
-     * @return time in millis
      */
     public long getTime()
     {
@@ -184,7 +194,7 @@ public class Path
             throw new IllegalStateException("Extract can only be called once");
 
         extractSW.start();
-        EdgeEntry goalEdge = edgeEntry;
+        SPTEntry goalEdge = edgeEntry;
         setEndNode(goalEdge.adjNode);
         while (EdgeIterator.Edge.isValid(goalEdge.edge))
         {

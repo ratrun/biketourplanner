@@ -83,7 +83,7 @@ public class ElevationWeightingTest
         assertEquals(originaltime * 10.0, eleinstance.calcWeight(eleEdge, false, 0), 1e-8);
 
         eleinstance = new EleWeighting(encoder, new PMap().put("weighthing", "elevation").put("ascendAvoidance","-1.0"), g.getNodeAccess());
-        assertEquals(1.234567901, eleinstance.calcWeight(eleEdge, false, 0), 1e-8);
+        assertEquals(2*1.234567901, eleinstance.calcWeight(eleEdge, false, 0), 1e-8);
         
     }
 

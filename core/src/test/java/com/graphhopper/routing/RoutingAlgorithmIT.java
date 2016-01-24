@@ -104,8 +104,8 @@ public class RoutingAlgorithmIT
         list.add(new OneRun(43.730729, 7.42135, 43.727697, 7.419199, 2703, 119));
         list.add(new OneRun(43.727687, 7.418737, 43.74958, 7.436566, 3749, 170));
         list.add(new OneRun(43.728677, 7.41016, 43.739213, 7.4277, 3175, 169));
-        list.add(new OneRun(43.733802, 7.413433, 43.739662, 7.424355, 2423, 141));
-        list.add(new OneRun(43.730949, 7.412338, 43.739643, 7.424542, 2253, 120));
+        list.add(new OneRun(43.733802, 7.413433, 43.739662, 7.424355, 5637, 298));
+        list.add(new OneRun(43.730949, 7.412338, 43.739643, 7.424542, 5467, 277));
         list.add(new OneRun(43.727592, 7.419333, 43.727712, 7.419333, 0, 1));
         runAlgo(testCollector, "files/monaco.osm.gz", "target/monaco-mc-gh",
                 list, "motorcycle", true, "motorcycle", "fastest", true);
@@ -248,7 +248,7 @@ public class RoutingAlgorithmIT
         // roundabout contains sidewalk=no which should be avoided
         list.add(new OneRun(57.154888, -2.101822, 57.153445, -2.099869, 329, 31));
         // longer path should go through tertiary, see discussion in #476
-        list.add(new OneRun(57.154888, -2.101822, 57.147299, -2.096286, 1118, 68));
+        list.add(new OneRun(57.154888, -2.101822, 57.147299, -2.096286, 1464, 96));
 
         boolean testAlsoCH = false, is3D = false;
         runAlgo(testCollector, "files/map-sidewalk-no.osm.gz", "target/graph-sidewalkno",
@@ -353,17 +353,17 @@ public class RoutingAlgorithmIT
         // 1. alternative: go over steps 'Rampe Major' => 1.7km vs. around 2.7km
         list.add(new OneRun(43.730864, 7.420771, 43.727687, 7.418737, 2710, 118));
         // 2.
-        list.add(new OneRun(43.728499, 7.417907, 43.74958, 7.436566, 3777, 194));
+        list.add(new OneRun(43.728499, 7.417907, 43.74958, 7.436566, 4272, 219));
         // 3.
         list.add(new OneRun(43.728677, 7.41016, 43.739213, 7.427806, 2776, 167));
         // 4.
-        list.add(new OneRun(43.733802, 7.413433, 43.739662, 7.424355, 1544, 84));
+        list.add(new OneRun(43.733802, 7.413433, 43.739662, 7.424355, 1566, 84));
 
         // try reverse direction
         // 1.
         list.add(new OneRun(43.727687, 7.418737, 43.730864, 7.420771, 2599, 115));
-        list.add(new OneRun(43.74958, 7.436566, 43.728499, 7.417907, 4199, 165));
-        list.add(new OneRun(43.739213, 7.427806, 43.728677, 7.41016, 3261, 177));
+        list.add(new OneRun(43.74958, 7.436566, 43.728499, 7.417907, 3923, 165));
+        list.add(new OneRun(43.739213, 7.427806, 43.728677, 7.41016, 2806, 145));
         // 4. avoid tunnel(s)!
         list.add(new OneRun(43.739662, 7.424355, 43.733802, 7.413433, 2452, 112));
         runAlgo(testCollector, "files/monaco.osm.gz", "target/monaco-gh",
@@ -388,11 +388,11 @@ public class RoutingAlgorithmIT
     public void testMonacoMountainBike()
     {
         List<OneRun> list = new ArrayList<OneRun>();
-        list.add(new OneRun(43.730864, 7.420771, 43.727687, 7.418737, 2322, 110));
-        list.add(new OneRun(43.727687, 7.418737, 43.74958, 7.436566, 3613, 178));
+        list.add(new OneRun(43.730864, 7.420771, 43.727687, 7.418737, 2594, 110));
+        list.add(new OneRun(43.727687, 7.418737, 43.74958, 7.436566, 3653, 178));
         list.add(new OneRun(43.728677, 7.41016, 43.739213, 7.427806, 2331, 121));
         // hard to select between secondary and primary (both are AVOID for mtb)
-        list.add(new OneRun(43.733802, 7.413433, 43.739662, 7.424355, 1459, 88));
+        list.add(new OneRun(43.733802, 7.413433, 43.739662, 7.424355, 1472, 93));
         runAlgo(testCollector, "files/monaco.osm.gz", "target/monaco-gh",
                 list, "MTB", true, "MTB", "fastest", false);
         assertEquals(testCollector.toString(), 0, testCollector.errors.size());
@@ -407,9 +407,9 @@ public class RoutingAlgorithmIT
     {
         List<OneRun> list = new ArrayList<OneRun>();
         list.add(new OneRun(43.730864, 7.420771, 43.727687, 7.418737, 2594, 111));
-        list.add(new OneRun(43.727687, 7.418737, 43.74958, 7.436566, 3588, 170));
+        list.add(new OneRun(43.727687, 7.418737, 43.74958, 7.436566, 3615, 184));
         list.add(new OneRun(43.728677, 7.41016, 43.739213, 7.427806, 2572, 135));
-        list.add(new OneRun(43.733802, 7.413433, 43.739662, 7.424355, 1490, 84));
+        list.add(new OneRun(43.733802, 7.413433, 43.739662, 7.424355, 1712, 100));
         runAlgo(testCollector, "files/monaco.osm.gz", "target/monaco-gh",
                 list, "RACINGBIKE", true, "RACINGBIKE", "fastest", false);
         assertEquals(testCollector.toString(), 0, testCollector.errors.size());
@@ -425,7 +425,7 @@ public class RoutingAlgorithmIT
         List<OneRun> list = new ArrayList<OneRun>();
         list.add(new OneRun(48.409523, 15.602394, 48.375466, 15.72916, 12491, 159));
         // 3109m is better as cyclepath is used
-        list.add(new OneRun(48.410061, 15.63951, 48.411386, 15.604899, 3113, 87));
+        list.add(new OneRun(48.410061, 15.63951, 48.411386, 15.604899, 3078, 79));
         list.add(new OneRun(48.412294, 15.62007, 48.398306, 15.609667, 3965, 94));
 
         runAlgo(testCollector, "files/krems.osm.gz", "target/krems-gh",
@@ -529,7 +529,7 @@ public class RoutingAlgorithmIT
     {
         List<OneRun> list = new ArrayList<OneRun>();
         // choose Unterloher Weg and the following residential + cycleway
-        list.add(new OneRun(50.004333, 11.600254, 50.044449, 11.543434, 6931, 184));
+        list.add(new OneRun(50.004333, 11.600254, 50.044449, 11.543434, 7023, 184));
         runAlgo(testCollector, "files/north-bayreuth.osm.gz", "target/north-bayreuth-gh",
                 list, "bike", true, "bike", "fastest", false);
         assertEquals(testCollector.toString(), 0, testCollector.errors.size());

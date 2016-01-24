@@ -18,9 +18,9 @@
  */
 package com.graphhopper.util;
 
-import com.graphhopper.GHResponse;
+import com.graphhopper.AltResponse;
 import com.graphhopper.routing.Path;
-
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,63 +31,37 @@ import java.util.List;
  */
 public class PathMerger
 {
+    private static final DouglasPeucker DP = new DouglasPeucker();
     private boolean enableInstructions = true;
     private boolean simplifyResponse = true;
-    private DouglasPeucker douglasPeucker;
+    private DouglasPeucker douglasPeucker = DP;
     private boolean calcPoints = true;
-    private double ascendMeters;
-    private double descendMeters;
-   
-    private void calcAscendDescendWithSmoothing(final double field[], double smoothing ) {
 
-        // Smoothing algorithm according to http://phrogz.net/js/framerate-independent-low-pass-filter.html
-        // The higher the smoothing value becomes, the more aggressive the filter get. A smoothing value 
-        // of one leads to the original input values.
-        // Note: This algorithm can only caculate an estimate for the ascend and descend meters.
-        // http://regex.info/blog/2015-05-09/2568 provides a good documentation that such an algorithm will 
-        // never be able to calculate correct values.
-
-        double value=field[0];
-        // Forward direction
-        double field_sc[] = new double[field.length];
-        for (int i=0;i<field.length;++i)
-        {
-            double currentValue=field[i];
-            value+= (currentValue-value)/smoothing;
-            field_sc[i]=value;
-        }
-        // Backward direction
-        value=field[field.length-1];
-        double[] field_scb = new double[field.length];
-        for (int i=field.length-1;i>=0;--i)
-        {
-            double currentValue=field[i];
-            value+= (currentValue-value)/smoothing;
-            field_scb[i]=value;
-        }
-        ascendMeters = 0;
-        descendMeters = 0;
-        double lastele = field_sc[0];
-        for (int i=0;i<field.length;++i)
-        {
-            // Mean value of forward and backward:
-            field_sc[i]=(field_sc[i]+field_scb[i])/2;
-            double ele = field_sc[i];
-            double diff = Math.abs(ele - lastele);
-
-            if (ele>lastele)
-               ascendMeters += diff;
-            else
-               descendMeters  += diff;
-
-            lastele=ele;
-
-        }
-        ascendMeters = Math.round(ascendMeters);
-        descendMeters = Math.round(descendMeters);
+    public PathMerger setCalcPoints( boolean calcPoints )
+    {
+        this.calcPoints = calcPoints;
+        return this;
     }
 
-    public void doWork( GHResponse rsp, List<Path> paths, Translation tr )
+    public PathMerger setDouglasPeucker( DouglasPeucker douglasPeucker )
+    {
+        this.douglasPeucker = douglasPeucker;
+        return this;
+    }
+
+    public PathMerger setSimplifyResponse( boolean simplifyRes )
+    {
+        this.simplifyResponse = simplifyRes;
+        return this;
+    }
+
+    public PathMerger setEnableInstructions( boolean enableInstructions )
+    {
+        this.enableInstructions = enableInstructions;
+        return this;
+    }
+
+    public void doWork( AltResponse altRsp, List<Path> paths, Translation tr )
     {
         int origPoints = 0;
         long fullTimeInMillis = 0;
@@ -97,9 +71,11 @@ public class PathMerger
 
         InstructionList fullInstructions = new InstructionList(tr);
         PointList fullPoints = PointList.EMPTY;
+        List<String> description = new ArrayList<String>();
         for (int pathIndex = 0; pathIndex < paths.size(); pathIndex++)
         {
             Path path = paths.get(pathIndex);
+            description.addAll(path.getDescription());
             fullTimeInMillis += path.getTime();
             fullDistance += path.getDistance();
             fullWeight += path.getWeight();
@@ -155,8 +131,8 @@ public class PathMerger
 
         if (!fullPoints.isEmpty())
         {
-            String debug = rsp.getDebugInfo() + ", simplify (" + origPoints + "->" + fullPoints.getSize() + ")";
-            rsp.setDebugInfo(debug);
+            String debug = altRsp.getDebugInfo() + ", simplify (" + origPoints + "->" + fullPoints.getSize() + ")";
+            altRsp.addDebugInfo(debug);
             if (fullPoints.is3D)
             {
                 int size = fullPoints.getSize();
@@ -172,52 +148,77 @@ public class PathMerger
 
                   ele = nextEle;
                 }
-                calcAscendDescendWithSmoothing(eleinArr, 5);
+                calcAscendDescendWithSmoothing(altRsp, eleinArr, 5);
             }
         }
 
         if (enableInstructions)
         {
-            rsp.setInstructions(fullInstructions);
-            rsp.setWayTypeInfo(calcWayTypeInfo(paths,tr));
+            altRsp.setInstructions(fullInstructions);
+            altRsp.setWayTypeInfo(calcWayTypeInfo(paths,tr));
         }
 
         if (!allFound)
-        {
-            rsp.addError(new RuntimeException("Connection between locations not found"));
-        }
+            altRsp.addError(new RuntimeException("Connection between locations not found"));
 
-        rsp.setAscend(ascendMeters);
-        rsp.setDescend(descendMeters);
-
-        rsp.setPoints(fullPoints).
+        altRsp.setDescription(description).
+                setPoints(fullPoints).
                 setRouteWeight(fullWeight).
                 setDistance(fullDistance).
                 setTime(fullTimeInMillis);
     }
 
-    public PathMerger setCalcPoints( boolean calcPoints )
-    {
-        this.calcPoints = calcPoints;
-        return this;
-    }
+    private void calcAscendDescendWithSmoothing(final AltResponse rsp, final double field[], double smoothing ) {
 
-    public PathMerger setDouglasPeucker( DouglasPeucker douglasPeucker )
-    {
-        this.douglasPeucker = douglasPeucker;
-        return this;
-    }
+        // Smoothing algorithm according to http://phrogz.net/js/framerate-independent-low-pass-filter.html
+        // The higher the smoothing value becomes, the more aggressive the filter get. A smoothing value 
+        // of one leads to the original input values.
+        // Note: This algorithm can only caculate an estimate for the ascend and descend meters.
+        // http://regex.info/blog/2015-05-09/2568 provides a good documentation that such an algorithm will 
+        // never be able to calculate correct values.
+        double ascendMeters = 0;
+        double descendMeters = 0;
 
-    public PathMerger setSimplifyResponse( boolean simplifyRes )
-    {
-        this.simplifyResponse = simplifyRes;
-        return this;
-    }
+        double value=field[0];
+        // Forward direction
+        double field_sc[] = new double[field.length];
+        for (int i=0;i<field.length;++i)
+        {
+            double currentValue=field[i];
+            value+= (currentValue-value)/smoothing;
+            field_sc[i]=value;
+        }
+        // Backward direction
+        value=field[field.length-1];
+        double[] field_scb = new double[field.length];
+        for (int i=field.length-1;i>=0;--i)
+        {
+            double currentValue=field[i];
+            value+= (currentValue-value)/smoothing;
+            field_scb[i]=value;
+        }
+        ascendMeters = 0;
+        descendMeters = 0;
+        double lastele = field_sc[0];
+        for (int i=0;i<field.length;++i)
+        {
+            // Mean value of forward and backward:
+            field_sc[i]=(field_sc[i]+field_scb[i])/2;
+            double ele = field_sc[i];
+            double diff = Math.abs(ele - lastele);
 
-    public PathMerger setEnableInstructions( boolean enableInstructions )
-    {
-        this.enableInstructions = enableInstructions;
-        return this;
+            if (ele>lastele)
+               ascendMeters += diff;
+            else
+               descendMeters  += diff;
+
+            lastele=ele;
+
+        }
+        ascendMeters = Math.round(ascendMeters);
+        descendMeters = Math.round(descendMeters);
+        rsp.setAscend(ascendMeters);
+        rsp.setDescend(descendMeters);
     }
 
     public WayTypeInfo calcWayTypeInfo(List<Path> pathList, Translation tr)
@@ -233,5 +234,5 @@ public class PathMerger
         }
         return res;
     }
-
+    
 }
