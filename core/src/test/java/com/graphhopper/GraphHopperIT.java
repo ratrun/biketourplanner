@@ -175,11 +175,11 @@ public class GraphHopperIT
 
         assertEquals(3, rsp.getAlternatives().size());
         // via ramsenthal
-        assertEquals(2864, rsp.getAlternatives().get(0).getTime() / 1000);
+        assertEquals(2945, rsp.getAlternatives().get(0).getTime() / 1000);
         // via unterwaiz
         assertEquals(3320, rsp.getAlternatives().get(1).getTime() / 1000);
         // via eselslohe -> theta; BTW: here decreasing time as priority influences time order
-        assertEquals(3094, rsp.getAlternatives().get(2).getTime() / 1000);
+        assertEquals(3594, rsp.getAlternatives().get(2).getTime() / 1000);
 
         req = new GHRequest(50.023513, 11.548862, 49.969441, 11.537876).
                 setAlgorithm(AlgorithmOptions.ALT_ROUTE).setVehicle("car").setWeighting("fastest");
