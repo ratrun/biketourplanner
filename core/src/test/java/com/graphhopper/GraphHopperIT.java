@@ -89,7 +89,7 @@ public class GraphHopperIT
         // identify the number of counts to compare with CH foot route
         assertEquals(698, rsp.getHints().getLong("visited_nodes.sum", 0));
 
-        AltResponse arsp = rsp.getFirst();
+        PathWrapper arsp = rsp.getBest();
         assertEquals(3437.6, arsp.getDistance(), .1);
         assertEquals(89, arsp.getPoints().getSize());
 
@@ -141,20 +141,20 @@ public class GraphHopperIT
 
         GHResponse rsp = hopper.route(req);
         assertFalse(rsp.hasErrors());
-        assertEquals(2, rsp.getAlternatives().size());
+        assertEquals(2, rsp.getAll().size());
 
-        assertEquals(1310, rsp.getAlternatives().get(0).getTime() / 1000);
-        assertEquals(1356, rsp.getAlternatives().get(1).getTime() / 1000);
+        assertEquals(1310, rsp.getAll().get(0).getTime() / 1000);
+        assertEquals(1356, rsp.getAll().get(1).getTime() / 1000);
 
         req.getHints().put("alternative_route.max_paths", "3");
         req.getHints().put("alternative_route.min_plateau_factor", "0.1");
         rsp = hopper.route(req);
         assertFalse(rsp.hasErrors());
-        assertEquals(3, rsp.getAlternatives().size());
+        assertEquals(3, rsp.getAll().size());
 
-        assertEquals(1310, rsp.getAlternatives().get(0).getTime() / 1000);
-        assertEquals(1356, rsp.getAlternatives().get(1).getTime() / 1000);
-        assertEquals(1416, rsp.getAlternatives().get(2).getTime() / 1000);
+        assertEquals(1310, rsp.getAll().get(0).getTime() / 1000);
+        assertEquals(1356, rsp.getAll().get(1).getTime() / 1000);
+        assertEquals(1416, rsp.getAll().get(2).getTime() / 1000);
     }
 
     @Test
@@ -173,13 +173,14 @@ public class GraphHopperIT
         GHResponse rsp = tmpHopper.route(req);
         assertFalse(rsp.getErrors().toString(), rsp.hasErrors());
 
-        assertEquals(3, rsp.getAlternatives().size());
+
+        assertEquals(3, rsp.getAll().size());
         // via ramsenthal
-        assertEquals(2945, rsp.getAlternatives().get(0).getTime() / 1000);
-        // via unterwaiz
-        assertEquals(3320, rsp.getAlternatives().get(1).getTime() / 1000);
+        assertEquals(2945, rsp.getAll().get(0).getTime() / 1000);        // via unterwaiz
+
+        assertEquals(3320, rsp.getAll().get(1).getTime() / 1000);
         // via eselslohe -> theta; BTW: here decreasing time as priority influences time order
-        assertEquals(3594, rsp.getAlternatives().get(2).getTime() / 1000);
+        assertEquals(3594, rsp.getAll().get(2).getTime() / 1000);
 
         req = new GHRequest(50.023513, 11.548862, 49.969441, 11.537876).
                 setAlgorithm(AlgorithmOptions.ALT_ROUTE).setVehicle("car").setWeighting("fastest");
@@ -187,13 +188,13 @@ public class GraphHopperIT
         rsp = tmpHopper.route(req);
         assertFalse(rsp.getErrors().toString(), rsp.hasErrors());
 
-        assertEquals(3, rsp.getAlternatives().size());
+        assertEquals(3, rsp.getAll().size());
         // directly via obergräfenthal
-        assertEquals(870, rsp.getAlternatives().get(0).getTime() / 1000);
+        assertEquals(870, rsp.getAll().get(0).getTime() / 1000);
         // via ramsenthal -> lerchenhof
-        assertEquals(913, rsp.getAlternatives().get(1).getTime() / 1000);
+        assertEquals(913, rsp.getAll().get(1).getTime() / 1000);
         // via neudrossenfeld
-        assertEquals(958, rsp.getAlternatives().get(2).getTime() / 1000);
+        assertEquals(958, rsp.getAll().get(2).getTime() / 1000);
     }
 
     @Test
@@ -205,7 +206,7 @@ public class GraphHopperIT
                 addPoint(new GHPoint(43.727687, 7.418737)).
                 setAlgorithm(AlgorithmOptions.ASTAR).setVehicle(vehicle).setWeighting(weightCalcStr));
 
-        AltResponse arsp = rsp.getFirst();
+        PathWrapper arsp = rsp.getBest();
         assertEquals(6875.1, arsp.getDistance(), .1);
         assertEquals(179, arsp.getPoints().getSize());
 
@@ -247,7 +248,7 @@ public class GraphHopperIT
                 addPoint(new GHPoint(43.727687, 7.418737)).
                 setAlgorithm(AlgorithmOptions.ASTAR).setVehicle(vehicle).setWeighting(weightCalcStr));
 
-        arsp = rsp.getFirst();
+        arsp = rsp.getBest();
         assertEquals(0, arsp.getDistance(), .1);
         assertEquals(0, arsp.getRouteWeight(), .1);
         assertEquals(1, arsp.getPoints().getSize());
@@ -261,7 +262,7 @@ public class GraphHopperIT
                 addPoint(new GHPoint(43.727687, 7.418737)).
                 setAlgorithm(AlgorithmOptions.ASTAR).setVehicle(vehicle).setWeighting(weightCalcStr));
 
-        arsp = rsp.getFirst();
+        arsp = rsp.getBest();
         assertEquals(0, arsp.getDistance(), .1);
         assertEquals(0, arsp.getRouteWeight(), .1);
         assertEquals(2, arsp.getPoints().getSize());
@@ -280,7 +281,7 @@ public class GraphHopperIT
         req.getHints().put("heading_penalty", "300");
         GHResponse rsp = hopper.route(req);
 
-        AltResponse arsp = rsp.getFirst();
+        PathWrapper arsp = rsp.getBest();
         assertEquals(921.8, arsp.getDistance(), 10.);
         assertEquals(38, arsp.getPoints().getSize());
     }
@@ -296,7 +297,7 @@ public class GraphHopperIT
         rq.getHints().put("pass_through", true);
         GHResponse rsp = hopper.route(rq);
 
-        AltResponse arsp = rsp.getFirst();
+        PathWrapper arsp = rsp.getBest();
         assertEquals(297, arsp.getDistance(), 5.);
         assertEquals(27, arsp.getPoints().getSize());
     }
@@ -317,7 +318,7 @@ public class GraphHopperIT
         GHResponse rsp = tmpHopper.route(new GHRequest(43.730729, 7.421288, 43.727697, 7.419199).
                 setAlgorithm(AlgorithmOptions.ASTAR).setVehicle(vehicle).setWeighting(weightCalcStr));
 
-        AltResponse arsp = rsp.getFirst();
+        PathWrapper arsp = rsp.getBest();
         assertEquals(1626.8, arsp.getDistance(), .1);
         assertEquals(60, arsp.getPoints().getSize());
         assertTrue(arsp.getPoints().is3D());
@@ -375,7 +376,7 @@ public class GraphHopperIT
         GHResponse rsp = tmpHopper.route(new GHRequest(48.410987, 15.599492, 48.383419, 15.659294).
                 setAlgorithm(AlgorithmOptions.ASTAR).setVehicle(tmpVehicle).setWeighting(tmpWeightCalcStr));
 
-        AltResponse arsp = rsp.getFirst();
+        PathWrapper arsp = rsp.getBest();
         assertEquals(6932.24, arsp.getDistance(), .1);
         assertEquals(110, arsp.getPoints().getSize());
 
@@ -435,22 +436,22 @@ public class GraphHopperIT
         GHResponse rsp = tmpHopper.route(new GHRequest(43.745084, 7.430513, 43.745247, 7.430347)
                 .setVehicle(tmpVehicle).setWeighting(tmpWeightCalcStr));
 
-        AltResponse arsp = rsp.getFirst();
+        PathWrapper arsp = rsp.getBest();
         assertEquals(2, ((RoundaboutInstruction) arsp.getInstructions().get(1)).getExitNumber());
 
         rsp = tmpHopper.route(new GHRequest(43.745968, 7.42907, 43.745832, 7.428614)
                 .setVehicle(tmpVehicle).setWeighting(tmpWeightCalcStr));
-        arsp = rsp.getFirst();
+        arsp = rsp.getBest();
         assertEquals(2, ((RoundaboutInstruction) arsp.getInstructions().get(1)).getExitNumber());
 
         rsp = tmpHopper.route(new GHRequest(43.745948, 7.42914, 43.746173, 7.428834)
                 .setVehicle(tmpVehicle).setWeighting(tmpWeightCalcStr));
-        arsp = rsp.getFirst();
+        arsp = rsp.getBest();
         assertEquals(1, ((RoundaboutInstruction) arsp.getInstructions().get(1)).getExitNumber());
 
         rsp = tmpHopper.route(new GHRequest(43.735817, 7.417096, 43.735666, 7.416587)
                 .setVehicle(tmpVehicle).setWeighting(tmpWeightCalcStr));
-        arsp = rsp.getFirst();
+        arsp = rsp.getBest();
         assertEquals(2, ((RoundaboutInstruction) arsp.getInstructions().get(1)).getExitNumber());
     }
 
@@ -486,14 +487,14 @@ public class GraphHopperIT
         String str = tmpHopper.getEncodingManager().toString();
         GHResponse rsp = tmpHopper.route(new GHRequest(43.73005, 7.415707, 43.741522, 7.42826)
                 .setVehicle("car"));
-        AltResponse arsp = rsp.getFirst();
+        PathWrapper arsp = rsp.getBest();
         assertFalse("car routing for " + str + " should not have errors:" + rsp.getErrors(), rsp.hasErrors());
         assertEquals(207, arsp.getTime() / 1000f, 1);
         assertEquals(2838, arsp.getDistance(), 1);
 
         rsp = tmpHopper.route(new GHRequest(43.73005, 7.415707, 43.741522, 7.42826)
                 .setVehicle("bike"));
-        arsp = rsp.getFirst();
+        arsp = rsp.getBest();
         assertFalse("bike routing for " + str + " should not have errors:" + rsp.getErrors(), rsp.hasErrors());
         assertEquals(529.4, arsp.getTime() / 1000f, 1);
         assertEquals(2523.1, arsp.getDistance(), 1);
@@ -538,7 +539,7 @@ public class GraphHopperIT
         GHResponse rsp = tmpHopper.route(new GHRequest(43.727687, 7.418737, 43.74958, 7.436566).
                 setVehicle(vehicle));
 
-        AltResponse arsp = rsp.getFirst();
+        PathWrapper arsp = rsp.getBest();
         // identify the number of counts to compare with none-CH foot route which had nearly 700 counts
         long sum = rsp.getHints().getLong("visited_nodes.sum", 0);
         assertNotEquals(sum, 0);

@@ -18,7 +18,7 @@
  */
 package com.graphhopper.util;
 
-import com.graphhopper.AltResponse;
+import com.graphhopper.PathWrapper;
 import com.graphhopper.routing.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +61,7 @@ public class PathMerger
         return this;
     }
 
-    public void doWork( AltResponse altRsp, List<Path> paths, Translation tr )
+    public void doWork( PathWrapper altRsp, List<Path> paths, Translation tr )
     {
         int origPoints = 0;
         long fullTimeInMillis = 0;
@@ -168,7 +168,7 @@ public class PathMerger
                 setTime(fullTimeInMillis);
     }
 
-    private void calcAscendDescendWithSmoothing(final AltResponse rsp, final double field[], double smoothing ) {
+    private void calcAscendDescendWithSmoothing(final PathWrapper rsp, final double field[], double smoothing ) {
 
         // Smoothing algorithm according to http://phrogz.net/js/framerate-independent-low-pass-filter.html
         // The higher the smoothing value becomes, the more aggressive the filter get. A smoothing value 
@@ -210,6 +210,7 @@ public class PathMerger
             if (ele>lastele)
                ascendMeters += diff;
             else
+
                descendMeters  += diff;
 
             lastele=ele;
