@@ -40,7 +40,7 @@ var GHRequest = function (host, api_key) {
     this.do_zoom = true;
     // use jsonp here if host allows CORS
     this.dataType = "json";
-    this.api_params = {"locale": "en", "vehicle": "car", "weighting": "fastest", "elevation": false, "ascendAvoidance": 0.0, "niceLevel": 3.0};
+    this.api_params = {"locale": "en", "vehicle": "car", "weighting": "fastest", "elevation": false, "ascendAvoidance": 0.0, "niceLevel": 3.0, "algorithm": "", "alternative_route": {"max_paths" : 2}};
 
     // register events
     this.route.addListener('route.add', function (evt) {
@@ -76,8 +76,10 @@ GHRequest.prototype.init = function (params) {
 
         if (key === "point" || key === "mathRandom" || key === "do_zoom" || key === "layer")
             continue;
-
-        this.api_params[key] = val;
+        if ( key.indexOf('.') === -1 )
+        {
+            this.api_params[key] = val;
+        }
     }
 
     if ('do_zoom' in params)
@@ -136,6 +138,8 @@ GHRequest.prototype.initVehicle = function (vehicle) {
         this.api_params.CHEnabled = false;
         $('#niceLevelcontrol').show();
         $("#niceLevelcontrol").css("visibility","visible");
+        $("#alternativeRoutecontrol").show();
+        $("#alternativeRoutecontrol").css("visibility","visible");
     }
     else
         this.api_params.CHEnabled = true;
@@ -208,12 +212,21 @@ GHRequest.prototype.createPointParams = function (useRawInput) {
 GHRequest.prototype.createPath = function (url) {
     for (var key in this.api_params) {
         var val = this.api_params[key];
-        if (GHRoute.isArray(val)) {
-            for (var keyIndex in val) {
-                url += "&" + encodeURIComponent(key) + "=" + encodeURIComponent(val[keyIndex]);
+        if ( val.toString() !== "[object Object]" )
+        {
+            if (GHRoute.isArray(val)) {
+                for (var keyIndex in val) {
+                    url += "&" + encodeURIComponent(key) + "=" + encodeURIComponent(val[keyIndex]);
+                }
+            } else {
+                url += "&" + encodeURIComponent(key) + "=" + encodeURIComponent(val);
             }
-        } else {
-            url += "&" + encodeURIComponent(key) + "=" + encodeURIComponent(val);
+        }
+        else
+        {
+            for (var subkey in val) {
+                url += "&" + encodeURIComponent(key) + "." + encodeURIComponent(subkey) + "=" + encodeURIComponent(val[subkey]);
+            }
         }
     }
     return url;

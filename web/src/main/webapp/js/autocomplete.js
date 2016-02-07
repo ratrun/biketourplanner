@@ -53,12 +53,21 @@ var AutoComplete = function (host, key) {
 AutoComplete.prototype.createPath = function (url) {
     for (var key in this.api_params) {
         var val = this.api_params[key];
-        if (GHRoute.isArray(val)) {
-            for (var keyIndex in val) {
-                url += "&" + encodeURIComponent(key) + "=" + encodeURIComponent(val[keyIndex]);
+        if ( val.toString() !== "[object Object]" )
+        {
+            if (GHRoute.isArray(val)) {
+                for (var keyIndex in val) {
+                    url += "&" + encodeURIComponent(key) + "=" + encodeURIComponent(val[keyIndex]);
+                }
+            } else {
+                url += "&" + encodeURIComponent(key) + "=" + encodeURIComponent(val);
             }
-        } else {
-            url += "&" + encodeURIComponent(key) + "=" + encodeURIComponent(val);
+        }
+        else
+        {
+            for (var subkey in val) {
+                url += "&" + encodeURIComponent(key) + "." + encodeURIComponent(subkey) + "=" + encodeURIComponent(val[subkey]);
+            }
         }
     }
     return url;

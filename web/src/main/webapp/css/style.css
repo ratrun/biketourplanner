@@ -407,12 +407,12 @@ td img.pic {
     float: left;
 }
 
-.input-ascend .input-niceLevel label {
+.input-ascend .input-niceLevel .input-alternativeRoutesMaxPaths label {
     display: inline-block;
     vertical-align: middle;
 }
 
-.ui-slider-ascend .ui-slider-niceLevel { 
+.ui-slider-ascend .ui-slider-niceLevel .ui-slider-alternativeRoutesMaxPaths { 
     background: transparent;
 }
 
@@ -425,3 +425,9 @@ td img.pic {
     display: none;
     visibility: hidden;
 }
+
+#alternativeRoutecontrol{
+    display: none;
+    visibility: hidden;
+}
+

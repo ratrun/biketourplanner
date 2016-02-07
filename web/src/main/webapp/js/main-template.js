@@ -693,6 +693,29 @@ $(function() {
     $( "#niceLevel" ).val( $( "#slider-range-niceLevel" ).slider( "value" ) );
 });
 
+$(function() {
+    $( "#slider-range-alternativeRoutesMaxPaths" ).slider({
+      range: "max",
+      min: 1.0,
+      max: 5.0,
+      step: 1.0,
+      slide: function( event, ui ) {
+        $( "#alternativeRoutesMaxPaths" ).val( ui.value );
+        if (ui.value > 1)
+        {
+            ghRequest.api_params.algorithm = "alternativeroute";
+            ghRequest.api_params.alternative_route.max_paths = ui.value;
+        }
+        else
+        {
+            ghRequest.api_params.algorithm = "";
+        }
+        routeLatLng(ghRequest, false);
+      }
+    });
+    $( "#alternativeRoutesMaxPaths" ).val( $( "#slider-range-alternativeRoutesMaxPaths" ).slider( "value" ) );
+});
+
 function isProduction() {
     return host.indexOf("graphhopper.com") > 0;
 }
