@@ -40,7 +40,7 @@ var GHRequest = function (host, api_key) {
     this.do_zoom = true;
     // use jsonp here if host allows CORS
     this.dataType = "json";
-    this.api_params = {"locale": "en", "vehicle": "car", "weighting": "fastest", "elevation": false, "ascendAvoidance": 0.0, "niceLevel": 3.0, "algorithm": "", "alternative_route": {"max_paths" : 2}};
+    this.api_params = {"locale": "en", "vehicle": "car", "weighting": "fastest", "elevation": false, "ascendAvoidance": 0.0, "niceLevel": 3.0, "algorithm": "", "alternative_route": {"max_paths" : 1}, "round_trip" : {"distance" : 0}};
 
     // register events
     this.route.addListener('route.add', function (evt) {
@@ -140,6 +140,10 @@ GHRequest.prototype.initVehicle = function (vehicle) {
         $("#niceLevelcontrol").css("visibility","visible");
         $("#alternativeRoutecontrol").show();
         $("#alternativeRoutecontrol").css("visibility","visible");
+        $("#roundtripcontrol").show();
+        $("#roundtripcontrol").css("visibility","visible");
+        $("#roundtripdistance").show();
+        $("#roundtripdistance").css("visibility","visible");
     }
     else
         this.api_params.CHEnabled = true;

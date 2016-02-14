@@ -694,6 +694,20 @@ $(function() {
 });
 
 $(function() {
+    $( "#roundtripdistance" ).spinner({
+      min: 0, 
+      change: function( event, ui ) {
+        if ($(this).spinner('value') > 0)
+        {
+           ghRequest.api_params.algorithm = "roundtrip";
+           ghRequest.api_params.round_trip.distance = $(this).spinner('value');
+           //routeLatLng(ghRequest, false);
+        }
+      }
+    });
+});
+
+$(function() {
     $( "#slider-range-alternativeRoutesMaxPaths" ).slider({
       range: "max",
       min: 1.0,
