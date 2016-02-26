@@ -40,14 +40,16 @@ public class RoundTripAlgorithm implements RoutingAlgorithm
     private EdgeFilter edgeFilter = null;
     private GHPoint from = null;
     private final double distanceInKm;
+    private final double bearing;
     private Graph g;
     private AlgorithmOptions opts;
     private int numberOfVisitedNodes = 0;
     private double weightLimit;
 
-    public RoundTripAlgorithm( Weighting weighting, double distanceInKm, Graph g, AlgorithmOptions opts )
+    public RoundTripAlgorithm( Weighting weighting, double distanceInKm, double bearing, Graph g, AlgorithmOptions opts )
     {
         this.distanceInKm = distanceInKm;
+        this.bearing = bearing;
         this.g = g;
         this.opts = opts;
         if (!(weighting instanceof UniquePathWeighting))
@@ -69,7 +71,16 @@ public class RoundTripAlgorithm implements RoutingAlgorithm
 
     public List<Path> calcRoundTrips()
     {
-        List<Integer> points = TourWayPointGenerator.generateTour(from, locationIndex, edgeFilter, this.distanceInKm);
+        List<Integer> points;
+        if (this.bearing >= 360)
+        {
+            points = TourWayPointGenerator.generateTour(from, locationIndex, edgeFilter, this.distanceInKm);
+        }
+        else
+        {
+            points = TourWayPointGenerator.generateTour(from, locationIndex, edgeFilter, this.distanceInKm, this.bearing);
+        }
+        
         List<Path> pathList = new ArrayList<Path>(points.size() - 1);
         RoutingAlgorithm routingAlgorithm;
 

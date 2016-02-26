@@ -695,12 +695,29 @@ $(function() {
 
 $(function() {
     $( "#roundtripdistance" ).spinner({
-      min: 0, 
+      min: 0,
+      step: 10.0,      
       change: function( event, ui ) {
         if ($(this).spinner('value') > 0)
         {
            ghRequest.api_params.algorithm = "roundtrip";
            ghRequest.api_params.round_trip.distance = $(this).spinner('value');
+           //routeLatLng(ghRequest, false);
+        }
+      }
+    });
+});
+
+$(function() {
+    $( "#roundtripbearing" ).spinner({
+      min: 0.0,
+      max: 360.0,
+      step: 20.0,
+      change: function( event, ui ) {
+        if ($(this).spinner('value') > 0)
+        {
+           ghRequest.api_params.algorithm = "roundtrip";
+           ghRequest.api_params.round_trip.bearing = $(this).spinner('value');
            //routeLatLng(ghRequest, false);
         }
       }

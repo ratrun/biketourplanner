@@ -18,19 +18,23 @@
 package com.graphhopper.routing.util.tour;
 
 /**
- * @author Robin Boldt
+ * Generate a single points tour with a bearing
+ *
+ * @author ratrun
  */
-public class TourStrategyFactory
+public class SinglePointBearingTour extends SinglePointTour
 {
-
-    public static TourStrategy getStrategy( double distanceInKm )
+    private double bearing;
+     
+    public SinglePointBearingTour( double overallDistance, double bearing )
     {
-        return new SinglePointTour(distanceInKm);
+        super(overallDistance);
+        this.bearing = bearing;
     }
 
-    public static TourStrategy getStrategy( double distanceInKm, double bearing )
+    @Override
+    double getBearingForIteration( int iteration )
     {
-        return new SinglePointBearingTour(distanceInKm, bearing);
+        return bearing + random.nextInt(30);
     }
-
 }

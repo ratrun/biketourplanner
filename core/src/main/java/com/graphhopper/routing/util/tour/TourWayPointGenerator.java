@@ -42,6 +42,11 @@ public class TourWayPointGenerator
         return generateTour(start, locationIndex, edgeFilter, TourStrategyFactory.getStrategy(distanceInKm));
     }
 
+    public static List<Integer> generateTour( GHPoint start, LocationIndex locationIndex, EdgeFilter edgeFilter, double distanceInKm, double bearing)
+    {
+        return generateTour(start, locationIndex, edgeFilter, TourStrategyFactory.getStrategy(distanceInKm, bearing));
+    }
+
     public static List<Integer> generateTour( GHPoint start, LocationIndex locationIndex, EdgeFilter edgeFilter, TourStrategy strategy )
     {
         List<Integer> tour = new ArrayList<Integer>(2 + strategy.numberOfGeneratedPoints());

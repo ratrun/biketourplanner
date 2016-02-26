@@ -66,7 +66,8 @@ public class RoutingAlgorithmFactorySimple implements RoutingAlgorithmFactory
         } else if (AlgorithmOptions.ROUND_TRIP.equalsIgnoreCase(algoStr))
         {
             double distanceInKm = opts.getHints().getDouble("round_trip.distance", 1);
-            return new RoundTripAlgorithm(opts.getWeighting(), distanceInKm, g, opts);
+            double bearing = opts.getHints().getDouble("round_trip.bearing", 180);
+            return new RoundTripAlgorithm(opts.getWeighting(), distanceInKm, bearing, g, opts);
         } else if (AlgorithmOptions.ROUND_TRIP_ALT.equalsIgnoreCase(algoStr))
         {
             RoundTripAltAlgorithm altRouteAlgo = new RoundTripAltAlgorithm(g, opts.getFlagEncoder(), opts.getWeighting(), opts.getTraversalMode());
