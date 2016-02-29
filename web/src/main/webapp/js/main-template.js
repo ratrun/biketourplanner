@@ -41,7 +41,8 @@ var translate = require('./translate.js');
 var format = require('./tools/format.js');
 var urlTools = require('./tools/url.js');
 var vehicle = require('./tools/vehicle.js');
-var tileLayers = require('./config/tileLayers.js');
+
+var tileLayers = require('./config/tileLayers.js').setHost(location.hostname);
 
 var debug = false;
 var ghRequest = new GHRequest(host, ghenv.routing.api_key);

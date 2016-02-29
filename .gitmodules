@@ -1,0 +1,3 @@
+[submodule "mbtiles-server"]
+	path = mbtiles-server
+	url = https://github.com/ratrun/mbtiles-server

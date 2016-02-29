@@ -2,6 +2,9 @@ var osmAttr = '&copy; <a href="http://www.openstreetmap.org/copyright" target="_
 
 // Automatically enable high-DPI tiles if provider and browser support it.
 var retinaTiles = L.Browser.retina;
+var host;
+
+var mapBox = require('../leaflet-mapbox-gl.js')
 
 var lyrk = L.tileLayer('https://tiles.lyrk.org/' + (retinaTiles ? 'lr' : 'ls') + '/{z}/{x}/{y}?apikey=6e8cfef737a140e2a58c8122aaa26077', {
     attribution: osmAttr + ', <a href="https://geodienste.lyrk.de/">Lyrk</a>'
@@ -67,24 +70,12 @@ var esriAerial = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/servic
     maxZoom: 18
 });
 
-var availableTileLayers = {
-    "Lyrk": lyrk,
-    "Omniscale": omniscale,
-    "MapQuest": mapquest,
-    "MapQuest Aerial": mapquestAerial,
-    "Esri Aerial": esriAerial,
-    "OpenMapSurfer": openMapSurfer,
-    "TF Transport": thunderTransport,
-    "TF Cycle": thunderCycle,
-    "TF Outdoors": thunderOutdoors,
-    "WanderReitKarte": wrk,
-    "OpenStreetMap": osm,
-    "OpenStreetMap.de": osmde,
-    "Sorbian Language": sorbianLang
-};
+var stylejsonObj = require('../../vectorstyles/bright-v8.json');
 
 module.exports.activeLayerName = "Omniscale";
 module.exports.defaultLayer = omniscale;
+
+var availableTileLayers = {};
 
 module.exports.getAvailableTileLayers = function () {
     return availableTileLayers;
@@ -97,3 +88,43 @@ module.exports.selectLayer = function (layerName) {
 
     return defaultLayer;
 };
+
+var vectorlayers = [];
+var stylejsonObj = require('../../vectorstyles/bright-v8.json');
+module.exports.setHost = function (hostname) {
+    host = hostname;
+    // Get the list of served vector tile areas
+    $.getJSON("http://" + host + ":3000/mbtilesareas.json", function( data ) {
+        var i = 0;
+        $.each( data, function( key, val ) {
+                stylejsonObj.sources.mapbox.tiles[i] = "http://" + host + ":3000/" + val.country + "/{z}/{x}/{y}.pbf";
+                var layerName = "Vector " + val.country.charAt(0).toUpperCase() + val.country.slice(1);
+                var vectorlayer = L.mapboxGL({
+                                          style: stylejsonObj
+                                       });
+                //alert(layerName);
+                vectorlayers[i] = vectorlayer;
+                availableTileLayers[layerName] = vectorlayers[i];
+                if (i == 0) // Select the first one
+                {
+                    module.exports.activeLayerName = "layerName";
+                    module.exports.defaultLayer = vectorlayer;
+                }
+                i++;
+        });
+        // availableTileLayers["Lyrk"] = lyrk;
+        availableTileLayers["Omniscale"] = omniscale;
+        availableTileLayers["MapQuest"] = mapquest;
+        availableTileLayers["MapQuest Aerial"] = mapquestAerial;
+        availableTileLayers["Esri Aerial"] = esriAerial;
+        availableTileLayers["OpenMapSurfer"] = openMapSurfer;
+        availableTileLayers["TF Transport"] = thunderTransport;
+        availableTileLayers["TF Cycle"] = thunderCycle;
+        availableTileLayers["TF Outdoors"] = thunderOutdoors;
+        availableTileLayers["WanderReitKarte"] = wrk;
+        availableTileLayers["OpenStreetMap"] = osm;
+        availableTileLayers["OpenStreetMap.de"] = osmde;
+        availableTileLayers["Sorbian Language"] = sorbianLang;
+    });
+};
+
