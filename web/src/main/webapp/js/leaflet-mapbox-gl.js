@@ -3,11 +3,11 @@ L.MapboxGL = L.Class.extend({
     initialize: function (options) {
         L.setOptions(this, options);
 
-        //if (options.accessToken) {
-        //    mapboxgl.accessToken = options.accessToken;
-        //} else {
-        //    throw new Error('You should provide a Mapbox GL access token as a token option.');
-        //}
+//        if (options.accessToken) {
+//            mapboxgl.accessToken = options.accessToken;
+//        } else {
+//            throw new Error('You should provide a Mapbox GL access token as a token option.');
+//        }
     },
 
     onAdd: function (map) {
@@ -83,7 +83,7 @@ L.MapboxGL = L.Class.extend({
             container.style.height = size.y + 'px';
             gl.resize();
         } else {
-            gl.update();
+            gl._update();
         }
     },
 

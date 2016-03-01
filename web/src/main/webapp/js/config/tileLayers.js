@@ -89,22 +89,34 @@ module.exports.selectLayer = function (layerName) {
     return defaultLayer;
 };
 
-var vectorlayers = [];
 var stylejsonObj = require('../../vectorstyles/bright-v8.json');
 module.exports.setHost = function (hostname) {
     host = hostname;
+    // availableTileLayers["Lyrk"] = lyrk;
+    availableTileLayers["Omniscale"] = omniscale;
+    availableTileLayers["MapQuest"] = mapquest;
+    availableTileLayers["MapQuest Aerial"] = mapquestAerial;
+    availableTileLayers["Esri Aerial"] = esriAerial;
+    availableTileLayers["OpenMapSurfer"] = openMapSurfer;
+    availableTileLayers["TF Transport"] = thunderTransport;
+    availableTileLayers["TF Cycle"] = thunderCycle;
+    availableTileLayers["TF Outdoors"] = thunderOutdoors;
+    availableTileLayers["WanderReitKarte"] = wrk;
+    availableTileLayers["OpenStreetMap"] = osm;
+    availableTileLayers["OpenStreetMap.de"] = osmde;
+    availableTileLayers["Sorbian Language"] = sorbianLang;
     // Get the list of served vector tile areas
     $.getJSON("http://" + host + ":3000/mbtilesareas.json", function( data ) {
         var i = 0;
         $.each( data, function( key, val ) {
-                stylejsonObj.sources.mapbox.tiles[i] = "http://" + host + ":3000/" + val.country + "/{z}/{x}/{y}.pbf";
+                // See tiles parameter in https://www.mapbox.com/mapbox-gl-style-spec/
+                stylejsonObj.sources.mapbox.tiles[0] = "http://" + host + ":3000/" + val.country + "/{z}/{x}/{y}.pbf";
                 var layerName = "Vector " + val.country.charAt(0).toUpperCase() + val.country.slice(1);
                 var vectorlayer = L.mapboxGL({
                                           style: stylejsonObj
                                        });
                 //alert(layerName);
-                vectorlayers[i] = vectorlayer;
-                availableTileLayers[layerName] = vectorlayers[i];
+                availableTileLayers[layerName] = vectorlayer;
                 if (i == 0) // Select the first one
                 {
                     module.exports.activeLayerName = "layerName";
@@ -112,19 +124,6 @@ module.exports.setHost = function (hostname) {
                 }
                 i++;
         });
-        // availableTileLayers["Lyrk"] = lyrk;
-        availableTileLayers["Omniscale"] = omniscale;
-        availableTileLayers["MapQuest"] = mapquest;
-        availableTileLayers["MapQuest Aerial"] = mapquestAerial;
-        availableTileLayers["Esri Aerial"] = esriAerial;
-        availableTileLayers["OpenMapSurfer"] = openMapSurfer;
-        availableTileLayers["TF Transport"] = thunderTransport;
-        availableTileLayers["TF Cycle"] = thunderCycle;
-        availableTileLayers["TF Outdoors"] = thunderOutdoors;
-        availableTileLayers["WanderReitKarte"] = wrk;
-        availableTileLayers["OpenStreetMap"] = osm;
-        availableTileLayers["OpenStreetMap.de"] = osmde;
-        availableTileLayers["Sorbian Language"] = sorbianLang;
     });
 };
 
