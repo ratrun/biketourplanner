@@ -75,14 +75,28 @@ var stylejsonObj = require('../../vectorstyles/bright-v8.json');
 module.exports.activeLayerName = "Omniscale";
 module.exports.defaultLayer = omniscale;
 
-var availableTileLayers = {};
+var availableRasterTileLayers = {};
+var availableVectorTileLayers = {};
+// availableTileLayers["Lyrk"] = lyrk;
+availableRasterTileLayers["Omniscale"] = omniscale;
+availableRasterTileLayers["MapQuest"] = mapquest;
+availableRasterTileLayers["MapQuest Aerial"] = mapquestAerial;
+availableRasterTileLayers["Esri Aerial"] = esriAerial;
+availableRasterTileLayers["OpenMapSurfer"] = openMapSurfer;
+availableRasterTileLayers["TF Transport"] = thunderTransport;
+availableRasterTileLayers["TF Cycle"] = thunderCycle;
+availableRasterTileLayers["TF Outdoors"] = thunderOutdoors;
+availableRasterTileLayers["WanderReitKarte"] = wrk;
+availableRasterTileLayers["OpenStreetMap"] = osm;
+availableRasterTileLayers["OpenStreetMap.de"] = osmde;
+availableRasterTileLayers["Sorbian Language"] = sorbianLang;
 
 module.exports.getAvailableTileLayers = function () {
-    return availableTileLayers;
+    return $.extend(availableVectorTileLayers, availableRasterTileLayers);
 };
 
 module.exports.selectLayer = function (layerName) {
-    var defaultLayer = availableTileLayers[layerName];
+    var defaultLayer = availableRasterTileLayers[layerName];
     if (!defaultLayer)
         defaultLayer = module.exports.defaultLayer;
 
@@ -92,19 +106,6 @@ module.exports.selectLayer = function (layerName) {
 var stylejsonObj = require('../../vectorstyles/bright-v8.json');
 module.exports.setHost = function (hostname) {
     host = hostname;
-    // availableTileLayers["Lyrk"] = lyrk;
-    availableTileLayers["Omniscale"] = omniscale;
-    availableTileLayers["MapQuest"] = mapquest;
-    availableTileLayers["MapQuest Aerial"] = mapquestAerial;
-    availableTileLayers["Esri Aerial"] = esriAerial;
-    availableTileLayers["OpenMapSurfer"] = openMapSurfer;
-    availableTileLayers["TF Transport"] = thunderTransport;
-    availableTileLayers["TF Cycle"] = thunderCycle;
-    availableTileLayers["TF Outdoors"] = thunderOutdoors;
-    availableTileLayers["WanderReitKarte"] = wrk;
-    availableTileLayers["OpenStreetMap"] = osm;
-    availableTileLayers["OpenStreetMap.de"] = osmde;
-    availableTileLayers["Sorbian Language"] = sorbianLang;
     // Get the list of served vector tile areas
     $.getJSON("http://" + host + ":3000/mbtilesareas.json", function( data ) {
         var i = 0;
@@ -116,7 +117,7 @@ module.exports.setHost = function (hostname) {
                                           style: stylejsonObj
                                        });
                 //alert(layerName);
-                availableTileLayers[layerName] = vectorlayer;
+                availableVectorTileLayers[layerName] = vectorlayer;
                 if (i == 0) // Select the first one
                 {
                     module.exports.activeLayerName = "layerName";
