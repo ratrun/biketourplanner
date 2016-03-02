@@ -95,6 +95,15 @@ module.exports.getAvailableTileLayers = function () {
     return $.extend(availableVectorTileLayers, availableRasterTileLayers);
 };
 
+var styleTileURL = {};
+
+module.exports.setActivelayer = function (layerEvent)
+{
+    // Obviously the style needs to be changed toghether with every layer change - this we do here:
+    if (styleTileURL[layerEvent.name])
+       layerEvent.layer.options.style.sources.mapbox.tiles[0] = styleTileURL[layerEvent.name]; 
+}
+
 module.exports.selectLayer = function (layerName) {
     var defaultLayer = availableRasterTileLayers[layerName];
     if (!defaultLayer)
@@ -110,13 +119,13 @@ module.exports.setHost = function (hostname) {
     $.getJSON("http://" + host + ":3000/mbtilesareas.json", function( data ) {
         var i = 0;
         $.each( data, function( key, val ) {
-                // See tiles parameter in https://www.mapbox.com/mapbox-gl-style-spec/
-                stylejsonObj.sources.mapbox.tiles[0] = "http://" + host + ":3000/" + val.country + "/{z}/{x}/{y}.pbf";
                 var layerName = "Vector " + val.country.charAt(0).toUpperCase() + val.country.slice(1);
+                var url = "http://" + host + ":3000/" + val.country + "/{z}/{x}/{y}.pbf";
+                stylejsonObj.sources.mapbox.tiles[0] = url;
+                styleTileURL[layerName] = url;
                 var vectorlayer = L.mapboxGL({
                                           style: stylejsonObj
                                        });
-                //alert(layerName);
                 availableVectorTileLayers[layerName] = vectorlayer;
                 if (i == 0) // Select the first one
                 {
