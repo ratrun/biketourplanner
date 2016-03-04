@@ -112,6 +112,8 @@ module.exports.selectLayer = function (layerName) {
     return defaultLayer;
 };
 
+// Remove the following block in case that you do not intend to run a local vector tile server. 
+// The code does not break anything, but is unnecessary then.
 var stylejsonObj = require('../../vectorstyles/bright-v8.json');
 module.exports.setHost = function (hostname) {
     host = hostname;
