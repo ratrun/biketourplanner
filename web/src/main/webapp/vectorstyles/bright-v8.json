@@ -81,6 +81,41 @@
             }
         },
         {
+            "id": "landuse_pitch",
+            "type": "fill",
+            "source": "mapbox",
+            "source-layer": "landuse",
+            "filter": [
+                "==",
+                "class",
+                "pitch"
+            ],
+            "paint": {
+                "fill-color": "#c9e8c8"
+            },
+            "metadata": {
+                "mapbox:group": "1444849388993.3071"
+            }
+        },
+        {
+            "id": "landuse_agriculture",
+            "type": "fill",
+            "source": "mapbox",
+            "source-layer": "landuse",
+            "filter": [
+                "==",
+                "class",
+                "agriculture"
+            ],
+            "paint": {
+                "fill-color": "#F0F5E6",
+                "fill-opacity": 0.4                
+            },
+            "metadata": {
+                "mapbox:group": "1444849388993.3071"
+            }
+        },
+        {
             "id": "landuse_park",
             "type": "fill",
             "source": "mapbox",
