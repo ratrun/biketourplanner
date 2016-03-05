@@ -70,8 +70,6 @@ var esriAerial = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/servic
     maxZoom: 18
 });
 
-var stylejsonObj = require('../../vectorstyles/bright-v8.json');
-
 module.exports.activeLayerName = "Omniscale";
 module.exports.defaultLayer = omniscale;
 
@@ -115,6 +113,8 @@ module.exports.selectLayer = function (layerName) {
 // Remove the following block in case that you do not intend to run a local vector tile server. 
 // The code does not break anything, but is unnecessary then.
 var stylejsonObj = require('../../vectorstyles/bright-v8.json');
+//var stylejsonObj = require('../../vectorstyles/outdoors-v8.json');
+
 module.exports.setHost = function (hostname) {
     host = hostname;
     // Get the list of served vector tile areas
