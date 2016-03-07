@@ -10,6 +10,6 @@
 // see also package.json and https://github.com/thlorenz/browserify-swap
 exports.options = {
     environment: "development",
-    routing: {host: '', api_key: ''},
-    geocoding: {host: '', api_key: ''}
+    routing: {host: 'http://localhost:8989'},
+    geocoding: {host: 'http://localhost:8989'}
 };

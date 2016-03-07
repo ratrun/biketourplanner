@@ -27,7 +27,6 @@ if (!Function.prototype.bind) {
     };
 }
 
-
 var GHRequest = function (host, api_key) {
     this.host = host;
     this.key = api_key;
@@ -304,7 +303,13 @@ GHRequest.prototype.fetchTranslationMap = function (urlLocaleParam) {
     if (!urlLocaleParam)
         // let servlet figure out the locale from the Accept-Language header
         urlLocaleParam = "";
-    var url = this.host + "/i18n/" + urlLocaleParam + "?type=" + this.dataType + "&key=" + this.key;
+    console.log("GHRequest.prototype.fetchTranslationMap host="+this.host);
+    if (this.host === undefined)
+        this.host = "http://localhost:8989";
+    var keyparam = "";
+    if (this.key !== undefined)
+        var keyparam= "&key=" + this.key;
+    var url = this.host + "/i18n/" + urlLocaleParam + "?type=" + this.dataType + keyparam;
     log(url);
     return $.ajax({
         url: url,

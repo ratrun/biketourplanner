@@ -116,6 +116,9 @@ var stylejsonObj = require('../../vectorstyles/bright-v8.json');
 
 module.exports.setHost = function (hostname) {
     host = hostname;
+    if (hostname === "")
+        host = "localhost";
+    console.log("tileLayers module.exports.setHost host=" + host + " hostname=" + hostname);
     // Get the list of served vector tile areas
     $.getJSON("http://" + host + ":3000/mbtilesareas.json", function( data ) {
         var i = 0;
@@ -123,6 +126,8 @@ module.exports.setHost = function (hostname) {
                 var layerName = "Vector " + val.country.charAt(0).toUpperCase() + val.country.slice(1);
                 var url = "http://" + host + ":3000/" + val.country + "/{z}/{x}/{y}.pbf";
                 stylejsonObj.sources.mapbox.tiles[0] = url;
+                stylejsonObj.sprite = "http://" + host + ":8989/assets/sprite";
+                stylejsonObj.glyphs = "http://" + host + ":8989/assets/font/{fontstack}/{range}.pbf";
                 styleTileURL[layerName] = url;
                 var vectorlayer = L.mapboxGL({
                                           style: stylejsonObj

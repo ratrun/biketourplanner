@@ -116,7 +116,7 @@ $(document).ready(function (e) {
                         button.hide();
 
                     button.attr('id', vehicle);
-                    button.html("<img src='img/" + vehicle + ".png' alt='" + translate.tr(vehicle) + "'></img>");
+                    button.html("<img src='./img/" + vehicle + ".png' alt='" + translate.tr(vehicle) + "'></img>");
                     button.click(function () {
                         ghRequest.initVehicle(vehicle);
                         resolveAll();
@@ -163,7 +163,7 @@ $(document).ready(function (e) {
                 initFromParams(urlParams, true);
             }, function (err) {
                 log(err);
-                $('#error').html('GraphHopper API offline? <a href="http://graphhopper.com/maps">Refresh</a>' + '<br/>Status: ' + err.statusText + '<br/>' + host);
+                $('#error').html('GraphHopper API offline? <a href="http://graphhopper.com/maps">Refresh</a>' + '<br/>Status: ' + err.statusText + '<br/>' + 'host=' + host);
 
                 bounds = {
                     "minLon": -180,
@@ -292,8 +292,8 @@ function checkInput() {
         var toFrom = getToFrom(i);
         div.data("index", i);
         div.find(".pointFlag").attr("src",
-                (toFrom === FROM) ? 'img/marker-small-green.png' :
-                ((toFrom === TO) ? 'img/marker-small-red.png' : 'img/marker-small-blue.png'));
+                (toFrom === FROM) ? './img/marker-small-green.png' :
+                ((toFrom === TO) ? './img/marker-small-red.png' : './img/marker-small-blue.png'));
         if (len > 2) {
             div.find(".pointDelete").click(deleteClickHandler).prop('disabled', false).removeClass('ui-state-disabled');
         } else {
@@ -536,7 +536,7 @@ function routeLatLng(request, doQuery) {
         var firstHeader;
 
         for (var pathIndex = 0; pathIndex < json.paths.length; pathIndex++) {
-            var tabHeader = $("<li>").append((pathIndex + 1) + "<img class='alt_route_img' src='img/alt_route.png'/>");
+            var tabHeader = $("<li>").append((pathIndex + 1) + "<img class='alt_route_img' src='./img/alt_route.png'/>");
             if (pathIndex === 0)
                 firstHeader = tabHeader;
 
