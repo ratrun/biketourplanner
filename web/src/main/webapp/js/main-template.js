@@ -15,6 +15,8 @@ var mathTools = require('./tools/math.js');
 var ghenv = require("./options.js").options;
 console.log(ghenv.environment);
 
+require('./menu.js');
+
 var GHInput = require('./graphhopper/GHInput.js');
 var GHRequest = require('./graphhopper/GHRequest.js');
 var host = ghenv.routing.host;
