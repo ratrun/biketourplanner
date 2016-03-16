@@ -21,14 +21,7 @@ function webkitapp()
     osmDataSubMenu.append(new gui.MenuItem({ label: 'Download new OSM data file' }));
     osmDataSubMenu.append(new gui.MenuItem({ label: 'Delete OSM data file' }));
     osmDataSubMenu.append(new gui.MenuItem({ label: 'Create marker data' }));
-    // Command for OSMOSIS 
-    // c:\Stefan\mkgmap\myanmar\osmosis-0.44\bin\osmosis.bat --read-xml D:\Surfing\azores-latest.osm --tf accept-nodes tourism=* amenity=drinking_water --tf reject-relations --tf reject-ways \
-    // --read-xml D:\Surfing\azores-latest.osm --tf accept-relations type=route --tf accept-relations route=bicycle,mtb --used-way --used-node \
-    // --merge --write-xml d:\temp\test.osm 
-    // From https://wiki.openstreetmap.org/wiki/Osmosis/Detailed_Usage_0.44
 
-    // osmtogeojson D:\temp\test.osm > D:\temp\test.json
-    
     menu.append(
         new gui.MenuItem({
             label: 'OSM data',
@@ -62,4 +55,5 @@ try {
  catch(err) {
      // Ignore: We are not running under nw
  }
+
 

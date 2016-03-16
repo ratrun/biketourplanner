@@ -142,4 +142,3 @@ module.exports.setHost = function (hostname) {
         });
     });
 };
-

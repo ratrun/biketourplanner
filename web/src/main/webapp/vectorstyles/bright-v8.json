@@ -8,6 +8,13 @@
                  "http://localhost:3000/austria/{z}/{x}/{y}.pbf"
             ],
             "maxzoom": 14
+        },
+        "mytourplan": {
+            "type": "vector",
+            "tiles": [ 
+                 "http://localhost:3000/austria.mytourplan/{z}/{x}/{y}.pbf"
+            ],
+            "maxzoom": 14,
         }
     },
     "sprite": "/assets/sprite",
@@ -3097,6 +3104,110 @@
                 "mapbox:group": "1444849242106.713"
             }
         },
+        {
+          "id": "network",
+          "type": "line",
+          "source": "mytourplan",
+          "source-layer": "mytourplan",
+          "filter": [
+                "in",
+                "network_bicycle",
+                "ncn",
+                "icn"
+          ],
+          "minzoom": 5,
+          "layout": {
+                "line-cap": "round",
+                "line-join": "round"
+          },
+          "paint": {
+                "line-color": "#FF0000",
+                "line-width": {
+                    "base": 1.2,
+                    "stops": [
+                        [
+                            5,
+                            1.0
+                        ],
+                        [
+                            6,
+                            1.6
+                        ],
+                        [
+                            20,
+                            22
+                        ],
+                        
+                    ]
+                }
+            }
+        },
+        {
+          "id": "network_2",
+          "type": "line",
+          "source": "mytourplan",
+          "source-layer": "mytourplan",
+          "filter": [
+                "==",
+                "network_bicycle",
+                "rcn"
+          ],
+          "minzoom": 6,
+          "layout": {
+                "line-cap": "round",
+                "line-join": "round"
+          },
+          "paint": {
+                "line-color": "#0000FF",
+                "line-width": {
+                    "base": 1.2,
+                    "stops": [
+                        [
+                            6,
+                            1.0
+                        ],
+                        [
+                            20,
+                            22
+                        ],
+                        
+                    ]
+                }
+            }
+        },
+        {
+          "id": "network_3",
+          "type": "line",
+          "source": "mytourplan",
+          "source-layer": "mytourplan",
+          "filter": [
+                "==",
+                "network_bicycle",
+                "lcn"
+          ],
+          "minzoom": 10,
+          "layout": {
+                "line-cap": "round",
+                "line-join": "round"
+          },
+          "paint": {
+                "line-color": "#00FFFF",
+                "line-width": {
+                    "base": 1.2,
+                    "stops": [
+                        [
+                            6,
+                            1.0
+                        ],
+                        [
+                            20,
+                            22
+                        ],
+                        
+                    ]
+                }
+            }
+        },        
         {
             "id": "country_label_1",
             "type": "symbol",
