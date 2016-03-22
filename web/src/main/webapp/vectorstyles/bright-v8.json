@@ -3106,15 +3106,77 @@
             }
         },
         {
-          "id": "icn_ncn5-8",
+          "id": "icn_ncn5-8-unpaved",
           "type": "line",
           "source": "biketourplaner",
           "source-layer": "icn_ncn",
           "filter": [
+               "all",
+               [
                 "in",
                 "network_bicycle",
                 "ncn",
                 "icn"
+               ],
+               [
+                 "in",
+                 "tracktype",
+                 "grade2",
+                 "grade3",
+                 "grade4",
+                 "grade5"
+               ]
+          ],
+          "minzoom": 5,
+          "maxzoom": 9,
+          "paint": {
+                "line-color": "#FF3300",
+                "line-dasharray": [
+                    1.0,
+                    1.0
+                ],
+                "line-opacity": 0.7,
+                "line-width": {
+                    "base": 1.2,
+                    "stops": [
+                        [
+                            5,
+                            1.0
+                        ],
+                        [
+                            6,
+                            1.6
+                        ],
+                        [
+                            20,
+                            22
+                        ],
+                        
+                    ]
+                }
+            }
+        },
+        {
+          "id": "icn_ncn5-8-paved",
+          "type": "line",
+          "source": "biketourplaner",
+          "source-layer": "icn_ncn",
+          "filter": [
+               "all",
+               [
+                "in",
+                "network_bicycle",
+                "ncn",
+                "icn"
+               ],
+               [
+                 "!in",
+                 "tracktype",
+                 "grade2",
+                 "grade3",
+                 "grade4",
+                 "grade5"
+               ]
           ],
           "minzoom": 5,
           "maxzoom": 9,
@@ -3142,15 +3204,76 @@
             }
         },
         {
-          "id": "icn_ncn8-9",
+          "id": "icn_ncn8-9-unpaved",
           "type": "line",
           "source": "biketourplaner",
           "source-layer": "icn_ncn_rcn",
           "filter": [
+               "all",
+               [
                 "in",
                 "network_bicycle",
                 "ncn",
                 "icn"
+               ],
+               [
+                 "in",
+                 "tracktype",
+                 "grade2",
+                 "grade3",
+                 "grade4",
+                 "grade5"
+               ]
+          ],
+          "minzoom": 9,
+          "paint": {
+                "line-color": "#FF3300",
+                "line-dasharray": [
+                    1.0,
+                    1.0
+                ],
+                "line-opacity": 0.7,
+                "line-width": {
+                    "base": 1.2,
+                    "stops": [
+                        [
+                            5,
+                            1.0
+                        ],
+                        [
+                            6,
+                            1.6
+                        ],
+                        [
+                            20,
+                            22
+                        ],
+                        
+                    ]
+                }
+            }
+        },
+        {
+          "id": "icn_ncn8-9-paved",
+          "type": "line",
+          "source": "biketourplaner",
+          "source-layer": "icn_ncn_rcn",
+          "filter": [
+               "all",
+               [
+                "in",
+                "network_bicycle",
+                "ncn",
+                "icn"
+               ],
+               [
+                 "!in",
+                 "tracktype",
+                 "grade2",
+                 "grade3",
+                 "grade4",
+                 "grade5"
+               ]
           ],
           "minzoom": 9,
           "paint": {
@@ -3177,19 +3300,34 @@
             }
         },
         {
-          "id": "icn_rcn9",
+          "id": "icn_rcn9_unpaved",
           "type": "line",
           "source": "biketourplaner",
           "source-layer": "icn_ncn_rcn",
           "filter": [
+               "all",
+               [
                 "==",
                 "network_bicycle",
                 "rcn"
+               ],
+               [
+                 "in",
+                 "tracktype",
+                 "grade2",
+                 "grade3",
+                 "grade4",
+                 "grade5"
+               ]
           ],
           "minzoom": 9,
           "paint": {
                 "line-color": "#0000FF",
-                "line-opacity": 0.5,                
+                "line-dasharray": [
+                    1.0,
+                    1.0
+                ],
+                "line-opacity": 0.5,
                 "line-width": {
                     "base": 1.2,
                     "stops": [
@@ -3205,21 +3343,77 @@
                     ]
                 }
             }
-        },        
+        },
         {
-          "id": "lcn",
+          "id": "icn_rcn9_paved",
+          "type": "line",
+          "source": "biketourplaner",
+          "source-layer": "icn_ncn_rcn",
+          "filter": [
+               "all",
+               [
+                "==",
+                "network_bicycle",
+                "rcn"
+               ],
+               [
+                 "!in",
+                 "tracktype",
+                 "grade2",
+                 "grade3",
+                 "grade4",
+                 "grade5"
+               ]
+          ],
+          "minzoom": 9,
+          "paint": {
+                "line-color": "#0000FF",
+                "line-opacity": 0.5,
+                "line-width": {
+                    "base": 1.2,
+                    "stops": [
+                        [
+                            6,
+                            1.0
+                        ],
+                        [
+                            20,
+                            22
+                        ],
+                        
+                    ]
+                }
+            }
+        },
+        {
+          "id": "lcn_unpaved",
           "type": "line",
           "source": "biketourplaner",
           "source-layer": "lcn",
           "filter": [
+               "all",
+               [
                 "==",
                 "network_bicycle",
                 "lcn"
+               ],
+               [
+                 "in",
+                 "tracktype",
+                 "grade2",
+                 "grade3",
+                 "grade4",
+                 "grade5"
+               ]
           ],
           "minzoom": 10,
           "paint": {
                 "line-color": "#00FFFF",
-                "line-opacity": 0.3,                
+                "line-dasharray": [
+                    1.0,
+                    1.0
+                ],
+                "line-opacity": 0.3,
                 "line-width": {
                     "base": 1.2,
                     "stops": [
@@ -3235,7 +3429,48 @@
                     ]
                 }
             }
-        },        
+        },
+        {
+          "id": "lcn_paved",
+          "type": "line",
+          "source": "biketourplaner",
+          "source-layer": "lcn",
+          "filter": [
+               "all",
+               [
+                "==",
+                "network_bicycle",
+                "lcn"
+               ],
+               [
+                 "!in",
+                 "tracktype",
+                 "grade2",
+                 "grade3",
+                 "grade4",
+                 "grade5"
+               ]
+          ],
+          "minzoom": 10,
+          "paint": {
+                "line-color": "#00FFFF",
+                "line-opacity": 0.3,
+                "line-width": {
+                    "base": 1.2,
+                    "stops": [
+                        [
+                            6,
+                            1.0
+                        ],
+                        [
+                            20,
+                            22
+                        ],
+                        
+                    ]
+                }
+            }
+        },
         {
 
             "id": "country_label_1",
