@@ -15,8 +15,6 @@ var mathTools = require('./tools/math.js');
 var ghenv = require("./options.js").options;
 console.log(ghenv.environment);
 
-require('./menu.js');
-
 var GHInput = require('./graphhopper/GHInput.js');
 var GHRequest = require('./graphhopper/GHRequest.js');
 var host = ghenv.routing.host;
@@ -46,6 +44,8 @@ var vehicle = require('./tools/vehicle.js');
 
 var tileLayers = require('./config/tileLayers.js');
 tileLayers.setHost(location.hostname);
+
+var menu = require('./menu.js');
 
 var debug = false;
 var ghRequest = new GHRequest(host, ghenv.routing.api_key);

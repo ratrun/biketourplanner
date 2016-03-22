@@ -97,7 +97,7 @@ var styleTileURL = {};
 
 module.exports.setActivelayer = function (layerEvent)
 {
-    // Obviously the style needs to be changed toghether with every layer change - this we do here:
+    // Obviously the style needs to be changed together with every layer change - this we do here:
     if (styleTileURL[layerEvent.name])
        layerEvent.layer.options.style.sources.mapbox.tiles[0] = styleTileURL[layerEvent.name]; 
 }
@@ -142,4 +142,3 @@ module.exports.setHost = function (hostname) {
         });
     });
 };
-

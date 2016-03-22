@@ -111,7 +111,7 @@ function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selec
     });
 
     L.control.layers(tileLayers.getAvailableTileLayers()/*, overlays*/).addTo(map);
-
+    
     map.on('baselayerchange', function (a) {
         if (a.name) {
             tileLayers.activeLayerName = a.name;
@@ -122,6 +122,47 @@ function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selec
         }
     });
 
+/*
+if (0 ===1)
+{
+    var geojsonMarkerOptions = {
+        radius: 8,
+        fillColor: "#ff7800",
+        color: "#000",
+        weight: 1,
+        opacity: 1,
+        fillOpacity: 0.8
+    };
+
+    var meta1nJson = require('../geojson/austria.json');
+    
+    var markerlayershow = false;
+    var tempMarker;
+    
+    map.on('zoomend', function() {
+         var currentZoom = map.getZoom();
+         if ((currentZoom >= 14) && (markerlayershow === false))
+         {
+             tempMarker =
+             L.geoJson(meta1nJson, {
+               pointToLayer: function (feature, latlng) {
+               return L.circleMarker(latlng, geojsonMarkerOptions);
+              }
+             });
+             tempMarker.addTo(map);
+             markerlayershow = true;
+         }
+         else
+         {
+             if ((markerlayershow) && (currentZoom < 14))
+             {
+                 map.removeLayer(tempMarker);
+                 markerlayershow = false;
+             }
+         }
+    });
+}
+*/
     L.control.scale().addTo(map);
 
     map.fitBounds(new L.LatLngBounds(new L.LatLng(bounds.minLat, bounds.minLon),
@@ -156,7 +197,7 @@ function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selec
         }).addTo(map);
 
     routingLayer = L.geoJson().addTo(map);
-
+    
     routingLayer.options = {
         // use style provided by the 'properties' entry of the geojson added by addDataToRoutingLayer
         style: function (feature) {
