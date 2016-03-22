@@ -197,7 +197,6 @@ if (0 ===1)
         }).addTo(map);
 
     routingLayer = L.geoJson().addTo(map);
-    
     routingLayer.options = {
         // use style provided by the 'properties' entry of the geojson added by addDataToRoutingLayer
         style: function (feature) {
