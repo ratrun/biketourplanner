@@ -3106,7 +3106,7 @@
             }
         },
         {
-          "id": "network",
+          "id": "icn_ncn5-8",
           "type": "line",
           "source": "biketourplaner",
           "source-layer": "icn_ncn",
@@ -3117,8 +3117,9 @@
                 "icn"
           ],
           "minzoom": 5,
+          "maxzoom": 9,
           "paint": {
-                "line-color": "#FF0000",
+                "line-color": "#FF3300",
                 "line-opacity": 0.7,
                 "line-width": {
                     "base": 1.2,
@@ -3141,7 +3142,42 @@
             }
         },
         {
-          "id": "network_2",
+          "id": "icn_ncn8-9",
+          "type": "line",
+          "source": "biketourplaner",
+          "source-layer": "icn_ncn_rcn",
+          "filter": [
+                "in",
+                "network_bicycle",
+                "ncn",
+                "icn"
+          ],
+          "minzoom": 9,
+          "paint": {
+                "line-color": "#FF3300",
+                "line-opacity": 0.7,
+                "line-width": {
+                    "base": 1.2,
+                    "stops": [
+                        [
+                            5,
+                            1.0
+                        ],
+                        [
+                            6,
+                            1.6
+                        ],
+                        [
+                            20,
+                            22
+                        ],
+                        
+                    ]
+                }
+            }
+        },
+        {
+          "id": "icn_rcn9",
           "type": "line",
           "source": "biketourplaner",
           "source-layer": "icn_ncn_rcn",
@@ -3150,7 +3186,7 @@
                 "network_bicycle",
                 "rcn"
           ],
-          "minzoom": 8,
+          "minzoom": 9,
           "paint": {
                 "line-color": "#0000FF",
                 "line-opacity": 0.5,                
@@ -3169,9 +3205,9 @@
                     ]
                 }
             }
-        },
+        },        
         {
-          "id": "network_3",
+          "id": "lcn",
           "type": "line",
           "source": "biketourplaner",
           "source-layer": "lcn",
@@ -3183,7 +3219,7 @@
           "minzoom": 10,
           "paint": {
                 "line-color": "#00FFFF",
-                "line-opacity": 0.4,                
+                "line-opacity": 0.3,                
                 "line-width": {
                     "base": 1.2,
                     "stops": [
