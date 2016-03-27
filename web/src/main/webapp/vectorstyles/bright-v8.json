@@ -9,14 +9,22 @@
             ],
             "maxzoom": 14
         },
-        "biketourplaner": {
+        "bicyclenodes": {
             "type": "vector",
             "tiles": [ 
-                 "http://localhost:3000/biketourplaner/{z}/{x}/{y}.pbf"
+                 "http://localhost:3000/bicyclenodes/{z}/{x}/{y}.pbf"
             ],
             "minzoom": 5,
             "maxzoom": 14
-        }
+        },
+        "bicycleroutes": {
+            "type": "vector",
+            "tiles": [ 
+                 "http://localhost:3000/bicycleroutes/{z}/{x}/{y}.pbf"
+            ],
+            "minzoom": 5,
+            "maxzoom": 14
+        }        
     },
     "sprite": "/assets/sprite",
     "glyphs": "/assets/font/{fontstack}/{range}.pbf",
@@ -2176,6 +2184,75 @@
             }
         },
         {
+            "id": "poi_campsites",
+            "type": "symbol",
+            "source": "bicyclenodes",
+            "source-layer": "bicyclenodes",
+            "filter": [
+                "all",
+                [
+                    "==",
+                    "$type",
+                    "Point"
+                ],
+                [
+                    "in",
+                    "tourism",
+                    "camp_site",
+                    "caravan_site"
+                ]
+            ],
+            "minzoom": 7,
+            "maxzoom": 12,
+            "layout": {
+                "icon-image": "campsite-12",
+                "visibility": "visible"
+            }
+        },
+        {
+            "id": "poi_label_campsite_nolabel",
+            "type": "symbol",
+            "source": "bicyclenodes",
+            "source-layer": "bicyclenodes",
+            "filter": [
+                "all",
+                [
+                    "==",
+                    "$type",
+                    "Point"
+                ],
+                [
+                    "in",
+                    "tourism",
+                    "camp_site",
+                    "caravan_site"
+                ]
+            ],
+            "minzoom": 13,
+            "layout": {
+                "icon-image": "campsite-18",
+                "text-font": [
+                    "Open Sans Semibold"
+                ],
+                "text-field": "{name}",
+                "text-max-width": 9,
+                "text-padding": 2,
+                "text-offset": [
+                    0,
+                    0.6
+                ],
+                "text-anchor": "top",
+                "text-size": 12,
+                "visibility": "visible"
+            },
+            "paint": {
+                "text-color": "#666",
+                "text-halo-color": "#ffffff",
+                "text-halo-width": 1,
+                "text-halo-blur": 0.5
+            }
+        },
+        {
             "id": "poi_label_4",
             "type": "symbol",
             "source": "mapbox",
@@ -2207,7 +2284,8 @@
                     0.6
                 ],
                 "text-anchor": "top",
-                "text-size": 12
+                "text-size": 12,
+                "visibility": "none"
             },
             "paint": {
                 "text-color": "#666",
@@ -2251,7 +2329,8 @@
                     0.6
                 ],
                 "text-anchor": "top",
-                "text-size": 12
+                "text-size": 12,
+                "visibility": "none"
             },
             "paint": {
                 "text-color": "#666",
@@ -2295,7 +2374,8 @@
                     0.6
                 ],
                 "text-anchor": "top",
-                "text-size": 12
+                "text-size": 12,
+                "visibility": "none"
             },
             "paint": {
                 "text-color": "#666",
@@ -2339,7 +2419,8 @@
                     0.6
                 ],
                 "text-anchor": "top",
-                "text-size": 12
+                "text-size": 12,
+                "visibility": "none"
             },
             "paint": {
                 "text-color": "#666",
@@ -3106,10 +3187,10 @@
             }
         },
         {
-          "id": "icn_ncn5-8-unpaved",
+          "id": "icn_ncn-unpaved",
           "type": "line",
-          "source": "biketourplaner",
-          "source-layer": "icn_ncn",
+          "source": "bicycleroutes",
+          "source-layer": "bicycleroutes",
           "filter": [
                "all",
                [
@@ -3128,7 +3209,6 @@
                ]
           ],
           "minzoom": 5,
-          "maxzoom": 9,
           "paint": {
                 "line-color": "#FF3300",
                 "line-dasharray": [
@@ -3157,10 +3237,10 @@
             }
         },
         {
-          "id": "icn_ncn5-8-paved",
+          "id": "icn_ncn-paved",
           "type": "line",
-          "source": "biketourplaner",
-          "source-layer": "icn_ncn",
+          "source": "bicycleroutes",
+          "source-layer": "bicycleroutes",
           "filter": [
                "all",
                [
@@ -3179,7 +3259,6 @@
                ]
           ],
           "minzoom": 5,
-          "maxzoom": 9,
           "paint": {
                 "line-color": "#FF3300",
                 "line-opacity": 0.7,
@@ -3204,106 +3283,10 @@
             }
         },
         {
-          "id": "icn_ncn8-9-unpaved",
+          "id": "rcn9_unpaved",
           "type": "line",
-          "source": "biketourplaner",
-          "source-layer": "icn_ncn_rcn",
-          "filter": [
-               "all",
-               [
-                "in",
-                "network_bicycle",
-                "ncn",
-                "icn"
-               ],
-               [
-                 "in",
-                 "tracktype",
-                 "grade2",
-                 "grade3",
-                 "grade4",
-                 "grade5"
-               ]
-          ],
-          "minzoom": 9,
-          "paint": {
-                "line-color": "#FF3300",
-                "line-dasharray": [
-                    1.0,
-                    1.0
-                ],
-                "line-opacity": 0.7,
-                "line-width": {
-                    "base": 1.2,
-                    "stops": [
-                        [
-                            5,
-                            1.0
-                        ],
-                        [
-                            6,
-                            1.6
-                        ],
-                        [
-                            20,
-                            22
-                        ],
-                        
-                    ]
-                }
-            }
-        },
-        {
-          "id": "icn_ncn8-9-paved",
-          "type": "line",
-          "source": "biketourplaner",
-          "source-layer": "icn_ncn_rcn",
-          "filter": [
-               "all",
-               [
-                "in",
-                "network_bicycle",
-                "ncn",
-                "icn"
-               ],
-               [
-                 "!in",
-                 "tracktype",
-                 "grade2",
-                 "grade3",
-                 "grade4",
-                 "grade5"
-               ]
-          ],
-          "minzoom": 9,
-          "paint": {
-                "line-color": "#FF3300",
-                "line-opacity": 0.7,
-                "line-width": {
-                    "base": 1.2,
-                    "stops": [
-                        [
-                            5,
-                            1.0
-                        ],
-                        [
-                            6,
-                            1.6
-                        ],
-                        [
-                            20,
-                            22
-                        ],
-                        
-                    ]
-                }
-            }
-        },
-        {
-          "id": "icn_rcn9_unpaved",
-          "type": "line",
-          "source": "biketourplaner",
-          "source-layer": "icn_ncn_rcn",
+          "source": "bicycleroutes",
+          "source-layer": "bicycleroutes",
           "filter": [
                "all",
                [
@@ -3345,10 +3328,10 @@
             }
         },
         {
-          "id": "icn_rcn9_paved",
+          "id": "rcn9_paved",
           "type": "line",
-          "source": "biketourplaner",
-          "source-layer": "icn_ncn_rcn",
+          "source": "bicycleroutes",
+          "source-layer": "bicycleroutes",
           "filter": [
                "all",
                [
@@ -3388,8 +3371,8 @@
         {
           "id": "lcn_unpaved",
           "type": "line",
-          "source": "biketourplaner",
-          "source-layer": "lcn",
+          "source": "bicycleroutes",
+          "source-layer": "bicycleroutes",
           "filter": [
                "all",
                [
@@ -3413,7 +3396,7 @@
                     1.0,
                     1.0
                 ],
-                "line-opacity": 0.3,
+                "line-opacity": 0.4,
                 "line-width": {
                     "base": 1.2,
                     "stops": [
@@ -3433,8 +3416,8 @@
         {
           "id": "lcn_paved",
           "type": "line",
-          "source": "biketourplaner",
-          "source-layer": "lcn",
+          "source": "bicycleroutes",
+          "source-layer": "bicycleroutes",
           "filter": [
                "all",
                [
@@ -3454,7 +3437,7 @@
           "minzoom": 10,
           "paint": {
                 "line-color": "#00FFFF",
-                "line-opacity": 0.3,
+                "line-opacity": 0.4,
                 "line-width": {
                     "base": 1.2,
                     "stops": [
