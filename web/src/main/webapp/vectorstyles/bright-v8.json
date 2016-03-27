@@ -2228,7 +2228,7 @@
                     "caravan_site"
                 ]
             ],
-            "minzoom": 13,
+            "minzoom": 12,
             "layout": {
                 "icon-image": "campsite-18",
                 "text-font": [
