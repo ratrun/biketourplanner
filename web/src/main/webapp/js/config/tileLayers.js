@@ -72,6 +72,7 @@ var esriAerial = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/servic
 
 module.exports.activeLayerName = "Omniscale";
 module.exports.defaultLayer = omniscale;
+module.exports.activeLayer = module.exports.defaultLayer;
 
 var availableRasterTileLayers = {};
 var availableVectorTileLayers = {};
@@ -99,14 +100,17 @@ module.exports.setActivelayer = function (layerEvent)
 {
     // Obviously the style needs to be changed together with every layer change - this we do here:
     if (styleTileURL[layerEvent.name])
+    {
        layerEvent.layer.options.style.sources.mapbox.tiles[0] = styleTileURL[layerEvent.name]; 
+       module.exports.activeLayer = availableVectorTileLayers[layerEvent.name];
+    }
 }
 
 module.exports.selectLayer = function (layerName) {
     var defaultLayer = availableRasterTileLayers[layerName];
     if (!defaultLayer)
         defaultLayer = module.exports.defaultLayer;
-
+    
     return defaultLayer;
 };
 

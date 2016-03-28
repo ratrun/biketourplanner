@@ -2319,6 +2319,30 @@
             }
         },
         {
+            "id": "poi_drinking_water",
+            "type": "symbol",
+            "source": "bicyclenodes",
+            "source-layer": "bicyclenodes",
+            "filter": [
+                "all",
+                [
+                    "==",
+                    "$type",
+                    "Point"
+                ],
+                [
+                    "==",
+                    "amenity",
+                    "drinking_water"
+                ]
+            ],
+            "minzoom": 7,
+            "layout": {
+                "icon-image": "drinking-water-12",
+                "visibility": "none"
+            }
+        },
+        {
             "id": "poi_label_4",
             "type": "symbol",
             "source": "mapbox",

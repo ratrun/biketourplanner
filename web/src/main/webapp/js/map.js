@@ -71,9 +71,10 @@ function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selec
         loadingControl: false
     });
 
-    addLayer('Bicycle shop', [ 'poi_bicycle_shops', 'poi_label_bicycle_shops'], defaultLayer);
-    addLayer('Campsite', ['poi_campsites', 'poi_campsite_nolabel'], defaultLayer);
-
+    addLayer('Bicycle shop', [ 'poi_bicycle_shops', 'poi_label_bicycle_shops']);
+    addLayer('Campsite', ['poi_campsites', 'poi_campsite_nolabel']);
+    addLayer('Drinking water', ['poi_drinking_water']);
+    
     var _startItem = {
         text: 'Set as start',
         callback: setStartCoord,
@@ -366,7 +367,7 @@ module.exports.createMarker = function (index, coord, setToEnd, setToStart, dele
             'Start' : ((toFrom === TO) ? 'End' : 'Intermediate ' + index)));
 };
 
-function addLayer(name, id, maplayer) {
+function addLayer(name, id) {
     var link = document.createElement('a');
     link.href = '#';
     link.className = '';
@@ -377,6 +378,7 @@ function addLayer(name, id, maplayer) {
         e.stopPropagation();
         
         for (index = 0; index < id.length; ++index) {
+          var maplayer = tileLayers.activeLayer;
           var visibility = maplayer._glMap.getLayoutProperty(id[index], 'visibility');
 
           if (visibility === 'visible') {
