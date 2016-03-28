@@ -32501,8 +32501,8 @@ function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selec
         loadingControl: false
     });
 
-    addLayer('Bicycle shop', [ 'poi_bicycle_shops', 'poi_label_bicycle_shops'], defaultLayer);
-    addLayer('Campsite', ['poi_campsites', 'poi_campsite_nolabel'], defaultLayer);
+    addLayer('Bicycle shops', [ 'poi_bicycle_shops', 'poi_label_bicycle_shops'], defaultLayer);
+    addLayer('Campsites', ['poi_campsites', 'poi_campsite_nolabel'], defaultLayer);
 
     var _startItem = {
         text: 'Set as start',

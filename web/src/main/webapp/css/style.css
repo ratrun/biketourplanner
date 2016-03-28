@@ -433,9 +433,10 @@ td img.pic {
 
 #layer_menu {
     background: #fff;
-    position: absolute;
+    float: right;
+    position: relative;
     z-index: 1;
-    top: 92%;
+    top: 70px;
     right: 5px;
     border-radius: 3px;
     width: 120px;
@@ -459,16 +460,16 @@ td img.pic {
 }
 
 #layer_menu a:hover {
-    background-color: #f8f8f8;
+    background-color: #00B946;
     color: #404040;
 }
 
 #layer_menu a.active {
-    background-color: #3887be;
+    background-color: #00B946;
     color: #ffffff;
 }
 
 #layer_menu a.active:hover {
-    background: #3074a4;
+    background: #00B946;
 }
 
