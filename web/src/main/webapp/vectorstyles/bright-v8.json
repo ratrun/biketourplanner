@@ -2206,11 +2206,11 @@
             "maxzoom": 12,
             "layout": {
                 "icon-image": "campsite-12",
-                "visibility": "visible"
+                "visibility": "none"
             }
         },
         {
-            "id": "poi_label_campsite_nolabel",
+            "id": "poi_campsite_nolabel",
             "type": "symbol",
             "source": "bicyclenodes",
             "source-layer": "bicyclenodes",
@@ -2243,7 +2243,7 @@
                 ],
                 "text-anchor": "top",
                 "text-size": 12,
-                "visibility": "visible"
+                "visibility": "none"
             },
             "paint": {
                 "text-color": "#666",
@@ -2273,7 +2273,7 @@
             "minzoom": 7,
             "layout": {
                 "icon-image": "bicycle-shop-12",
-                "visibility": "visible"
+                "visibility": "none"
             }
         },
         {
@@ -2309,7 +2309,7 @@
                 ],
                 "text-anchor": "top",
                 "text-size": 12,
-                "visibility": "visible"
+                "visibility": "none"
             },
             "paint": {
                 "text-color": "#666",

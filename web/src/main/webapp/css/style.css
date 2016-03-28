@@ -431,3 +431,44 @@ td img.pic {
     visibility: hidden;
 }
 
+#layer_menu {
+    background: #fff;
+    position: absolute;
+    z-index: 1;
+    top: 92%;
+    right: 5px;
+    border-radius: 3px;
+    width: 120px;
+    border: 1px solid rgba(0,0,0,0.4);
+}
+
+#layer_menu a {
+    font-size: 13px;
+    color: #404040;
+    display: block;
+    margin: 0;
+    padding: 0;
+    padding: 5px;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(0,0,0,0.25);
+    text-align: center;
+}
+
+#layer_menu a:last-child {
+    border: none;
+}
+
+#layer_menu a:hover {
+    background-color: #f8f8f8;
+    color: #404040;
+}
+
+#layer_menu a.active {
+    background-color: #3887be;
+    color: #ffffff;
+}
+
+#layer_menu a.active:hover {
+    background: #3074a4;
+}
+

@@ -71,6 +71,8 @@ function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selec
         loadingControl: false
     });
 
+    addLayer('Bicycle shop', [ 'poi_bicycle_shops', 'poi_label_bicycle_shops'], defaultLayer);
+    addLayer('Campsite', ['poi_campsites', 'poi_campsite_nolabel'], defaultLayer);
 
     var _startItem = {
         text: 'Set as start',
@@ -363,3 +365,31 @@ module.exports.createMarker = function (index, coord, setToEnd, setToStart, dele
     }).addTo(routingLayer).bindPopup(((toFrom === FROM) ?
             'Start' : ((toFrom === TO) ? 'End' : 'Intermediate ' + index)));
 };
+
+function addLayer(name, id, maplayer) {
+    var link = document.createElement('a');
+    link.href = '#';
+    link.className = '';
+    link.textContent = name;
+
+    link.onclick = function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        for (index = 0; index < id.length; ++index) {
+          var visibility = maplayer._glMap.getLayoutProperty(id[index], 'visibility');
+
+          if (visibility === 'visible') {
+              maplayer._glMap.setLayoutProperty(id[index], 'visibility', 'none');
+              this.className = '';
+          } else {
+              this.className = 'active';
+              maplayer._glMap.setLayoutProperty(id[index], 'visibility', 'visible');
+          }
+        }
+    };
+
+    var layers_menu = document.getElementById('layer_menu');
+    layers_menu.appendChild(link);
+}
+
