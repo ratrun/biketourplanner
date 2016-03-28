@@ -2210,7 +2210,7 @@
             }
         },
         {
-            "id": "poi_campsite_nolabel",
+            "id": "poi_campsite_label",
             "type": "symbol",
             "source": "bicyclenodes",
             "source-layer": "bicyclenodes",
@@ -2231,6 +2231,81 @@
             "minzoom": 12,
             "layout": {
                 "icon-image": "campsite-18",
+                "text-font": [
+                    "Open Sans Semibold"
+                ],
+                "text-field": "{name}",
+                "text-max-width": 9,
+                "text-padding": 2,
+                "text-offset": [
+                    0,
+                    0.6
+                ],
+                "text-anchor": "top",
+                "text-size": 12,
+                "visibility": "none"
+            },
+            "paint": {
+                "text-color": "#666",
+                "text-halo-color": "#ffffff",
+                "text-halo-width": 1,
+                "text-halo-blur": 0.5
+            }
+        },
+        {
+            "id": "poi_lodging",
+            "type": "symbol",
+            "source": "bicyclenodes",
+            "source-layer": "bicyclenodes",
+            "filter": [
+                "all",
+                [
+                    "==",
+                    "$type",
+                    "Point"
+                ],
+                [
+                    "in",
+                    "tourism",
+                    "motel",
+                    "hotel",
+                    "hostel",
+                    "guest_house",
+                    "chalet"
+                ]
+            ],
+            "minzoom": 7,
+            "maxzoom": 12,
+            "layout": {
+                "icon-image": "lodging-12",
+                "visibility": "none"
+            }
+        },
+        {
+            "id": "poi_lodging_label",
+            "type": "symbol",
+            "source": "bicyclenodes",
+            "source-layer": "bicyclenodes",
+            "filter": [
+                "all",
+                [
+                    "==",
+                    "$type",
+                    "Point"
+                ],
+                [
+                    "in",
+                    "tourism",
+                    "motel",
+                    "hotel",
+                    "hostel",
+                    "guest_house",
+                    "chalet"
+                ]
+            ],
+            "minzoom": 12,
+            "layout": {
+                "icon-image": "lodging-18",
                 "text-font": [
                     "Open Sans Semibold"
                 ],

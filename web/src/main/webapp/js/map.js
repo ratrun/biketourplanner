@@ -71,8 +71,9 @@ function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selec
         loadingControl: false
     });
 
+    addLayer('Lodging', ['poi_lodging', 'poi_lodging_label']);
+    addLayer('Campsite', ['poi_campsites', 'poi_campsite_label']);
     addLayer('Bicycle shop', [ 'poi_bicycle_shops', 'poi_label_bicycle_shops']);
-    addLayer('Campsite', ['poi_campsites', 'poi_campsite_nolabel']);
     addLayer('Drinking water', ['poi_drinking_water']);
     
     var _startItem = {
