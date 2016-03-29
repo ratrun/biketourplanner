@@ -72,7 +72,7 @@ function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selec
     });
 
     addLayer('Lodging', ['poi_lodging', 'poi_lodging_label']);
-    addLayer('Campsite', ['poi_campsites', 'poi_campsite_label']);
+    addLayer('Campsite', ['poi_campsites', 'poi_campsites_label']);
     addLayer('Bicycle shop', [ 'poi_bicycle_shops', 'poi_label_bicycle_shops']);
     addLayer('Drinking water', ['poi_drinking_water']);
     
@@ -124,6 +124,18 @@ function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selec
                 return v.replace(/(layer=)([\w\s]+)/, '$1' + tileLayers.activeLayerName);
             });
         }
+    });
+
+
+    map.on('mousemove', function (e) {
+       var maplayer = tileLayers.activeLayer;
+       var pointarr = [e.containerPoint.x, e.containerPoint.y];
+       var features = maplayer._glMap.queryRenderedFeatures(pointarr, {layers: ['poi_lodging', 'poi_lodging_label', 'poi_campsites', 'poi_campsites_label', 'poi_bicycle_shops', 'poi_label_bicycle_shops' ]});
+
+       if ( features.length !==0 )
+       {
+         document.getElementById('layerfeatures').innerHTML = JSON.stringify(features[0].properties, null, 2);
+       }
     });
 
 /*
@@ -395,4 +407,3 @@ function addLayer(name, id) {
     var layers_menu = document.getElementById('layer_menu');
     layers_menu.appendChild(link);
 }
-

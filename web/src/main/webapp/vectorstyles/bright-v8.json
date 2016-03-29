@@ -125,7 +125,7 @@
             ],
             "paint": {
                 "fill-color": "#F0F5E6",
-                "fill-opacity": 0.4                
+                "fill-opacity": 0.4 
             },
             "metadata": {
                 "mapbox:group": "1444849388993.3071"
@@ -2210,7 +2210,7 @@
             }
         },
         {
-            "id": "poi_campsite_label",
+            "id": "poi_campsites_label",
             "type": "symbol",
             "source": "bicyclenodes",
             "source-layer": "bicyclenodes",
