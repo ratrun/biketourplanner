@@ -134,6 +134,7 @@ module.exports.setHost = function (hostname) {
                 stylejsonObj.glyphs = "http://" + host + ":8989/assets/font/{fontstack}/{range}.pbf";
                 styleTileURL[layerName] = url;
                 var vectorlayer = L.mapboxGL({
+                                          attributionControl: true,
                                           style: stylejsonObj
                                        });
                 availableVectorTileLayers[layerName] = vectorlayer;

@@ -120,12 +120,16 @@ function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selec
         if (a.name) {
             tileLayers.activeLayerName = a.name;
             tileLayers.setActivelayer(a);
+            var credits = L.control.attribution().addTo(map);
+            credits.addAttribution("© <a href='https://www.mapbox.com/map-feedback/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap contributors</a>");
             $("#export-link a").attr('href', function (i, v) {
                 return v.replace(/(layer=)([\w\s]+)/, '$1' + tileLayers.activeLayerName);
             });
         }
     });
 
+    $('#layerfeatures').hide();
+    $("#layerfeatures").css("visibility","hidden");
 
     map.on('mousemove', function (e) {
        var maplayer = tileLayers.activeLayer;
@@ -134,7 +138,19 @@ function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selec
 
        if ( features.length !==0 )
        {
-         document.getElementById('layerfeatures').innerHTML = JSON.stringify(features[0].properties, null, 2);
+         $('#layerfeatures').show();
+         $('#layerfeatures').css("visibility","visible");
+         var properties = features[0].properties;
+         delete properties.id;
+         var displaytext=JSON.stringify(properties, null, 1).replace(/{/g,'').replace(/}/g,'');
+         document.getElementById('layerfeatures').innerHTML = displaytext.replace(/\",/g,'').replace(/\"/g,'');
+         var len = 0.5 + 1.5 * displaytext.split('\": \"').length;
+         $('#layerfeatures').css('height', len  + 'em');
+       }
+       else
+       {
+          $('#layerfeatures').hide();
+          $("#layerfeatures").css("visibility","hidden");
        }
     });
 

@@ -475,9 +475,8 @@ td img.pic {
 
 #layerfeatures {
         position: absolute;
-        top: 10;
+        top: 15em;
         right: 0;
-        bottom: 0;
         width: 350px;
         overflow: auto;
         background: rgba(255, 255, 255, 0.8);
