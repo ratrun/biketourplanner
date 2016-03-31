@@ -1,5 +1,4 @@
 L.MapboxGL = L.Class.extend({
-
     initialize: function (options) {
         L.setOptions(this, options);
 
@@ -28,6 +27,7 @@ L.MapboxGL = L.Class.extend({
         map.getPanes().tilePane.removeChild(this._glContainer);
         map.off('zoomanim', this._animateZoom, this);
         map.off('move', this._update, this);
+        map.attributionControl.removeAttribution(this.options.attribution);
         this._glMap.remove();
         this._glMap = null;
     },
@@ -47,18 +47,18 @@ L.MapboxGL = L.Class.extend({
 
     _initGL: function () {
         var center = this._map.getCenter();
-
         var options = L.extend({}, this.options, {
             container: this._glContainer,
             interactive: false,
             center: [center.lng, center.lat],
             zoom: this._map.getZoom() - 1,
-            attributionControl: false
+            attributionControl: true
         });
 
         this._glMap = new mapboxgl.Map(options);
         // allow GL base map to pan beyond min/max latitudes
         this._glMap.transform.latRange = null;
+        this._map.attributionControl.addAttribution(this.options.attribution);
     },
 
     _update: function () {
