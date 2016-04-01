@@ -134,6 +134,7 @@ function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selec
        if (maplayer._glMap !== null)
        {
            var pointarr = [e.containerPoint.x, e.containerPoint.y];
+           // see https://www.mapbox.com/mapbox-gl-js/example/queryrenderedfeatures/
            var features = maplayer._glMap.queryRenderedFeatures(pointarr, {layers: ['poi_lodging', 'poi_lodging_label', 'poi_campsites', 'poi_campsites_label', 'poi_bicycle_shops', 'poi_label_bicycle_shops' ]});
 
            if ( features.length !==0 )
