@@ -2162,7 +2162,7 @@
     "y": 48,
     "pixelRatio": 2
   },
-  "lighthouse-12": {
+  "zoo-12": {
     "width": 24,
     "height": 24,
     "x": 720,
@@ -2589,18 +2589,11 @@
     "y": 72,
     "pixelRatio": 2
   },
-  "zoo-12": {
+  "lighthouse-12": {
     "width": 24,
     "height": 24,
     "x": 744,
     "y": 96,
-    "pixelRatio": 2
-  },
-  "wave": {
-    "width": 32,
-    "height": 16,
-    "x": 516,
-    "y": 480,
     "pixelRatio": 2
   }
 }
