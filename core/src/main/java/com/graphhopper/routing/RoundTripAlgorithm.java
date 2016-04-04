@@ -44,8 +44,8 @@ public class RoundTripAlgorithm implements RoutingAlgorithm
     private Graph g;
     private AlgorithmOptions opts;
     private int numberOfVisitedNodes = 0;
-    private double weightLimit;
-
+    private int maxVisitedNodes = Integer.MAX_VALUE;
+    
     public RoundTripAlgorithm( Weighting weighting, double distanceInKm, double bearing, Graph g, AlgorithmOptions opts )
     {
         this.distanceInKm = distanceInKm;
@@ -87,7 +87,7 @@ public class RoundTripAlgorithm implements RoutingAlgorithm
         for (int i = 1; i < points.size(); i++)
         {
             routingAlgorithm = this.getRoutingAlgorithm();
-            routingAlgorithm.setWeightLimit(weightLimit);
+            routingAlgorithm.setMaxVisitedNodes(this.maxVisitedNodes);
             Path path = routingAlgorithm.calcPath(points.get(i - 1), points.get(i));
             pathList.add(path);
             this.numberOfVisitedNodes += routingAlgorithm.getVisitedNodes();
@@ -115,9 +115,9 @@ public class RoundTripAlgorithm implements RoutingAlgorithm
     }
 
     @Override
-    public void setWeightLimit( double weightLimit )
+    public void setMaxVisitedNodes( int numberOfNodes )
     {
-        this.weightLimit = weightLimit;
+        this.maxVisitedNodes = numberOfNodes;
     }
 
     @Override

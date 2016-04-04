@@ -68,10 +68,10 @@ public class GraphHopper implements GraphHopperAPI
     private String preferredLanguage = "";
     private boolean fullyLoaded = false;
     // for routing
-    private double defaultWeightLimit = Double.MAX_VALUE;
     private boolean simplifyResponse = true;
     private TraversalMode traversalMode = TraversalMode.NODE_BASED;
     private final Map<Weighting, RoutingAlgorithmFactory> algoFactories = new LinkedHashMap<Weighting, RoutingAlgorithmFactory>();
+    private int maxVisitedNodes = Integer.MAX_VALUE;
     // for index
     private LocationIndex locationIndex;
     private int preciseIndexResolution = 300;
@@ -377,11 +377,6 @@ public class GraphHopper implements GraphHopperAPI
 
     /**
      * Enables or disables contraction hierarchies (CH). This speed-up mode is enabled by default.
-     * Disabling CH is only recommended for short routes or in combination with
-     * setDefaultWeightLimit and called flexibility mode
-     * <p>
-     *
-     * @see #setDefaultWeightLimit(double)
      */
     public GraphHopper setCHEnable( boolean enable )
     {
@@ -392,13 +387,11 @@ public class GraphHopper implements GraphHopperAPI
 
     /**
      * This methods stops the algorithm from searching further if the resulting path would go over
-     * specified weight, important if CH is disabled. The unit is defined by the used weighting
-     * created from createWeighting, e.g. distance for shortest or seconds for the standard
-     * FastestWeighting implementation.
+     * the specified node count, important if CH is disabled.
      */
-    public void setDefaultWeightLimit( double defaultWeightLimit )
+    public void setMaxVisitedNodes( int maxVisitedNodes )
     {
-        this.defaultWeightLimit = defaultWeightLimit;
+        this.maxVisitedNodes = maxVisitedNodes;
     }
 
     public boolean isCHEnabled()
@@ -685,7 +678,8 @@ public class GraphHopper implements GraphHopperAPI
         maxRegionSearch = args.getInt("index.maxRegionSearch", maxRegionSearch);
 
         // routing
-        defaultWeightLimit = args.getDouble("routing.defaultWeightLimit", defaultWeightLimit);
+        maxVisitedNodes = args.getInt("routing.maxVisitedNodes", Integer.MAX_VALUE);
+
         return this;
     }
 
@@ -991,7 +985,7 @@ public class GraphHopper implements GraphHopperAPI
         } else if ("curvature".equalsIgnoreCase(weighting))
         {
             if (encoder.supports(CurvatureWeighting.class))
-                return new CurvatureWeighting(encoder, weightingMap, ghStorage);
+                return new CurvatureWeighting(encoder, weightingMap);
             else
                 return new FastestWeighting(encoder, weightingMap);
         } else if ("elevation".equalsIgnoreCase(weighting))
@@ -1098,11 +1092,17 @@ public class GraphHopper implements GraphHopperAPI
         List<Path> altPaths = new ArrayList<Path>(points.size() - 1);
         QueryResult fromQResult = qResults.get(0);
 
-        double weightLimit = request.getHints().getDouble("defaultWeightLimit", defaultWeightLimit);
+        int maxVisistedNodesForRequest = request.getHints().getInt("routing.maxVisitedNodes", maxVisitedNodes);
+        if (maxVisistedNodesForRequest > maxVisitedNodes)
+        {
+            ghRsp.addError(new IllegalStateException("The routing.maxVisitedNodes parameter has to be below or equal to:" + maxVisitedNodes));
+            return Collections.emptyList();
+        }
+
         String algoStr = request.getAlgorithm().isEmpty() ? AlgorithmOptions.DIJKSTRA_BI : request.getAlgorithm();
         AlgorithmOptions algoOpts = AlgorithmOptions.start().
                 algorithm(algoStr).traversalMode(tMode).flagEncoder(encoder).weighting(weighting).
-                hints(request.getHints()).
+                maxVisitedNodes(maxVisistedNodesForRequest).hints(request.getHints()).
                 build();
 
         boolean viaTurnPenalty = request.getHints().getBool("pass_through", false);
@@ -1161,7 +1161,6 @@ public class GraphHopper implements GraphHopperAPI
             if(algo instanceof RoundTripAlgorithm){
                 ((RoundTripAlgorithm) algo).prepare(locationIndex, new DefaultEdgeFilter(encoder), points.get(0));
             }
-            algo.setWeightLimit(weightLimit);
             String debug = ", algoInit:" + sw.stop().getSeconds() + "s";
 
             sw = new StopWatch().start();
