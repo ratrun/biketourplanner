@@ -40,7 +40,6 @@ function adjustMapSize() {
 function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selectLayer) {
     adjustMapSize();
     log("init map at " + JSON.stringify(bounds));
-
     var defaultLayer = tileLayers.selectLayer(selectLayer);
 
     // default
@@ -114,8 +113,12 @@ function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selec
         state: 3
     });
 
-    L.control.layers(tileLayers.getAvailableTileLayers()/*, overlays*/).addTo(map);
-    
+    // Allow the tile server some time for startup
+    setTimeout(function(){ 
+        console.log("Constructing tile layer control");
+        L.control.layers(tileLayers.getAvailableTileLayers()/*, overlays*/).addTo(map);
+    }, 500);
+
     map.on('baselayerchange', function (a) {
         if (a.name) {
             tileLayers.activeLayerName = a.name;
@@ -131,7 +134,7 @@ function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selec
 
     map.on('mousemove', function (e) {
        var maplayer = tileLayers.activeLayer;
-       if (maplayer._glMap !== null)
+       if ((maplayer._glMap !== null) && (maplayer._glMap !== undefined))
        {
            var pointarr = [e.containerPoint.x, e.containerPoint.y];
            // see https://www.mapbox.com/mapbox-gl-js/example/queryrenderedfeatures/

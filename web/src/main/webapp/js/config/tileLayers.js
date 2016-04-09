@@ -109,7 +109,16 @@ module.exports.setActivelayer = function (layerEvent)
 module.exports.selectLayer = function (layerName) {
     var defaultLayer = availableRasterTileLayers[layerName];
     if (!defaultLayer)
+    {
         defaultLayer = module.exports.defaultLayer;
+        try {
+             // Change the tile url
+             defaultLayer.options.style.sources.mapbox.tiles[0] = styleTileURL[module.exports.activeLayerName];
+            }
+         catch(err) {
+            // Ignore for raster tile layer
+         }
+    }
     
     return defaultLayer;
 };
@@ -138,10 +147,12 @@ module.exports.setHost = function (hostname) {
                                           style: stylejsonObj
                                        });
                 availableVectorTileLayers[layerName] = vectorlayer;
-                if (i == 0) // Select the first one
+                // FIXME persist a default vector layer name
+                if (layerName === "Vector Austria") // Select the default
                 {
-                    module.exports.activeLayerName = "layerName";
+                    module.exports.activeLayerName = layerName;
                     module.exports.defaultLayer = vectorlayer;
+                    module.exports.activeLayer = vectorlayer;
                 }
                 i++;
         });

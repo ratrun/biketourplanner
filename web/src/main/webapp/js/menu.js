@@ -1,12 +1,84 @@
-// Here we define the functionality for the graphhopper webkit application
-function webkitapp()
+var mbtiles;
+
+function startLocalVectorTileServer(win)
 {
+    var tilesServerHasExited = false;
+    // On Windows Only ...
+    const exec = global.require('child_process').spawn;
+    mbtiles = exec('node' , ['server.js'], {
+       cwd: 'ratrun-mbtiles-server',
+       detached: true
+    });
+    mbtiles.unref();
+
+    console.log('mbtiles started: ' + mbtiles);
+        
+    mbtiles.on('error', function (err) {
+      console.log('mbtiles error' + err);
+    });
+
+    mbtiles.stdout.on('data', function (data) {
+        console.log('mbtiles stdout: ' + data);
+    });
+
+    mbtiles.stderr.on('data', function (data) {
+        console.log('mbtiles stderr: ' + data);
+    });
+
+    mbtiles.on('close', function (code) {
+        console.log('tiles server child process closed with code ' + code);
+    });
+    
+    mbtiles.on('exit', function (code, signal) {
+        console.log('tiles server child process exited with code ' + code +' signal=' + signal);
+        tilesServerHasExited = true;
+        setTimeout(function(){ 
+                this.close(true);
+        }, 500);
+    });
+    
+    win.on('close', function() {
+        this.hide(); // Pretend to be closed already
+        if (tilesServerHasExited)
+        {
+            this.close(true);
+        }
+        else
+        {   // Inform the tile server via SIGINT to close
+            var res = mbtiles.kill('SIGINT');
+            console.log("Guiwindow.on exit kill SIGINT returned:" + res);
+            setTimeout(function(){ 
+                console.log("Wait for second close");
+            }, 500);
+        }
+    });
+    
+    mbtiles.on('uncaughtException', function (err) {
+      console.log('Caught exception: ' + err);
+    });
+    
+}
+
+// Here we define the functionality for the graphhopper webkit application
+function webkitapp(win)
+{
+    startLocalVectorTileServer(win);
     var menu = new gui.Menu({type: "menubar"});
 
     // Create a sub-menu
     var mapSubMenu = new gui.Menu();
     mapSubMenu.append(new gui.MenuItem({ label: 'Show available map areas' }));
     mapSubMenu.append(new gui.MenuItem({ label: 'Download new map data' }));
+    mapSubMenu.append(new gui.MenuItem({ label: 'Stop tile server',
+        click: function() { 
+                             alert("Stop tile server clicked");
+                          }
+    }));
+    mapSubMenu.append(new gui.MenuItem({ label: 'Start tile server' ,
+        click: function() { 
+                             alert("Start tile server clicked");
+                          }
+    }));
     
     menu.append(
         new gui.MenuItem({
@@ -59,7 +131,8 @@ function webkitapp()
 // Test if we are running under nwjs. If so the window.require('nw.gui'); command succeeds, otherwise we get an exception
 try {
      var gui = window.require('nw.gui');
-     webkitapp();
+     var win = gui.Window.get();
+     webkitapp(win);
  }
  catch(err) {
      // Ignore: We are not running under nw

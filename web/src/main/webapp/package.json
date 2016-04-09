@@ -9,7 +9,8 @@
     "show": true,
     "position": "center",
     "width": 1500,
-    "height": 900
+    "height": 900,
+    "toolbar": true
   },
   "dependencies": {
     "d3": "^3.5.9",

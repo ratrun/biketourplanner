@@ -13,3 +13,6 @@
 [submodule "mytourplan/ratrunosmtogeojson"]
 	path = mytourplan/ratrunosmtogeojson
 	url = https://github.com/tyrasd/osmtogeojson
+[submodule "web/src/main/webapp/ratrun-mbtiles-server"]
+	path = web/src/main/webapp/ratrun-mbtiles-server
+	url = https://github.com/ratrun/mbtiles-server

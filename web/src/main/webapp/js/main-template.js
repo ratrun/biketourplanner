@@ -1,3 +1,4 @@
+var menu = require('./menu.js');
 global.d3 = require('d3');
 var L = require('leaflet');
 require('leaflet-loading');
@@ -44,8 +45,6 @@ var vehicle = require('./tools/vehicle.js');
 
 var tileLayers = require('./config/tileLayers.js');
 tileLayers.setHost(location.hostname);
-
-var menu = require('./menu.js');
 
 var debug = false;
 var ghRequest = new GHRequest(host, ghenv.routing.api_key);
@@ -158,8 +157,10 @@ $(document).ready(function (e) {
                     }
                 }
                 metaVersionInfo = messages.extractMetaVersionInfo(json);
-
-                mapLayer.initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, urlParams.layer);
+                setTimeout(function(){ 
+                     console.log("Calling delayed initMap1 with urlParams.layer:" + urlParams.layer);
+                     mapLayer.initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, urlParams.layer);
+                }, 100);
 
                 // execute query
                 initFromParams(urlParams, true);
@@ -208,7 +209,6 @@ $(document).ready(function (e) {
 
     checkInput();
 });
-
 
 function initFromParams(params, doQuery) {
     ghRequest.init(params);
@@ -756,3 +756,4 @@ function isProduction() {
 }
 
 module.exports.setFlag = setFlag;
+
