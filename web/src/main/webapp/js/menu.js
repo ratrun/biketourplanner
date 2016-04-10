@@ -1,5 +1,8 @@
 var mbtiles;
 
+var stopTileServerMenuItem;
+var startTileServerMenuItem;
+
 function startLocalVectorTileServer(win)
 {
     var tilesServerHasExited = false;
@@ -28,12 +31,23 @@ function startLocalVectorTileServer(win)
     mbtiles.on('close', function (code) {
         console.log('tiles server child process closed with code ' + code);
     });
-    
+
     mbtiles.on('exit', function (code, signal) {
         console.log('tiles server child process exited with code ' + code +' signal=' + signal);
         tilesServerHasExited = true;
         setTimeout(function(){ 
+              if (signal === 'SIGINT')
                 this.close(true);
+              else
+                if (code === 100) // Code for received stop trigger 
+                {
+                    stopTileServerMenuItem.enabled = false;
+                    startTileServerMenuItem.enabled = true;
+                }
+                else
+                   // We got this most likely during startup because the vector tile server is already active and the 
+                   // new instance cannot bind to the tile server port again as it is in use.
+                   console.log("Running tile server detected, keep it active");
         }, 500);
     });
     
@@ -67,18 +81,31 @@ function webkitapp(win)
 
     // Create a sub-menu
     var mapSubMenu = new gui.Menu();
-    mapSubMenu.append(new gui.MenuItem({ label: 'Show available map areas' }));
+    mapSubMenu.append(new gui.MenuItem({ label: 'Show installed map areas',
+        click: function() { 
+                             $.getJSON("http://127.0.0.1:3000/mbtilesareas.json", function( data ) {
+                                    alert("Installed tiles: " + JSON.stringify(data))
+                             });
+                          }
+    }));
     mapSubMenu.append(new gui.MenuItem({ label: 'Download new map data' }));
-    mapSubMenu.append(new gui.MenuItem({ label: 'Stop tile server',
+    stopTileServerMenuItem = new gui.MenuItem({ label: 'Stop tile server',
         click: function() { 
-                             alert("Stop tile server clicked");
-                          }
-    }));
-    mapSubMenu.append(new gui.MenuItem({ label: 'Start tile server' ,
+                             console.log("Stop tile server clicked");
+                             $.getJSON("http://127.0.0.1:3000/4cede326-7166-4cbd-994f-699c6dc271e9", function( data ) {
+                                    console.log("Tile server stop response was" + data);
+                             });
+                           }
+    });
+    startTileServerMenuItem = new gui.MenuItem({ label: 'Start tile server', enabled : false , 
         click: function() { 
-                             alert("Start tile server clicked");
+                             startLocalVectorTileServer(win);
+                             this.enabled = false;
+                             stopTileServerMenuItem.enabled = true;
                           }
-    }));
+    });
+    mapSubMenu.append(stopTileServerMenuItem);    
+    mapSubMenu.append(startTileServerMenuItem);
     
     menu.append(
         new gui.MenuItem({
