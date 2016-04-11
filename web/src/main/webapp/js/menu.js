@@ -70,7 +70,7 @@ function startLocalVectorTileServer(win)
     mbtiles.on('uncaughtException', function (err) {
       console.log('Caught exception: ' + err);
     });
-    
+
 }
 
 // Here we define the functionality for the graphhopper webkit application
@@ -81,10 +81,10 @@ function webkitapp(win)
 
     // Create a sub-menu
     var mapSubMenu = new gui.Menu();
-    mapSubMenu.append(new gui.MenuItem({ label: 'Show installed map areas',
+    mapSubMenu.append(new gui.MenuItem({ label: 'Show installed maps',
         click: function() { 
                              $.getJSON("http://127.0.0.1:3000/mbtilesareas.json", function( data ) {
-                                    alert("Installed tiles: " + JSON.stringify(data))
+                                    alert("Installed map: " + JSON.stringify(data))
                              });
                           }
     }));
