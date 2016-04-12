@@ -2,6 +2,7 @@ var mbtiles;
 
 var stopTileServerMenuItem;
 var startTileServerMenuItem;
+var aboutWindow = null;
 
 function startLocalVectorTileServer(win)
 {
@@ -55,6 +56,8 @@ function startLocalVectorTileServer(win)
         this.hide(); // Pretend to be closed already
         if (tilesServerHasExited)
         {
+            if (aboutWindow != null)
+                aboutWindow.close(true);
             this.close(true);
         }
         else
@@ -88,7 +91,7 @@ function webkitapp(win)
                              });
                           }
     }));
-    mapSubMenu.append(new gui.MenuItem({ label: 'Download new map data' }));
+    mapSubMenu.append(new gui.MenuItem({ label: 'Add or exchange vector map' }));
     stopTileServerMenuItem = new gui.MenuItem({ label: 'Stop tile server',
         click: function() { 
                              console.log("Stop tile server clicked");
@@ -114,40 +117,53 @@ function webkitapp(win)
         })
     );
 
-    // Create the osm data sub-menu
-    var osmDataSubMenu = new gui.Menu();
-    osmDataSubMenu.append(new gui.MenuItem({ label: 'Show available OSM data files' }));
-    osmDataSubMenu.append(new gui.MenuItem({ label: 'Download new OSM data file' }));
-    osmDataSubMenu.append(new gui.MenuItem({ label: 'Delete OSM data file' }));
-
-    menu.append(
-        new gui.MenuItem({
-            label: 'OSM data',
-            submenu: osmDataSubMenu 
-        })
-    );
-
     var graphhopperSubMenu = new gui.Menu();
     graphhopperSubMenu.append(new gui.MenuItem({ label: 'Change active graph' ,  enabled : false} ));
     graphhopperSubMenu.append(new gui.MenuItem({ type: 'separator' ,  enabled : false }))
-    graphhopperSubMenu.append(new gui.MenuItem({ label: 'Change graph settings' }));
-    graphhopperSubMenu.append(new gui.MenuItem({ label: 'Calculate graph' ,  enabled : false}));
+    // graphhopperSubMenu.append(new gui.MenuItem({ label: 'Change graph settings', enabled : false }));
+    graphhopperSubMenu.append(new gui.MenuItem({ label: 'Calculate new graph' ,  enabled : false}));
+    graphhopperSubMenu.append(new gui.MenuItem({ type: 'separator' ,  enabled : false }))
+    graphhopperSubMenu.append(new gui.MenuItem({ label: 'Show available OSM data files' ,  enabled : false  }));
+    graphhopperSubMenu.append(new gui.MenuItem({ label: 'Download new OSM data file' }));
+    graphhopperSubMenu.append(new gui.MenuItem({ label: 'Delete OSM data file' ,  enabled : false  }));
 
     menu.append(
         new gui.MenuItem({
-            label: 'Graphhopper',
+            label: 'Routing',
             submenu: graphhopperSubMenu 
         })
     );
 
-    // Create the about sub-menu
-    var aboutSubMenu = new gui.Menu();
-    aboutSubMenu.append(new gui.MenuItem({ label: 'Active graph: None' ,  enabled : false} ));
-
-    menu.append(
+    // Create the help sub-menu
+    var helpSubMenu = new gui.Menu();
+    helpSubMenu.append(new gui.MenuItem({ label: 'Info' ,  enabled : false}));
+    helpSubMenu.append(new gui.MenuItem({ type: 'separator' ,  enabled : false }));
+    helpSubMenu.append(new gui.MenuItem({ label: 'About' ,
+        click: function() {
+                            var params = {toolbar: false, resizable: false, show: true, height: 270, width: 450};
+                            if (aboutWindow == null)
+                            {
+                                aboutWindow = gui.Window.open('about.html', params);
+                                    aboutWindow.on('document-end', function() {
+                                      aboutWindow.focus();
+                                      // open link in default browser
+                                      $(aboutWindow.window.document).find('a').bind('click', function (e) {
+                                        e.preventDefault();
+                                        gui.Shell.openExternal(this.href);
+                                      });
+                                    });
+                            }
+                            aboutWindow.on('close', function() {
+                                   aboutWindow.close(true);
+                                   aboutWindow = null;
+                                });    
+                          }
+    }));
+    
+        menu.append(
         new gui.MenuItem({
             label: 'About',
-            submenu: aboutSubMenu
+            submenu: helpSubMenu
         })
     );
 
