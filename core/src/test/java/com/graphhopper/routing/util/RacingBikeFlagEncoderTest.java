@@ -119,6 +119,7 @@ public class RacingBikeFlagEncoderTest extends AbstractBikeFlagEncoderTester
         way.clearTags();
         way.setTag("highway", "primary");
         assertEquals(20, getSpeedFromFlags(way), 1e-1);
+        assertPriority(UNCHANGED.getValue(), way);
 
         way.clearTags();
         way.setTag("highway", "primary");
