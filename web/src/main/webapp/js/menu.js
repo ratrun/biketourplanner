@@ -76,6 +76,41 @@ function startLocalVectorTileServer(win)
 
 }
 
+var download = function(url, dest, cb) {
+    var http = global.require('https');
+    var fs = global.require('fs');
+    var file = fs.createWriteStream(dest);
+    var request = http.get(url, function(response) {
+
+        // check if response is success
+        if (response.statusCode !== 200) {
+            return cb('Response status was ' + response.statusCode);
+        }
+
+        response.pipe(file);
+
+        file.on('finish', function() {
+            file.close(cb('Download of ' + url + ' finished!'));  // close() is async, call cb after close completes.
+        });
+    });
+
+    // check for request error too
+    request.on('error', function (err) {
+        fs.unlink(dest);
+
+        if (cb) {
+            return cb(err.message);
+        }
+    });
+
+    file.on('error', function(err) { // Handle errors
+        fs.unlink(dest); // Delete the file async. (But we don't check the result)
+
+        if (cb) {
+            return cb(err.message);
+        }
+    });
+};
 // Here we define the functionality for the graphhopper webkit application
 function webkitapp(win)
 {
@@ -91,7 +126,15 @@ function webkitapp(win)
                              });
                           }
     }));
-    mapSubMenu.append(new gui.MenuItem({ label: 'Add or exchange vector map' }));
+    mapSubMenu.append(new gui.MenuItem({ label: 'Add map',
+        click: function() {
+               download("https://osm2vectortiles-downloads.os.zhdk.cloud.switch.ch/v1.0/extracts/liechtenstein.mbtiles", "ratrun-mbtiles-server\\liechtenstein.mbtiles",
+               function(err) {
+                   alert(err);
+               }
+               );
+        }
+    }));
     stopTileServerMenuItem = new gui.MenuItem({ label: 'Stop tile server',
         click: function() { 
                              console.log("Stop tile server clicked");
@@ -124,7 +167,15 @@ function webkitapp(win)
     graphhopperSubMenu.append(new gui.MenuItem({ label: 'Calculate new graph' ,  enabled : false}));
     graphhopperSubMenu.append(new gui.MenuItem({ type: 'separator' ,  enabled : false }))
     graphhopperSubMenu.append(new gui.MenuItem({ label: 'Show available OSM data files' ,  enabled : false  }));
-    graphhopperSubMenu.append(new gui.MenuItem({ label: 'Download new OSM data file' }));
+    graphhopperSubMenu.append(new gui.MenuItem({ label: 'Download new OSM data file',
+        click: function() {
+            download("https://download.geofabrik.de/europe/liechtenstein-latest.osm.pbf", "graphhopper\\osmfiles\\liechtenstein-latest.osm.pbf",
+               function(err) {
+                   alert(err);
+               });
+        }
+    }));
+
     graphhopperSubMenu.append(new gui.MenuItem({ label: 'Delete OSM data file' ,  enabled : false  }));
 
     menu.append(

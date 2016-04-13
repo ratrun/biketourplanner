@@ -5,6 +5,7 @@ TODO.txt
 *.osm
 nbactions-*.xml
 config.properties
+!web/src/main/webapp/graphhopper/config.properties
 build.xml
 queries.sh
 maven/

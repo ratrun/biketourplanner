@@ -1,18 +1,3 @@
-[submodule "mbtiles-server"]
-	path = mbtiles-server
-	url = https://github.com/ratrun/mbtiles-server
-[submodule "ratrun-mbtiles-server"]
-	path = ratrun-mbtiles-server
-	url = https://github.com/ratrun/mbtiles-server
-[submodule "ratrunosmtogeojson"]
-	path = ratrunosmtogeojson
-	url = https://github.com/tyrasd/osmtogeojson
-[submodule "mytourbook/ratrunosmtogeojson"]
-	path = mytourbook/ratrunosmtogeojson
-	url = https://github.com/tyrasd/osmtogeojson
-[submodule "mytourplan/ratrunosmtogeojson"]
-	path = mytourplan/ratrunosmtogeojson
-	url = https://github.com/tyrasd/osmtogeojson
 [submodule "web/src/main/webapp/ratrun-mbtiles-server"]
 	path = web/src/main/webapp/ratrun-mbtiles-server
 	url = https://github.com/ratrun/mbtiles-server
