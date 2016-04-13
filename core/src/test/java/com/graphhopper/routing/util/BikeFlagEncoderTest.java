@@ -374,6 +374,7 @@ public class BikeFlagEncoderTest extends AbstractBikeFlagEncoderTester
     {
         OSMWay osmWay = new OSMWay(1);
         osmWay.setTag("highway", "secondary");
+        assertPriority(REACH_DEST.getValue(), osmWay);
 
         OSMRelation osmRel = new OSMRelation(1);
         osmRel.setTag("description", "something");
