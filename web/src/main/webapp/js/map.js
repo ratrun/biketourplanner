@@ -208,8 +208,11 @@ if (0 ===1)
         {
             if (currentZoom < layers_menu.childNodes[i].minzoom)
             {
-                layers_menu.childNodes[i].activeClassName = layers_menu.childNodes[i].className; // Save the current state 
-                layers_menu.childNodes[i].className = 'disabled';
+                if (layers_menu.childNodes[i].className !== 'disabled')
+                {
+                    layers_menu.childNodes[i].activeClassName = layers_menu.childNodes[i].className; // Save the current state 
+                    layers_menu.childNodes[i].className = 'disabled';
+                }
             }
             else
             {
@@ -423,8 +426,7 @@ module.exports.createMarker = function (index, coord, setToEnd, setToStart, dele
 function addOverlayLayer(name, id, minzoom) {
     var link = document.createElement('a');
     link.href = '#';
-    link.className = 'disabled';
-    link.activeClassName = '';
+    link.className = '';
     link.textContent = name;
     link.minzoom = minzoom;
 
@@ -448,7 +450,8 @@ function addOverlayLayer(name, id, minzoom) {
             }
         }
     };
-
+    
+    link.activeClassName = link.className;
     var layers_menu = document.getElementById('layer_menu');
     layers_menu.appendChild(link);
 }
