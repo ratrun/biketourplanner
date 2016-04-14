@@ -446,6 +446,11 @@ td img.pic {
     color: #ffffff;
 }
 
+#layer_menu a.disabled {
+    color: #404040;
+    opacity: 0.4;
+}
+
 #layer_menu a.active:hover {
     background: #00B946;
 }

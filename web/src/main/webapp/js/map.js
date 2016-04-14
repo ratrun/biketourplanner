@@ -70,10 +70,10 @@ function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selec
         loadingControl: false
     });
 
-    addLayer('Lodging', ['poi_lodging', 'poi_lodging_label']);
-    addLayer('Campsite', ['poi_campsites', 'poi_campsites_label']);
-    addLayer('Bicycle shop', [ 'poi_bicycle_shops', 'poi_label_bicycle_shops']);
-    addLayer('Drinking water', ['poi_drinking_water']);
+    addOverlayLayer('Lodging', ['poi_lodging', 'poi_lodging_label'], 8);
+    addOverlayLayer('Campsite', ['poi_campsites', 'poi_campsites_label'], 8);
+    addOverlayLayer('Bicycle shop', [ 'poi_bicycle_shops', 'poi_label_bicycle_shops'], 8);
+    addOverlayLayer('Drinking water', ['poi_drinking_water'], 8);
     
     var _startItem = {
         text: 'Set as start',
@@ -200,6 +200,25 @@ if (0 ===1)
     });
 }
 */
+
+    map.on('zoomend', function() {
+        var currentZoom = map.getZoom();
+        var layers_menu = document.getElementById('layer_menu');
+        for (var i=0; i<layers_menu.childNodes.length; i++)
+        {
+            if (currentZoom < layers_menu.childNodes[i].minzoom)
+            {
+                layers_menu.childNodes[i].activeClassName = layers_menu.childNodes[i].className; // Save the current state 
+                layers_menu.childNodes[i].className = 'disabled';
+            }
+            else
+            {
+                layers_menu.childNodes[i].className = layers_menu.childNodes[i].activeClassName;
+                layers_menu.childNodes[i].activeClassName = layers_menu.childNodes[i].className;
+            }
+        }
+    });
+
     L.control.scale().addTo(map);
 
     map.fitBounds(new L.LatLngBounds(new L.LatLng(bounds.minLat, bounds.minLon),
@@ -401,27 +420,32 @@ module.exports.createMarker = function (index, coord, setToEnd, setToStart, dele
             'Start' : ((toFrom === TO) ? 'End' : 'Intermediate ' + index)));
 };
 
-function addLayer(name, id) {
+function addOverlayLayer(name, id, minzoom) {
     var link = document.createElement('a');
     link.href = '#';
-    link.className = '';
+    link.className = 'disabled';
+    link.activeClassName = '';
     link.textContent = name;
+    link.minzoom = minzoom;
 
     link.onclick = function (e) {
         e.preventDefault();
         e.stopPropagation();
         
-        for (index = 0; index < id.length; ++index) {
-          var maplayer = tileLayers.activeLayer;
-          var visibility = maplayer._glMap.getLayoutProperty(id[index], 'visibility');
+        if (this.className !== 'disabled')
+        {
+            var maplayer = tileLayers.activeLayer;
+            for (index = 0; index < id.length; ++index) {
+              var visibility = maplayer._glMap.getLayoutProperty(id[index], 'visibility');
 
-          if (visibility === 'visible') {
-              maplayer._glMap.setLayoutProperty(id[index], 'visibility', 'none');
-              this.className = '';
-          } else {
-              this.className = 'active';
-              maplayer._glMap.setLayoutProperty(id[index], 'visibility', 'visible');
-          }
+              if (visibility === 'visible') {
+                  maplayer._glMap.setLayoutProperty(id[index], 'visibility', 'none');
+                  this.className = '';
+              } else {
+                  this.className = 'active';
+                  maplayer._glMap.setLayoutProperty(id[index], 'visibility', 'visible');
+              }
+            }
         }
     };
 
