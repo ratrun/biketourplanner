@@ -45,7 +45,7 @@ body {
     padding: 7px 5px;
 }
 
-#input, #instructions, #footer {
+#input, #instructions {
     width: 280px;
 }
 
@@ -195,19 +195,9 @@ body {
     width: 200px;
 }
 
-#footer {
-    position: fixed;
-    bottom: 5px;
-    left: 30px;
-}
-
-#hosting a, .footer-link {
+#hosting a {
     text-decoration: none;
     color: #00cc33;
-}
-.footer-link {
-    padding-right: 12px;
-    font-size: 12px;
 }
 
 #export-link {
@@ -392,19 +382,6 @@ td img.pic {
 
 .route_result_tab.current {
     display: block;    
-}
-
-#donate_form {
-    padding: 0;
-}
-
-#donate_form_button {
-    background: none;
-    border: none;
-    padding-left: 0px;
-    margin-top: 5px;
-    cursor: pointer;
-    float: left;
 }
 
 .input-ascend .input-niceLevel .input-alternativeRoutesMaxPaths label {
