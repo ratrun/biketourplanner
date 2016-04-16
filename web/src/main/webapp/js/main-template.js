@@ -162,8 +162,11 @@ $(document).ready(function (e) {
                      mapLayer.initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, urlParams.layer);
                 }, 100);
 
-                // execute query
-                initFromParams(urlParams, true);
+                setTimeout(function(){ 
+                     // execute query
+                     initFromParams(urlParams, true);
+                }, 1000);
+
             }, function (err) {
                 log(err);
                 $('#error').html('GraphHopper API offline? <a href="http://graphhopper.com/maps">Refresh</a>' + '<br/>Status: ' + err.statusText + '<br/>' + 'host=' + host);
