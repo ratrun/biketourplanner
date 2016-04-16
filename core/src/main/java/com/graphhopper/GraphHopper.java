@@ -1053,6 +1053,13 @@ public class GraphHopper implements GraphHopperAPI
         if (vehicle.isEmpty())
             vehicle = getDefaultVehicle().toString();
 
+        // Switch from racebike to bike with avoidUnpaved for nicelevels >=4
+        if ((vehicle == "racingbike") && (request.getHints().getDouble("niceLevel", 1.0)>=4))
+        {
+            vehicle = "bike";
+            request.getHints().put("avoidUnpaved", true);
+        }
+
         if (!encodingManager.supports(vehicle))
         {
             ghRsp.addError(new IllegalArgumentException("Vehicle " + vehicle + " unsupported. "
@@ -1090,7 +1097,16 @@ public class GraphHopper implements GraphHopperAPI
             weighting = getWeightingForCH(request.getHints(), encoder);
             routingGraph = ghStorage.getGraph(CHGraph.class, weighting);
         } else
+        {
+            // Propagate avoidUnpaved to bike encoders - 
+            // Note: This is not nice, but currently there does not seem to be another way to 
+            // dynamically pass parameters to specific encoders, this is possible aonly for weightings 
             weighting = createWeighting(request.getHints(), encoder);
+            if ( (vehicle == "bike") || (vehicle == "mountainbike"))
+            {
+               ((BikeCommonFlagEncoder) encoder).setAvoidUnpaved(request.getHints().getBool("avoidUnpaved", false));
+            }
+        }
 
         RoutingAlgorithmFactory tmpAlgoFactory = getAlgorithmFactory(weighting);
         QueryGraph queryGraph = new QueryGraph(routingGraph);

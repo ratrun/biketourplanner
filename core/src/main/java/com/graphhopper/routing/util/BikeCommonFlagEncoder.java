@@ -62,6 +62,9 @@ public class BikeCommonFlagEncoder extends AbstractFlagEncoder
     // Car speed limit which switches the preference from UNCHANGED to AVOID_IF_POSSIBLE
     private int avoidSpeedLimit;
 
+    // Flag to avoid any unpaved section
+    private boolean avoidUnpaved = false;
+
     // This is the specific bicycle class
     private String specificBicycleClass;
 
@@ -451,10 +454,6 @@ public class BikeCommonFlagEncoder extends AbstractFlagEncoder
         return new InstructionAnnotation(0, wayName, wayType, paveType==0);
     }
 
-    public boolean isPaved( long flags)
-    {
-        return ((flags & unpavedBit) != 0);
-    }
 
     String getWayName( int pavementType, int wayType, Translation tr )
     {
@@ -676,7 +675,12 @@ public class BikeCommonFlagEncoder extends AbstractFlagEncoder
         switch (key)
         {
             case PriorityWeighting.KEY:
-                return (double) priorityWayEncoder.getValue(flags) / BEST.getValue();
+            {
+                if ((this.avoidUnpaved) && (isBool(flags, K_UNPAVED)))
+                   return (double) priorityWayEncoder.getValue(flags) / BEST.getValue() / 5; // decrease weighting by factor 5
+                else
+                   return (double) priorityWayEncoder.getValue(flags) / BEST.getValue();
+            }
             default:
                 return super.getDouble(flags, key);
         }
@@ -787,4 +791,11 @@ public class BikeCommonFlagEncoder extends AbstractFlagEncoder
     {
         specificBicycleClass = "class:bicycle:" + subkey;
     }
+
+    // Set flag for avoidance of unpaved edges
+    public void setAvoidUnpaved( boolean flag)
+    {
+        this.avoidUnpaved = flag;
+    }
+
 }

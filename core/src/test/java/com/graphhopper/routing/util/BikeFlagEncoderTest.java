@@ -425,6 +425,21 @@ public class BikeFlagEncoderTest extends AbstractBikeFlagEncoderTester
         osmWay.setTag("highway", "somethingelse");
         flags = encoder.handleWayTags(osmWay, allowed, 0);
         assertEquals((double) UNCHANGED.getValue() / BEST.getValue(), encoder.getDouble(flags, PriorityWeighting.KEY), 1e-3);
+
+        encoder.setAvoidUnpaved(true);
+        osmWay.setTag("highway", "primary");
+        assertEquals((double) UNCHANGED.getValue() / BEST.getValue(), encoder.getDouble(flags, PriorityWeighting.KEY), 1e-3);
+        flags = encoder.handleWayTags(osmWay, allowed, 0);
+        assertEquals(false,encoder.isBool(flags, encoder.K_UNPAVED));
+
+        osmWay = new OSMWay(1);
+        osmWay.setTag("highway", "track");
+        osmWay.setTag("surface", "unpaved");
+        flags = encoder.handleWayTags(osmWay, allowed, 0);
+        assertEquals(true,encoder.isBool(flags, encoder.K_UNPAVED));
+        // decreased weighting by factor 5
+        assertEquals( (double) UNCHANGED.getValue() / BEST.getValue(), 5 * encoder.getDouble(flags, PriorityWeighting.KEY), 1e-3);
+        encoder.setAvoidUnpaved(false);
     }
 
     @Test
