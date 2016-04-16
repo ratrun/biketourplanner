@@ -103,6 +103,7 @@ module.exports.setActivelayer = function (layerEvent)
     {
        layerEvent.layer.options.style.sources.mapbox.tiles[0] = styleTileURL[layerEvent.name]; 
        module.exports.activeLayer = availableVectorTileLayers[layerEvent.name];
+       localStorage['lastlayerName'] = layerEvent.name;
     }
 }
 
@@ -147,8 +148,10 @@ module.exports.setHost = function (hostname) {
                                           style: stylejsonObj
                                        });
                 availableVectorTileLayers[layerName] = vectorlayer;
-                // FIXME persist a default vector layer name
-                if (layerName === "Vector Austria") // Select the default
+                lastlayerName = localStorage.lastlayerName;
+                if (lastlayerName === undefined)
+                    lastlayerName = layerName;
+                if (layerName === lastlayerName) // Select the default
                 {
                     module.exports.activeLayerName = layerName;
                     module.exports.defaultLayer = vectorlayer;
