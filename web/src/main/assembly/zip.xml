@@ -13,6 +13,10 @@
             <includes>
                 <include>webapp/**</include>
             </includes>
+            <excludes>
+                <exclude>webapp/ratrun-mbtiles-server/**</exclude>
+                <exclude>webapp/node_modules/**</exclude>                
+            </excludes>
         </fileSet>
         <fileSet>
             <directory>${project.basedir}/..</directory>
