@@ -384,27 +384,37 @@ td img.pic {
     display: block;    
 }
 
-.input-ascend .input-niceLevel .input-alternativeRoutesMaxPaths label {
+.input-ascend .input-niceLevel .input-roundtrip .input-alternativeRoutesMaxPaths label {
     display: inline-block;
+    font-size: smaller;
     vertical-align: middle;
 }
 
-.ui-slider-ascend .ui-slider-niceLevel .ui-slider-alternativeRoutesMaxPaths { 
+.ui-slider-ascend .ui-slider-niceLevel .ui-input-roundtrip .ui-slider-alternativeRoutesMaxPaths { 
     background: transparent;
+}
+
+#roundtripcontrol{
+    display: none;
+    font-size: smaller;
+    visibility: hidden;
 }
 
 #ascendcontrol{
     display: none;
+    font-size: smaller;
     visibility: hidden;
 }
 
 #niceLevelcontrol{
     display: none;
+    font-size: smaller;
     visibility: hidden;
 }
 
 #alternativeRoutecontrol{
     display: none;
+    font-size: smaller;
     visibility: hidden;
 }
 
