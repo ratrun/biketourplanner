@@ -2085,8 +2085,8 @@
                 "text-halo-blur": 0.5
             }
         },
-        {
-            "id": "poi_bicycle_shops",
+        {
+            "id": "poi_alpine_hut",
             "type": "symbol",
             "source": "bicyclenodes",
             "source-layer": "bicyclenodes",
@@ -2099,18 +2099,18 @@
                 ],
                 [
                     "==",
-                    "shop",
-                    "bicycle"
+                    "tourism",
+                    "alpine_hut"
                 ]
             ],
             "minzoom": 7,
             "layout": {
-                "icon-image": "bicycle-shop-12",
+                "icon-image": "building-12",
                 "visibility": "none"
             }
         },
         {
-            "id": "poi_label_bicycle_shops",
+            "id": "poi_label_alpine_hut",
             "type": "symbol",
             "source": "bicyclenodes",
             "source-layer": "bicyclenodes",
@@ -2123,13 +2123,13 @@
                 ],
                 [
                     "==",
-                    "shop",
-                    "bicycle"
+                    "tourism",
+                    "alpine_hut"
                 ]
             ],
             "minzoom": 12,
             "layout": {
-                "icon-image": "bicycle-shop-18",
+                "icon-image": "building-18",
                 "text-font": [
                     "Open Sans Semibold"
                 ],
@@ -2151,6 +2151,72 @@
                 "text-halo-blur": 0.5
             }
         },
+        {
+            "id": "poi_bicycle_shops",
+            "type": "symbol",
+            "source": "bicyclenodes",
+            "source-layer": "bicyclenodes",
+            "filter": [
+                "all",
+                [
+                    "==",
+                    "$type",
+                    "Point"
+                ],
+                [
+                    "==",
+                    "shop",
+                    "bicycle"
+                ]
+            ],
+            "minzoom": 7,
+            "layout": {
+                "icon-image": "bicycle-shop-12",
+                "visibility": "none"
+            }
+        },
+        {
+            "id": "poi_label_bicycle_shops",
+            "type": "symbol",
+            "source": "bicyclenodes",
+            "source-layer": "bicyclenodes",
+            "filter": [
+                "all",
+                [
+                    "==",
+                    "$type",
+                    "Point"
+                ],
+                [
+                    "==",
+                    "shop",
+                    "bicycle"
+                ]
+            ],
+            "minzoom": 12,
+            "layout": {
+                "icon-image": "bicycle-shop-18",
+                "text-font": [
+                    "Open Sans Semibold"
+                ],
+                "text-field": "{name}",
+                "text-max-width": 9,
+                "text-padding": 2,
+                "text-offset": [
+                    0,
+                    0.6
+                ],
+                "text-anchor": "top",
+                "text-size": 12,
+                "visibility": "none"
+            },
+            "paint": {
+                "text-color": "#666",
+                "text-halo-color": "#ffffff",
+                "text-halo-width": 1,
+                "text-halo-blur": 0.5
+            }
+        },
         {
             "id": "poi_drinking_water",
             "type": "symbol",

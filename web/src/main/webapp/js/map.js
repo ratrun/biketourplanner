@@ -73,6 +73,7 @@ function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selec
     addOverlayLayer('Lodging', ['poi_lodging', 'poi_lodging_label'], 8);
     addOverlayLayer('Campsite', ['poi_campsites', 'poi_campsites_label'], 8);
     addOverlayLayer('Bicycle shop', [ 'poi_bicycle_shops', 'poi_label_bicycle_shops'], 8);
+    addOverlayLayer('Alpine hut', [ 'poi_alpine_hut', 'poi_label_alpine_hut'], 8);
     addOverlayLayer('Drinking water', ['poi_drinking_water'], 8);
     
     var _startItem = {
@@ -138,7 +139,7 @@ function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selec
        {
            var pointarr = [e.containerPoint.x, e.containerPoint.y];
            // see https://www.mapbox.com/mapbox-gl-js/example/queryrenderedfeatures/
-           var features = maplayer._glMap.queryRenderedFeatures(pointarr, {layers: ['poi_lodging', 'poi_lodging_label', 'poi_campsites', 'poi_campsites_label', 'poi_bicycle_shops', 'poi_label_bicycle_shops' ]});
+           var features = maplayer._glMap.queryRenderedFeatures(pointarr, {layers: ['poi_lodging', 'poi_lodging_label', 'poi_campsites', 'poi_campsites_label', 'poi_bicycle_shops', 'poi_label_bicycle_shops', 'poi_alpine_hut', 'poi_label_alpine_hut' ]});
 
            if ( features.length !==0 )
            {
