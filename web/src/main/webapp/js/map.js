@@ -450,9 +450,9 @@ function addOverlayLayer(name, id, minzoom) {
               }
             }
         }
+        link.activeClassName = link.className;
     };
     
-    link.activeClassName = link.className;
     var layers_menu = document.getElementById('layer_menu');
     layers_menu.appendChild(link);
 }
