@@ -43,11 +43,19 @@ public abstract class AbstractAdjustedWeighting implements Weighting
         return superWeighting.getFlagEncoder();
     }
 
+    /*
     @Override
     public boolean matches( String weightingAsStr, FlagEncoder encoder )
     {
         return getName().equals(weightingAsStr) && encoder == superWeighting.getFlagEncoder();
     }
+    */
 
+    @Override
+    public boolean matches( HintsMap reqMap )
+    {
+        return getName().equals(reqMap.getWeighting()) && superWeighting.getFlagEncoder().toString().equals(reqMap.getVehicle());
+    }
+    
 }
 
