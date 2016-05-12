@@ -9,7 +9,7 @@ function startLocalVectorTileServer(win)
     var tilesServerHasExited = false;
     // On Windows Only ...
     const exec = global.require('child_process').spawn;
-    mbtiles = exec('node' , ['server.js'], {
+    mbtiles = exec('../node.exe' , ['server.js'], {
        cwd: 'ratrun-mbtiles-server',
        detached: true
     });
