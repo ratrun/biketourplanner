@@ -17,24 +17,26 @@
  */
 package com.graphhopper.routing.util.tour;
 
+import java.util.Random;
+
 /**
- * Generate a single points tour with a bearing
+ * Generate a single points tour with a heading
  *
  * @author ratrun
  */
-public class SinglePointBearingTour extends SinglePointTour
+public class SinglePointHeadingTour extends SinglePointTour
 {
-    private double bearing;
+    private double heading;
      
-    public SinglePointBearingTour( double overallDistance, double bearing )
+    public SinglePointHeadingTour( Random random, double overallDistance, double heading )
     {
-        super(overallDistance);
-        this.bearing = bearing;
+        super(random, overallDistance);
+        this.heading = heading;
     }
 
     @Override
-    double getBearingForIteration( int iteration )
+    public double getHeadingForIteration( int iteration )
     {
-        return bearing + random.nextInt(30);
+        return heading + random.nextInt(30);
     }
 }

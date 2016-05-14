@@ -17,6 +17,8 @@
  */
 package com.graphhopper.routing.util.tour;
 
+import java.util.Random;
+
 /**
  * Generate only a single points
  *
@@ -24,15 +26,13 @@ package com.graphhopper.routing.util.tour;
  */
 public class SinglePointTour extends TourStrategy
 {
-
-
-    public SinglePointTour( double overallDistance )
+    public SinglePointTour( Random random, double distanceInMeter )
     {
-        super(overallDistance);
+        super(random, distanceInMeter);
     }
 
     @Override
-    public int numberOfGeneratedPoints()
+    public int getNumberOfGeneratedPoints()
     {
         return 1;
     }
@@ -44,7 +44,7 @@ public class SinglePointTour extends TourStrategy
     }
 
     @Override
-    double getBearingForIteration( int iteration )
+    public double getHeadingForIteration( int iteration )
     {
         return random.nextInt(360);
     }

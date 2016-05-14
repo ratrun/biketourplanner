@@ -563,24 +563,24 @@ public class GraphHopperIT
         tmpHopper.close();
     }
 
-    @Test
+@Test
     public void testRoundTour()
     {
         GHRequest rq = new GHRequest().
                 addPoint(new GHPoint(43.741069, 7.426854)).
-                addPoint(new GHPoint(43.741069, 7.426854)).
                 setVehicle(vehicle).setWeighting("fastest").
-                setAlgorithm("roundTrip")
-                ;
-        rq.getHints().put("round_trip.distance", 1);
+                setAlgorithm(AlgorithmOptions.ROUND_TRIP);
+        rq.getHints().put("round_trip.distance", 1000);
+        rq.getHints().put("round_trip.seed", 0);
+
         GHResponse rsp = hopper.route(rq);
-
-        for (PathWrapper altRsp: rsp.getAll()){
-            assertTrue(altRsp.getPoints().size() > 2);
-        }
+ 
+        assertEquals(1, rsp.getAll().size());
+        PathWrapper pw = rsp.getBest();
+        assertEquals(14, rsp.getBest().getTime() / 1000f / 60, 1);
+        assertEquals(68, pw.getPoints().size());
     }
-
-    @Test
+    
     public void testFlexMode_631()
     {
         String tmpOsmFile = "files/monaco.osm.gz";

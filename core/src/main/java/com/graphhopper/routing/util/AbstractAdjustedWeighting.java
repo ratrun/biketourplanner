@@ -24,7 +24,6 @@ package com.graphhopper.routing.util;
  */
 public abstract class AbstractAdjustedWeighting implements Weighting
 {
-
     protected final Weighting superWeighting;
 
     public AbstractAdjustedWeighting( Weighting superWeighting )
@@ -43,19 +42,16 @@ public abstract class AbstractAdjustedWeighting implements Weighting
         return superWeighting.getFlagEncoder();
     }
 
-    /*
-    @Override
-    public boolean matches( String weightingAsStr, FlagEncoder encoder )
-    {
-        return getName().equals(weightingAsStr) && encoder == superWeighting.getFlagEncoder();
-    }
-    */
-
     @Override
     public boolean matches( HintsMap reqMap )
     {
-        return getName().equals(reqMap.getWeighting()) && superWeighting.getFlagEncoder().toString().equals(reqMap.getVehicle());
+        return getName().equals(reqMap.getWeighting())
+                && superWeighting.getFlagEncoder().toString().equals(reqMap.getVehicle());
     }
-    
-}
 
+    @Override
+    public String toString()
+    {
+        return getName() + "|" + superWeighting.toString();
+    }
+}

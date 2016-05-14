@@ -707,8 +707,8 @@ $(function() {
       change: function( event, ui ) {
         if ($(this).spinner('value') > 0)
         {
-           ghRequest.api_params.algorithm = "roundtrip";
-           ghRequest.api_params.round_trip.distance = $(this).spinner('value');
+           ghRequest.api_params.algorithm = "roundTrip";
+           ghRequest.api_params.round_trip.distance = 1000 * $(this).spinner('value');
            //routeLatLng(ghRequest, false);
         }
       }
@@ -716,15 +716,15 @@ $(function() {
 });
 
 $(function() {
-    $( "#roundtripbearing" ).spinner({
+    $( "#roundtripheading" ).spinner({
       min: 0.0,
       max: 360.0,
       step: 20.0,
       change: function( event, ui ) {
         if ($(this).spinner('value') > 0)
         {
-           ghRequest.api_params.algorithm = "roundtrip";
-           ghRequest.api_params.round_trip.bearing = $(this).spinner('value');
+           ghRequest.api_params.algorithm = "roundTrip";
+           ghRequest.api_params.round_trip.heading = $(this).spinner('value');
            //routeLatLng(ghRequest, false);
         }
       }
@@ -741,7 +741,7 @@ $(function() {
         $( "#alternativeRoutesMaxPaths" ).val( ui.value );
         if (ui.value > 1)
         {
-            ghRequest.api_params.algorithm = "alternativeroute";
+            ghRequest.api_params.algorithm = "alternativeRoute";
             ghRequest.api_params.alternative_route.max_paths = ui.value;
         }
         else

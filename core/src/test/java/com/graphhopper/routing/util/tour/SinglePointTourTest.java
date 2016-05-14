@@ -17,29 +17,27 @@
  */
 package com.graphhopper.routing.util.tour;
 
+import java.util.Random;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
-
 
 /**
  * @author Robin Boldt
  */
 public class SinglePointTourTest
 {
-
     @Test
-    public void testBasics(){
+    public void testBasics()
+    {
+        SinglePointTour tour = new SinglePointTour(new Random(0), 100);
+        assertEquals(1, tour.getNumberOfGeneratedPoints());
 
-        SinglePointTour tour = new SinglePointTour(100);
-        assertEquals(1, tour.numberOfGeneratedPoints());
-
-        assertTrue(0 <= tour.getBearingForIteration(0));
-        assertTrue(360 >= tour.getBearingForIteration(0));
+        assertTrue(0 <= tour.getHeadingForIteration(0));
+        assertTrue(360 >= tour.getHeadingForIteration(0));
 
         assertTrue(29 <= tour.getDistanceForIteration(0));
         assertTrue(37 >= tour.getDistanceForIteration(0));
     }
-
 }
