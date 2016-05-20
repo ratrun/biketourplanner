@@ -10,13 +10,30 @@
         <param name="BufferSize" value="500"/>
         <appender-ref ref="stdout"/>
     </appender>   
+    <appender name="R" class="org.apache.log4j.RollingFileAppender"> 
+      <param name="file" value="graphhopperratrun.log"/>
+      <param name="MaxFileSize" value="100KB"/>
+      <!-- Keep one backup file -->
+      <param name="MaxBackupIndex" value="1"/>
+      <layout class="org.apache.log4j.PatternLayout"> 
+        <param name="ConversionPattern" value="%p %t %c - %m%n"/> 
+      </layout> 
+    </appender>
+    <!--
     <logger name="com.graphhopper" additivity="false">
         <level value="info" />
         <appender-ref ref="ASYNC" />
     </logger>
+    -->
+    <logger name="graphhopperratrun" additivity="false">
+        <level value="info" />
+        <appender-ref ref="R" />
+    </logger>
+
     <!-- order important otherwise we'll get a warning -->
     <root>
-        <priority value="warn"></priority>
-        <appender-ref ref="ASYNC"/>
+        <priority value="info"></priority>
+        <appender-ref ref="R"/>
     </root>
+
 </log4j:configuration>

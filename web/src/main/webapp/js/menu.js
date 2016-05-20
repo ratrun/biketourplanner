@@ -1,19 +1,28 @@
 var mbtiles;
+var graphhopper;
 
 var stopTileServerMenuItem;
 var startTileServerMenuItem;
+var stopGraphhopperServerMenuItem;
+var startGraphhopperServerMenuItem;
+
 var aboutWindow = null;
+var tilesServerHasExited;
+var graphhopperServerHasExited;
+var shutdownapp = false;
 
 function startLocalVectorTileServer(win)
 {
-    var tilesServerHasExited = false;
+    tilesServerHasExited = false;
     // On Windows Only ...
-    const exec = global.require('child_process').spawn;
+    var exec = global.require('child_process').spawn;
     mbtiles = exec('../node.exe' , ['server.js'], {
        cwd: 'ratrun-mbtiles-server',
-       detached: true
+       detached: false
     });
-    mbtiles.unref();
+    
+    stopTileServerMenuItem.enabled = true;
+    startTileServerMenuItem.enabled = false;
 
     console.log('mbtiles started: ' + mbtiles);
         
@@ -52,28 +61,93 @@ function startLocalVectorTileServer(win)
         }, 500);
     });
     
+    mbtiles.on('uncaughtException', function (err) {
+      console.log('Caught exception: ' + err);
+    });
+}
+
+function startGraphhopperServer(win)
+{
+    console.log('Starting graphhopper');
+    // On Windows Only 
+    var exec = global.require('child_process').spawn;
+    graphhopper = exec('java.exe' , ['-Xmx1500m', '-Xms1500m', '-jar', 'graphhopper-web-0.7-SNAPSHOT-with-dep.jar', 'jetty.resourcebase=../', 'jetty.port=8989', 'config=config.properties', 'osmreader.osm=osmfiles/liechtenstein-latest.osm.pbf', 'graph.location=graph'], {
+       cwd: 'graphhopper',
+       detached: false
+    });
+
+    console.log('graphhopper started: ' + graphhopper);
+    graphhopperServerHasExited = false;
+    stopGraphhopperServerMenuItem.enabled = true;
+    startGraphhopperServerMenuItem.enabled = false;
+
+    graphhopper.on('error', function (err) {
+      console.log('graphhopper error' + err);
+    });
+
+    graphhopper.stdout.on('data', function (data) {
+        console.log('graphhopper stdout: ' + data);
+    });
+
+    graphhopper.stderr.on('data', function (data) {
+        console.log('graphhopper stderr: ' + data);
+    });
+
+    graphhopper.on('close', function (code) {
+        console.log('graphhopper child process closed with code ' + code);
+    });
+
+    graphhopper.on('exit', function (code, signal) {
+        console.log('graphhopper child process exited with code ' + code +' signal=' + signal);
+        graphhopperServerHasExited = true;
+        if (shutdownapp)
+        {
+            setTimeout(function(){ 
+                  if (signal === 'SIGTERM')
+                    this.close(true);
+            }, 500);
+        }
+    });
+
     win.on('close', function() {
         this.hide(); // Pretend to be closed already
-        if (tilesServerHasExited)
+        shutdownapp = true;
+        if ((tilesServerHasExited) && (graphhopperServerHasExited))
         {
             if (aboutWindow != null)
                 aboutWindow.close(true);
             this.close(true);
         }
         else
-        {   // Inform the tile server via SIGINT to close
-            var res = mbtiles.kill('SIGINT');
-            console.log("Guiwindow.on exit kill SIGINT returned:" + res);
-            setTimeout(function(){ 
-                console.log("Wait for second close");
-            }, 500);
+        {
+           stopLocalVectorTileServer();
+           stopGraphhopperServer();
         }
     });
-    
-    mbtiles.on('uncaughtException', function (err) {
+
+    graphhopper.on('uncaughtException', function (err) {
       console.log('Caught exception: ' + err);
     });
+}
 
+function stopLocalVectorTileServer()
+{
+  if (!tilesServerHasExited)
+  {   // Inform the tile server via SIGINT to close
+      var res = mbtiles.kill('SIGINT');
+      console.log("mbtiles kill SIGINT returned:" + res);
+  }
+}
+
+function stopGraphhopperServer()
+{
+  if (!graphhopperServerHasExited)
+  {   // Inform the graphhopper server to close
+      stopGraphhopperServerMenuItem.enabled = false;
+      startGraphhopperServerMenuItem.enabled = true;
+      var res = graphhopper.kill('SIGTERM');
+      console.log("graphhopper kill SIGTERM returned:" + res);
+  }
 }
 
 var download = function(url, dest, cb) {
@@ -111,10 +185,10 @@ var download = function(url, dest, cb) {
         }
     });
 };
+
 // Here we define the functionality for the graphhopper webkit application
 function webkitapp(win)
 {
-    startLocalVectorTileServer(win);
     var menu = new gui.Menu({type: "menubar"});
 
     // Create a sub-menu
@@ -122,7 +196,7 @@ function webkitapp(win)
     mapSubMenu.append(new gui.MenuItem({ label: 'Show installed maps',
         click: function() { 
                              $.getJSON("http://127.0.0.1:3000/mbtilesareas.json", function( data ) {
-                                    alert("Installed map: " + JSON.stringify(data))
+                                    alert("Installed maps: \n" + JSON.stringify(data).replace(/{\"country\"\:\"/g,'').replace(/\"}/g,''));
                              });
                           }
     }));
@@ -135,22 +209,23 @@ function webkitapp(win)
                );
         }
     }));
-    stopTileServerMenuItem = new gui.MenuItem({ label: 'Stop tile server',
+    stopTileServerMenuItem = new gui.MenuItem({ label: 'Stop tile server', enabled : tilesServerHasExited ,
         click: function() { 
                              console.log("Stop tile server clicked");
                              $.getJSON("http://127.0.0.1:3000/4cede326-7166-4cbd-994f-699c6dc271e9", function( data ) {
                                     console.log("Tile server stop response was" + data);
                              });
+                             startTileServerMenuItem.enabled = true;
+                             stopTileServerMenuItem.enabled = false;
                            }
     });
-    startTileServerMenuItem = new gui.MenuItem({ label: 'Start tile server', enabled : false , 
+    startTileServerMenuItem = new gui.MenuItem({ label: 'Start tile server', enabled : !tilesServerHasExited , 
         click: function() { 
                              startLocalVectorTileServer(win);
                              this.enabled = false;
-                             stopTileServerMenuItem.enabled = true;
                           }
     });
-    mapSubMenu.append(stopTileServerMenuItem);    
+    mapSubMenu.append(stopTileServerMenuItem);
     mapSubMenu.append(startTileServerMenuItem);
     
     menu.append(
@@ -160,12 +235,29 @@ function webkitapp(win)
         })
     );
 
-    var graphhopperSubMenu = new gui.Menu();
+    var graphhopperSubMenu = new gui.Menu()
+    var win = gui.Window.get();
+
+    stopGraphhopperServerMenuItem = new gui.MenuItem({ label: 'Stop Graphhopper server', enabled : graphhopperServerHasExited , 
+        click: function() { 
+                             console.log('Stop Graphhopper server clicked');
+                             stopGraphhopperServer();
+                           }
+    });
+    startGraphhopperServerMenuItem = new gui.MenuItem({ label: 'Start Graphhopper server', enabled : !graphhopperServerHasExited , 
+        click: function() {  console.log('Start Graphhopper server clicked');
+                             startGraphhopperServer(win);
+                             this.enabled = false;
+                          }
+    });
+    graphhopperSubMenu.append(stopGraphhopperServerMenuItem);
+    graphhopperSubMenu.append(startGraphhopperServerMenuItem);
+    graphhopperSubMenu.append(new gui.MenuItem({ type: 'separator' , enabled : false }))
     graphhopperSubMenu.append(new gui.MenuItem({ label: 'Change active graph' ,  enabled : false} ));
-    graphhopperSubMenu.append(new gui.MenuItem({ type: 'separator' ,  enabled : false }))
+    graphhopperSubMenu.append(new gui.MenuItem({ type: 'separator' , enabled : false }))
     // graphhopperSubMenu.append(new gui.MenuItem({ label: 'Change graph settings', enabled : false }));
     graphhopperSubMenu.append(new gui.MenuItem({ label: 'Calculate new graph' ,  enabled : false}));
-    graphhopperSubMenu.append(new gui.MenuItem({ type: 'separator' ,  enabled : false }))
+    graphhopperSubMenu.append(new gui.MenuItem({ type: 'separator' , enabled : false }))
     graphhopperSubMenu.append(new gui.MenuItem({ label: 'Show available OSM data files' ,  enabled : false  }));
     graphhopperSubMenu.append(new gui.MenuItem({ label: 'Download new OSM data file',
         click: function() {
@@ -220,6 +312,10 @@ function webkitapp(win)
 
         // Append Menu to Window
     gui.Window.get().menu = menu;
+
+    startLocalVectorTileServer(win);
+    startGraphhopperServer(win);
+
 }
 
 // Test if we are running under nwjs. If so the window.require('nw.gui'); command succeeds, otherwise we get an exception
