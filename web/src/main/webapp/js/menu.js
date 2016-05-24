@@ -134,8 +134,10 @@ function stopLocalVectorTileServer()
 {
   if (!tilesServerHasExited)
   {   // Inform the tile server via SIGINT to close
-      var res = mbtiles.kill('SIGINT');
-      console.log("mbtiles kill SIGINT returned:" + res);
+      var res = mbtiles.kill('SIGTERM');
+      console.log("mbtiles kill SIGTERM returned:" + res);
+      stopTileServerMenuItem.enabled = false;
+      startTileServerMenuItem.enabled = true;
   }
 }
 
@@ -193,6 +195,7 @@ function webkitapp(win)
 
     // Create a sub-menu
     var mapSubMenu = new gui.Menu();
+    var separator = new gui.MenuItem({ type: 'separator' , enabled : false });
     mapSubMenu.append(new gui.MenuItem({ label: 'Show installed maps',
         click: function() { 
                              $.getJSON("http://127.0.0.1:3000/mbtilesareas.json", function( data ) {
@@ -200,15 +203,17 @@ function webkitapp(win)
                              });
                           }
     }));
-    mapSubMenu.append(new gui.MenuItem({ label: 'Add map',
+    mapSubMenu.append(new gui.MenuItem({ label: 'Add map: Fixme',
         click: function() {
-               download("https://osm2vectortiles-downloads.os.zhdk.cloud.switch.ch/v1.0/extracts/liechtenstein.mbtiles", "ratrun-mbtiles-server\\liechtenstein.mbtiles",
+        	     stopLocalVectorTileServer();
+               download("https://osm2vectortiles-downloads.os.zhdk.cloud.switch.ch/v2.0/extracts/liechtenstein.mbtiles", "ratrun-mbtiles-server\\liechtenstein.mbtiles",
                function(err) {
                    alert(err);
                }
                );
         }
     }));
+    mapSubMenu.append(new gui.MenuItem({ label: 'Delete map: Fixme' , enabled : false }));
     stopTileServerMenuItem = new gui.MenuItem({ label: 'Stop tile server', enabled : tilesServerHasExited ,
         click: function() { 
                              console.log("Stop tile server clicked");
@@ -225,6 +230,7 @@ function webkitapp(win)
                              this.enabled = false;
                           }
     });
+    mapSubMenu.append(separator);
     mapSubMenu.append(stopTileServerMenuItem);
     mapSubMenu.append(startTileServerMenuItem);
     
@@ -250,16 +256,13 @@ function webkitapp(win)
                              this.enabled = false;
                           }
     });
-    graphhopperSubMenu.append(stopGraphhopperServerMenuItem);
-    graphhopperSubMenu.append(startGraphhopperServerMenuItem);
-    graphhopperSubMenu.append(new gui.MenuItem({ type: 'separator' , enabled : false }))
-    graphhopperSubMenu.append(new gui.MenuItem({ label: 'Change active graph' ,  enabled : false} ));
-    graphhopperSubMenu.append(new gui.MenuItem({ type: 'separator' , enabled : false }))
+    graphhopperSubMenu.append(new gui.MenuItem({ label: 'Change active graph: Fixme' ,  enabled : false} ));
+    graphhopperSubMenu.append(separator);
     // graphhopperSubMenu.append(new gui.MenuItem({ label: 'Change graph settings', enabled : false }));
-    graphhopperSubMenu.append(new gui.MenuItem({ label: 'Calculate new graph' ,  enabled : false}));
+    graphhopperSubMenu.append(new gui.MenuItem({ label: 'Calculate new graph: Fixme' ,  enabled : false}));
     graphhopperSubMenu.append(new gui.MenuItem({ type: 'separator' , enabled : false }))
-    graphhopperSubMenu.append(new gui.MenuItem({ label: 'Show available OSM data files' ,  enabled : false  }));
-    graphhopperSubMenu.append(new gui.MenuItem({ label: 'Download new OSM data file',
+    graphhopperSubMenu.append(new gui.MenuItem({ label: 'Show available OSM data files: Fixme' , enabled : false }));
+    graphhopperSubMenu.append(new gui.MenuItem({ label: 'Download new OSM data file: Fixme',
         click: function() {
             download("https://download.geofabrik.de/europe/liechtenstein-latest.osm.pbf", "graphhopper\\osmfiles\\liechtenstein-latest.osm.pbf",
                function(err) {
@@ -268,7 +271,10 @@ function webkitapp(win)
         }
     }));
 
-    graphhopperSubMenu.append(new gui.MenuItem({ label: 'Delete OSM data file' ,  enabled : false  }));
+    graphhopperSubMenu.append(new gui.MenuItem({ label: 'Delete OSM data file' , enabled : false }));
+    graphhopperSubMenu.append(separator);
+    graphhopperSubMenu.append(stopGraphhopperServerMenuItem);
+    graphhopperSubMenu.append(startGraphhopperServerMenuItem);
 
     menu.append(
         new gui.MenuItem({
@@ -279,8 +285,8 @@ function webkitapp(win)
 
     // Create the help sub-menu
     var helpSubMenu = new gui.Menu();
-    helpSubMenu.append(new gui.MenuItem({ label: 'Info' ,  enabled : false}));
-    helpSubMenu.append(new gui.MenuItem({ type: 'separator' ,  enabled : false }));
+    helpSubMenu.append(new gui.MenuItem({ label: 'Help: Fixme' ,  enabled : false}));
+    helpSubMenu.append(separator);
     helpSubMenu.append(new gui.MenuItem({ label: 'About' ,
         click: function() {
                             var params = {toolbar: false, resizable: false, show: true, height: 270, width: 450};
@@ -305,7 +311,7 @@ function webkitapp(win)
     
         menu.append(
         new gui.MenuItem({
-            label: 'About',
+            label: 'Help',
             submenu: helpSubMenu
         })
     );
