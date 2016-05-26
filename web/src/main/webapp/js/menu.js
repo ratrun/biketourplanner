@@ -7,9 +7,10 @@ var stopGraphhopperServerMenuItem;
 var startGraphhopperServerMenuItem;
 
 var aboutWindow = null;
-var tilesServerHasExited;
-var graphhopperServerHasExited;
+var tilesServerHasExited = true;
+var graphhopperServerHasExited = true;
 var shutdownapp = false;
+var fs = global.require('fs');
 
 function startLocalVectorTileServer(win)
 {
@@ -80,6 +81,7 @@ function startGraphhopperServer(win)
     graphhopperServerHasExited = false;
     stopGraphhopperServerMenuItem.enabled = true;
     startGraphhopperServerMenuItem.enabled = false;
+    deleteGraphMenuItem.enabled = false;
 
     graphhopper.on('error', function (err) {
       console.log('graphhopper error' + err);
@@ -147,6 +149,7 @@ function stopGraphhopperServer()
   {   // Inform the graphhopper server to close
       stopGraphhopperServerMenuItem.enabled = false;
       startGraphhopperServerMenuItem.enabled = true;
+      deleteGraphMenuItem.enabled = true;
       var res = graphhopper.kill('SIGTERM');
       console.log("graphhopper kill SIGTERM returned:" + res);
   }
@@ -154,7 +157,6 @@ function stopGraphhopperServer()
 
 var download = function(url, dest, cb) {
     var http = global.require('https');
-    var fs = global.require('fs');
     var file = fs.createWriteStream(dest);
     var request = http.get(url, function(response) {
 
@@ -186,6 +188,22 @@ var download = function(url, dest, cb) {
             return cb(err.message);
         }
     });
+};
+
+// Deletes the graph data file from the provided directory.
+function deletegraph(dir)
+{
+  if (graphhopperServerHasExited)
+  {
+      fs.unlinkSync(dir + '/edges');
+      fs.unlinkSync(dir + '/geometry');
+      fs.unlinkSync(dir + '/location_index');
+      fs.unlinkSync(dir + '/names');
+      fs.unlinkSync(dir + '/properties');
+      fs.unlinkSync(dir + '/nodes');
+  }
+  else
+      alert("Cannot delete graph as graphhopper server is running!");
 };
 
 // Here we define the functionality for the graphhopper webkit application
@@ -260,7 +278,13 @@ function webkitapp(win)
     graphhopperSubMenu.append(separator);
     // graphhopperSubMenu.append(new gui.MenuItem({ label: 'Change graph settings', enabled : false }));
     graphhopperSubMenu.append(new gui.MenuItem({ label: 'Calculate new graph: Fixme' ,  enabled : false}));
-    graphhopperSubMenu.append(new gui.MenuItem({ type: 'separator' , enabled : false }))
+    deleteGraphMenuItem = new gui.MenuItem({ label: 'Delete graph', enabled : !graphhopperServerHasExited , 
+        click: function() {  console.log('Delete graph clicked');
+                             deletegraph('graphhopper/graph');
+                          }
+    });
+    graphhopperSubMenu.append(deleteGraphMenuItem);
+    graphhopperSubMenu.append(separator);
     graphhopperSubMenu.append(new gui.MenuItem({ label: 'Show available OSM data files: Fixme' , enabled : false }));
     graphhopperSubMenu.append(new gui.MenuItem({ label: 'Download new OSM data file: Fixme',
         click: function() {
