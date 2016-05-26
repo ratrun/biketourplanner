@@ -67,7 +67,6 @@ public class ElevationWeightingTest
         flatEdge = g.edge(0, 1, 10, true).setWayGeometry(Helper.createPointList3D(51, 0, 100, 51, 1, 100));
         eleEdge =  g.edge(2, 3, 10, true).setWayGeometry(Helper.createPointList3D(51, 0, 100, 51, 1, 300));
     }
-    
 
     @Test
     public void testWeightWrongHeading()

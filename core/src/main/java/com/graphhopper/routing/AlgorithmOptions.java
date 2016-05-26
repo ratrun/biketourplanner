@@ -63,7 +63,6 @@ public class AlgorithmOptions
      * round trip algorithm
      */
     public static final String ROUND_TRIP = "roundTrip";
-
     private String algorithm = DIJKSTRA_BI;
     private Weighting weighting;
     private TraversalMode traversalMode = TraversalMode.NODE_BASED;

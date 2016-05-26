@@ -53,7 +53,7 @@ public class EleWeighting extends PriorityWeighting
             return applyEle( edgeState, weight, reverse );
         }
     }
-    
+
     @Override
     public double getMinWeight( double distance )
     {
@@ -73,15 +73,13 @@ public class EleWeighting extends PriorityWeighting
     }
     
     /* 
-    
-    FIXME: - need one bit in flags 
+    FIXME: - need one more bit in flags 
         if (way.hasTag("tunnel", "yes") || way.hasTag("bridge", "yes") || way.hasTag("highway", "steps"))
         {
             // do not change speed
             // note: although tunnel can have a difference in elevation it is very unlikely that the elevation data is correct for a tunnel
         } else
         {
-    
     */
 
     
@@ -155,7 +153,7 @@ public class EleWeighting extends PriorityWeighting
             double fwdDecline = decDist2DSum > 1 ? decEleSum / decDist2DSum : 0;
             double restDist2D = fullDist2D - incDist2DSum - decDist2DSum;
             
-            double elefactor;            
+            double elefactor;
 
             if (!reverse)
             {
@@ -168,7 +166,7 @@ public class EleWeighting extends PriorityWeighting
                 return weight * com.graphhopper.util.Helper.keepIn(1.0 / elefactor , 1.0/10.0, 10.0);
             }
             else
-            {               
+            {
                 double bwFaster = 1 + 2 * com.graphhopper.util.Helper.keepIn(fwdIncline, 0, 0.2);
                 bwFaster = bwFaster * bwFaster;
                 double bwSlower = 1 - 4 * ascendAvoidance * com.graphhopper.util.Helper.keepIn(fwdDecline, 0, 0.2);
@@ -177,5 +175,5 @@ public class EleWeighting extends PriorityWeighting
                 return weight * com.graphhopper.util.Helper.keepIn(1.0 / elefactor , 1.0/10.0, 10.0);
             }
     }
-    
+
 }

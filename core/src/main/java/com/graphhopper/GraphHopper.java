@@ -288,6 +288,19 @@ public class GraphHopper implements GraphHopperAPI
     /**
      * Wrapper method for {@link GraphHopper#setCHWeightings(List)}
      *
+     * @deprecated This method is used as a deprecated wrapper to not break the JavaApi. This will
+     * be removed in 0.7. Please use {@link GraphHopper#setCHWeightings(List)} or
+     * {@link GraphHopper#setCHWeightings(String...)}
+     */
+    @Deprecated
+    public GraphHopper setCHWeighting( String weightingName )
+    {
+        return this.setCHWeightings(weightingName);
+    }
+
+    /**
+     * Wrapper method for {@link GraphHopper#setCHWeightings(List)}
+     *
      * @deprecated Use getCHFactoryDecorator().setWeightingsAsStrings() instead. Will be removed in
      * 0.8.
      */
@@ -1023,7 +1036,7 @@ public class GraphHopper implements GraphHopperAPI
         }
 
         FlagEncoder encoder = encodingManager.getEncoder(vehicle);
-        List<GHPoint> points = request.getPoints();
+        List<GHPoint> points = request.getPoints();        
         String algoStr = request.getAlgorithm().isEmpty() ? AlgorithmOptions.DIJKSTRA_BI : request.getAlgorithm();
 
         RoutingTemplate routingTemplate;

@@ -25,7 +25,6 @@ web/src/main/webapp/js/options_prod.js
 *.log
 core/TODO*.txt
 srtmprovider/
-!web/src/main/webapp/graphhopper/srtmprovider/readme.txt
 core/docs/
 .*#
 cgiarprovider/

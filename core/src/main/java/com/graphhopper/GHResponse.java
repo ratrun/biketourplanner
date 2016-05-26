@@ -155,7 +155,7 @@ public class GHResponse
 
         return str;
     }
-    
+
     public PMap getHints()
     {
         return hintsMap;

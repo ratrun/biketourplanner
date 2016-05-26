@@ -20,7 +20,7 @@ package com.graphhopper.routing.util.tour;
 import java.util.Random;
 
 /**
- * Generate a single points tour with a heading
+ * Generate a single point tour with a heading
  *
  * @author ratrun
  */
@@ -40,3 +40,4 @@ public class SinglePointHeadingTour extends SinglePointTour
         return heading + random.nextInt(30);
     }
 }
+

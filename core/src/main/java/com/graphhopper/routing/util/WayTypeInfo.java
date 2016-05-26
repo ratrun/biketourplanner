@@ -20,7 +20,7 @@ package com.graphhopper.util;
 import com.graphhopper.util.InstructionAnnotation;
 
 /**
- *
+ * Class for separate distance detection on verious way types. Desinged fo bicycle usage.
  * @author ratrun
  */
 public class WayTypeInfo
@@ -30,7 +30,7 @@ public class WayTypeInfo
     private double roadDistance;
     private double unspecificWayDistance;
     private double pushingSectionDistance;
-    
+
     public void WayTypeInfo()
     {
         this.unpavedDistance = 0;
@@ -38,9 +38,8 @@ public class WayTypeInfo
         this.roadDistance = 0;
         this.unspecificWayDistance = 0;
         this.pushingSectionDistance = 0;
-                
     }
-   
+
     public double getUnpavedDistance()
     {
         return unpavedDistance;
@@ -65,7 +64,7 @@ public class WayTypeInfo
     {
         return pushingSectionDistance;
     }
-    
+
     public void addDistances(WayTypeInfo mergwaytypeinfo)
     {
         roadDistance += mergwaytypeinfo.getRoadDistance();
@@ -74,7 +73,7 @@ public class WayTypeInfo
         unspecificWayDistance += mergwaytypeinfo.getUnspecificWayDistance();
         unpavedDistance += mergwaytypeinfo.getUnpavedDistance();
     }
-    
+
     public void classifyDistance(InstructionAnnotation annotation, double distance)
     {
 
@@ -107,5 +106,6 @@ public class WayTypeInfo
               break;
         }
     }
-    
+
 }
+

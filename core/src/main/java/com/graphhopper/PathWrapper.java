@@ -270,7 +270,7 @@ public class PathWrapper
         this.errors.addAll(errors);
         return this;
     }
-    
+
     public void setWayTypeInfo(WayTypeInfo wayTypeInfo)
     {
         this.wayTypeInfo = wayTypeInfo;

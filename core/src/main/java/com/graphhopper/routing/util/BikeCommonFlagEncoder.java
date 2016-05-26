@@ -62,7 +62,7 @@ public class BikeCommonFlagEncoder extends AbstractFlagEncoder
     // Car speed limit which switches the preference from UNCHANGED to AVOID_IF_POSSIBLE
     private int avoidSpeedLimit;
 
-    // Flag to avoid any unpaved section
+    // Flag to turn on avoidence of unpaved sections
     private boolean avoidUnpaved = false;
 
     // This is the specific bicycle class
@@ -457,7 +457,6 @@ public class BikeCommonFlagEncoder extends AbstractFlagEncoder
         String wayName = getWayName(paveType, wayType, tr);
         return new InstructionAnnotation(0, wayName, wayType, paveType==0);
     }
-
 
     String getWayName( int pavementType, int wayType, Translation tr )
     {

@@ -42,7 +42,6 @@ var translate = require('./translate.js');
 var format = require('./tools/format.js');
 var urlTools = require('./tools/url.js');
 var vehicle = require('./tools/vehicle.js');
-
 var tileLayers = require('./config/tileLayers.js');
 tileLayers.setHost(location.hostname);
 
@@ -212,6 +211,7 @@ $(document).ready(function (e) {
 
     checkInput();
 });
+
 
 function initFromParams(params, doQuery) {
     ghRequest.init(params);
@@ -564,7 +564,7 @@ function routeLatLng(request, doQuery) {
             var tmpTime = translate.createTimeString(path.time);
             var tmpDist = translate.createDistanceString(path.distance);
             var tmpwaytype="";
-        
+
             if (path.haswaytypeinfo === "yes")
             {
                 if (path.unpavedDistance !== 0)
@@ -578,7 +578,7 @@ function routeLatLng(request, doQuery) {
                 if (path.unspecificWayDistance !== 0)
                     tmpwaytype += "<br/>Unspecific:" + translate.createDistanceString(path.unspecificWayDistance);
             }
-            
+
             var routeInfo = $("<div class='route_description'>");
             if (path.description && path.description.length > 0) {
                 routeInfo.text(path.description);

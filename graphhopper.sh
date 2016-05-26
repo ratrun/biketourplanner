@@ -1,6 +1,5 @@
 #!/bin/bash
 
-export JAVA_HOME=~/jdk1.8.0_66/
 GH_CLASS=com.graphhopper.tools.Import
 GH_HOME=$(dirname "$0")
 JAVA=$JAVA_HOME/bin/java
@@ -208,7 +207,9 @@ else
 fi
 
 if [ "$JAVA_OPTS" = "" ]; then
-  JAVA_OPTS="-Xmx1000m -Xms1000m -server"
+  JAVA_OPTS="-Xmx1000m -Xms1000m -server -XX:+HeapDumpOnOutOfMemoryError"
+else
+  JAVA_OPTS="$JAVA_OPTS -XX:+HeapDumpOnOutOfMemoryError"
 fi
 
 
@@ -262,20 +263,20 @@ elif [ "$ACTION" = "miniui" ]; then
 
 
 elif [ "$ACTION" = "measurement" ]; then
- ARGS="config=$CONFIG graph.location=$GRAPH osmreader.osm=$OSM_FILE prepare.chWeighting=elevation graph.flagEncoders=bike graph.elevation.dataaccess=RAM_STORE"
- echo -e "\ncreate graph via $ARGS, $JAR"
- START=$(date +%s)
+ ARGS="config=$CONFIG graph.location=$GRAPH osmreader.osm=$OSM_FILE prepare.chWeightings=fastest graph.flagEncoders=CAR prepare.minNetworkSize=10000 prepare.minOnewayNetworkSize=10000"
+ # echo -e "\ncreate graph via $ARGS, $JAR"
+ # START=$(date +%s)
  # avoid islands for measurement at all costs
- "$JAVA" $JAVA_OPTS -cp "$JAR" $GH_CLASS $ARGS prepare.doPrepare=false prepare.minNetworkSize=10000 prepare.minOnewayNetworkSize=10000
- END=$(date +%s)
- IMPORT_TIME=$(($END - $START))
+ # "$JAVA" $JAVA_OPTS -cp "$JAR" $GH_CLASS $ARGS prepare.doPrepare=false prepare.minNetworkSize=10000 prepare.minOnewayNetworkSize=10000
+ # END=$(date +%s)
+ # IMPORT_TIME=$(($END - $START))
 
  function startMeasurement {
-    COUNT=50000
+    COUNT=5000
     commit_info=$(git log -n 1 --pretty=oneline)
     echo -e "\nperform measurement via jar=> $JAR and ARGS=> $ARGS"
     "$JAVA" $JAVA_OPTS -cp "$JAR" com.graphhopper.tools.Measurement $ARGS measurement.count=$COUNT measurement.location="$M_FILE_NAME" \
-            graph.importTime=$IMPORT_TIME measurement.gitinfo="$commit_info"
+            measurement.gitinfo="$commit_info"
  }
  
  

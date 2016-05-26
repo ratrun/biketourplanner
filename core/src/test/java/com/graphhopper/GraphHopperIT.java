@@ -172,8 +172,8 @@ public class GraphHopperIT
 
         assertEquals(3, rsp.getAll().size());
         // via ramsenthal
-        assertEquals(2945, rsp.getAll().get(0).getTime() / 1000);        // via unterwaiz
-
+        assertEquals(2945, rsp.getAll().get(0).getTime() / 1000);
+        // via unterwaiz
         assertEquals(3318, rsp.getAll().get(1).getTime() / 1000);
         // via eselslohe -> theta; BTW: here smaller time as 2nd alternative due to priority influences time order
         assertEquals(3594, rsp.getAll().get(2).getTime() / 1000);
@@ -577,8 +577,8 @@ public class GraphHopperIT
  
         assertEquals(1, rsp.getAll().size());
         PathWrapper pw = rsp.getBest();
-        assertEquals(14, rsp.getBest().getTime() / 1000f / 60, 1);
-        assertEquals(68, pw.getPoints().size());
+        assertEquals(11.6, rsp.getBest().getTime() / 1000f / 60, 1);
+        assertEquals(49, pw.getPoints().size());
     }
     
     public void testFlexMode_631()

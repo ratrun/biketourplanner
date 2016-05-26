@@ -217,13 +217,10 @@ public class Bike2WeightFlagEncoder extends BikeFlagEncoder
             double fwdIncline = incDist2DSum > 1 ? incEleSum / incDist2DSum : 0;
             double fwdDecline = decDist2DSum > 1 ? decEleSum / decDist2DSum : 0;
             double restDist2D = fullDist2D - incDist2DSum - decDist2DSum;
-            
-            /* FIXME: Increase the average speed on flat parts by some constant factor, 
-               because the bike flag encoder assumptions that the average speed already includes some small ascends and descends.*/
-            double maxSpeed = getHighwaySpeed("cycleway");
-            // Note this.getMaxSpeed() contains 30
-            // FIXME 
 
+            /* FIXME: Increase the average speed on flat parts by some constant factor, 
+               because the bike flag encoder assumes that the average speed already includes some small ascends and descends.*/
+            double maxSpeed = getHighwaySpeed("cycleway");
             if (isForward(flags))
             {
                 // use weighted mean so that longer incline influences speed more than shorter

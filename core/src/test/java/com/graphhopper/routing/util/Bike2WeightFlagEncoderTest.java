@@ -131,7 +131,7 @@ public class Bike2WeightFlagEncoderTest extends BikeFlagEncoderTest
         speedOnIncline[26] = 18;  // 26%
         speedOnIncline[27] = 18;  // 27%
         speedOnIncline[28] = 18;  // 28%
-        speedOnIncline[29] = 1;  // 29%        
+        speedOnIncline[29] = 1;  // 29%
 
         int[] speedOnDecline = new int[30];
         speedOnDecline[0] = 18;  // 0%
@@ -163,9 +163,8 @@ public class Bike2WeightFlagEncoderTest extends BikeFlagEncoderTest
         speedOnDecline[26] = 18;  // 26%
         speedOnDecline[27] = 18;  // 27%
         speedOnDecline[28] = 18;  // 28%
-        speedOnDecline[29] = 18;  // 29%        
-        
-        
+        speedOnDecline[29] = 18;  // 29%
+
         Graph graph = initExampleGraph();
         for (int incline=0; incline<=29; incline++)
         {
