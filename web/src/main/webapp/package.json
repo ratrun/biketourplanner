@@ -6,6 +6,7 @@
   "license": "Apache-2.0",
   "main": "index.html",
   "window": {
+    "icon": "img/icon.png",
     "show": true,
     "position": "center",
     "width": 1500,
@@ -16,7 +17,8 @@
     "d3": "^3.5.9",
     "jquery": "^2.1.4",
     "leaflet": "^0.7.7",
-    "leaflet-loading": "^0.1.15"
+    "leaflet-loading": "^0.1.15",
+    "nw-notify": "0.2.0"
   },
   "scripts": {
     "start": "nw ."

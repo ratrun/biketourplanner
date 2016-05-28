@@ -11,11 +11,12 @@ var tilesServerHasExited = true;
 var graphhopperServerHasExited = true;
 var shutdownapp = false;
 var fs = global.require('fs');
+var notifier = global.require('nw-notify');
 
 function startLocalVectorTileServer(win)
 {
     tilesServerHasExited = false;
-    // On Windows Only ...
+    // On Windows only ???
     var exec = global.require('child_process').spawn;
     mbtiles = exec('../node.exe' , ['server.js'], {
        cwd: 'ratrun-mbtiles-server',
@@ -47,7 +48,7 @@ function startLocalVectorTileServer(win)
         console.log('tiles server child process exited with code ' + code +' signal=' + signal);
         tilesServerHasExited = true;
         setTimeout(function(){ 
-              if (signal === 'SIGINT')
+              if (signal === 'SIGTERM')
                 this.close(true);
               else
                 if (code === 100) // Code for received stop trigger 
@@ -69,10 +70,20 @@ function startLocalVectorTileServer(win)
 
 function startGraphhopperServer(win)
 {
+    var os = global.require('os');
     console.log('Starting graphhopper');
-    // On Windows Only 
+    const initialpercent = 40; // Intitial percentage of heap space of total available RAM to reserve for graphhopper
+    const maxpercent = 80; // Max percentage of total available RAM to reserve as max heap space for graphhopper
+    var initialreserved = Math.trunc((os.totalmem() * (initialpercent/100))/(1024*1000));
+    var maxreserved = Math.trunc((os.totalmem() * (maxpercent/100))/(1024*1000));
+    console.log('Installed RAM:' + os.totalmem() + ' Bytes. Initial heap ' + initialpercent + '%=' + initialreserved + 'MB, max heap ' + maxpercent + '%=' +  maxreserved +'MB');
+    // On Windows only ???
     var exec = global.require('child_process').spawn;
-    graphhopper = exec('java.exe' , ['-Xmx1500m', '-Xms1500m', '-jar', 'graphhopper-web-0.7-SNAPSHOT-with-dep.jar', 'jetty.resourcebase=../', 'jetty.port=8989', 'config=config.properties', 'osmreader.osm=osmfiles/liechtenstein-latest.osm.pbf', 'graph.location=graph'], {
+    // FIXME: change hardcoded liechtenstein-latest.osm.pbf to flexible input
+
+    //-Xms<size>        set initial Java heap size
+    //-Xmx<size>        set maximum Java heap size
+    graphhopper = exec('java.exe' , ['-Xmx' + maxreserved + 'm', '-Xms' + initialreserved + 'm', '-jar', 'graphhopper-web-0.7-SNAPSHOT-with-dep.jar', 'jetty.resourcebase=../', 'jetty.port=8989', 'config=config.properties', 'osmreader.osm=osmfiles/liechtenstein-latest.osm.pbf', 'graph.location=graph'], {
        cwd: 'graphhopper',
        detached: false
     });
@@ -89,6 +100,10 @@ function startGraphhopperServer(win)
 
     graphhopper.stdout.on('data', function (data) {
         console.log('graphhopper stdout: ' + data);
+        if (data.toString('utf-8').indexOf('creating graph') !==-1 )
+             showHtmlNotification("./img/mtb.png", "Creating graph", 'might take a while!');
+        if (data.toString('utf-8').indexOf('Started server at HTTP :8989') !==-1 )
+             showHtmlNotification("./img/mtb.png", "Graphhopper server", 'is ready...');
     });
 
     graphhopper.stderr.on('data', function (data) {
@@ -96,32 +111,33 @@ function startGraphhopperServer(win)
     });
 
     graphhopper.on('close', function (code) {
-        console.log('graphhopper child process closed with code ' + code);
+        console.log('graphhopper child process closed with code ' + code + ' shutdownapp=' + shutdownapp);
+        graphhopperServerHasExited = true;
+        if (shutdownapp)
+           win.close();
     });
 
     graphhopper.on('exit', function (code, signal) {
         console.log('graphhopper child process exited with code ' + code +' signal=' + signal);
         graphhopperServerHasExited = true;
         if (shutdownapp)
-        {
-            setTimeout(function(){ 
-                  if (signal === 'SIGTERM')
-                    this.close(true);
-            }, 500);
-        }
+            win.close();
     });
 
     win.on('close', function() {
         this.hide(); // Pretend to be closed already
         shutdownapp = true;
+        console.log("win.on close tilesServerHasExited=" + tilesServerHasExited + " ,graphhopperServerHasExited="+ graphhopperServerHasExited);
         if ((tilesServerHasExited) && (graphhopperServerHasExited))
         {
+            console.log("close2");
             if (aboutWindow != null)
                 aboutWindow.close(true);
             this.close(true);
         }
         else
         {
+           notifier.closeAll();
            stopLocalVectorTileServer();
            stopGraphhopperServer();
         }
@@ -135,7 +151,7 @@ function startGraphhopperServer(win)
 function stopLocalVectorTileServer()
 {
   if (!tilesServerHasExited)
-  {   // Inform the tile server via SIGINT to close
+  {   // Inform the tile server via SIGTERM to close
       var res = mbtiles.kill('SIGTERM');
       console.log("mbtiles kill SIGTERM returned:" + res);
       stopTileServerMenuItem.enabled = false;
@@ -347,6 +363,22 @@ function webkitapp(win)
     startGraphhopperServer(win);
 
 }
+
+// NW-NOTIFY
+var showHtmlNotification = function (icon, title, body, callback) {
+  // give it nice look
+  notifier.setConfig({
+    displayTime: 6000
+  });
+
+  if (icon) icon = notifier.getAppPath() + icon;
+
+  notifier.notify({
+    title: title,
+    text: body,
+    image: icon,
+  });
+};
 
 // Test if we are running under nwjs. If so the window.require('nw.gui'); command succeeds, otherwise we get an exception
 try {
