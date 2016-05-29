@@ -10,8 +10,8 @@ var aboutWindow = null;
 var tilesServerHasExited = true;
 var graphhopperServerHasExited = true;
 var shutdownapp = false;
-var fs = global.require('fs');
-var notifier = global.require('nw-notify');
+var fs;
+var notifier;
 
 function startLocalVectorTileServer(win)
 {
@@ -226,6 +226,8 @@ function deletegraph(dir)
 function webkitapp(win)
 {
     var menu = new gui.Menu({type: "menubar"});
+    fs = global.require('fs');
+    notifier = global.require('nw-notify');
 
     // Create a sub-menu
     var mapSubMenu = new gui.Menu();
