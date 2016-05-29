@@ -12,6 +12,7 @@ var graphhopperServerHasExited = true;
 var shutdownapp = false;
 var fs;
 var notifier;
+var activeOsmfile = 'liechtenstein-latest.osm.pbf';
 
 function startLocalVectorTileServer(win)
 {
@@ -79,11 +80,16 @@ function startGraphhopperServer(win)
     console.log('Installed RAM:' + os.totalmem() + ' Bytes. Initial heap ' + initialpercent + '%=' + initialreserved + 'MB, max heap ' + maxpercent + '%=' +  maxreserved +'MB');
     // On Windows only ???
     var exec = global.require('child_process').spawn;
-    // FIXME: change hardcoded liechtenstein-latest.osm.pbf to flexible input
 
     //-Xms<size>        set initial Java heap size
     //-Xmx<size>        set maximum Java heap size
-    graphhopper = exec('java.exe' , ['-Xmx' + maxreserved + 'm', '-Xms' + initialreserved + 'm', '-jar', 'graphhopper-web-0.7-SNAPSHOT-with-dep.jar', 'jetty.resourcebase=../', 'jetty.port=8989', 'config=config.properties', 'osmreader.osm=osmfiles/liechtenstein-latest.osm.pbf', 'graph.location=graph'], {
+    graphhopper = exec('java.exe' , ['-Xmx' + maxreserved + 'm', '-Xms' + initialreserved + 'm', '-jar', 
+                       'graphhopper-web-0.7-SNAPSHOT-with-dep.jar', 
+                       'jetty.resourcebase=../', 
+                       'jetty.port=8989', 
+                       'config=config.properties', 
+                       'osmreader.osm=osmfiles/' + activeOsmfile, 
+                       'graph.location=graph'], {
        cwd: 'graphhopper',
        detached: false
     });
