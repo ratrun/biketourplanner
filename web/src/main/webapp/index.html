@@ -116,10 +116,17 @@
                 <br>
             </form>
         </div>
+        <div id="map_selection_dialog" title="Select map data:">
+            <form id="MapChoice" name="MapChoice">
+                <select id= "mapDropDownDest"></select>
+            </form>
+        </div>
         <div id="map">
             <nav id="layer_menu"></nav>
         </div>
         <pre id='layerfeatures'></pre>
+        <input style="display:none;" id="osmFileDialog" type="file" nwworkingdir="graphhopper\osmfiles"/>
+        <input style="display:none;" id="mbtilesFileDialog" type="file" nwworkingdir="ratrun-mbtiles-server"/>
         <!-- Piwik -->
         <script type="text/javascript">
             PIWIK = false;

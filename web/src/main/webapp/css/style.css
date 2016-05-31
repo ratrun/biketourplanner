@@ -172,6 +172,11 @@ body {
 #gpxExportButton img {
     padding-left: 6px;
 }
+
+#map_selection_dialog {
+    display: none;
+}
+
 #searchButton {
     float: right;
     margin-bottom: 5px;
