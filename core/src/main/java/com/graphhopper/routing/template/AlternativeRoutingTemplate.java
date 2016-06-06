@@ -1,9 +1,9 @@
 /*
- *  Licensed to GraphHopper and Peter Karich under one or more contributor
+ *  Licensed to GraphHopper GmbH under one or more contributor
  *  license agreements. See the NOTICE file distributed with this work for 
  *  additional information regarding copyright ownership.
  * 
- *  GraphHopper licenses this file to you under the Apache License, 
+ *  GraphHopper GmbH licenses this file to you under the Apache License, 
  *  Version 2.0 (the "License"); you may not use this file except in 
  *  compliance with the License. You may obtain a copy of the License at
  * 
@@ -25,7 +25,9 @@ import com.graphhopper.routing.Path;
 import com.graphhopper.routing.QueryGraph;
 import com.graphhopper.routing.RoutingAlgorithmFactory;
 import com.graphhopper.storage.index.LocationIndex;
+import com.graphhopper.util.Parameters.Routing;
 import com.graphhopper.util.PathMerger;
+import com.graphhopper.util.PointList;
 import com.graphhopper.util.Translation;
 import java.util.Collections;
 import java.util.List;
@@ -45,7 +47,7 @@ final public class AlternativeRoutingTemplate extends ViaRoutingTemplate
     @Override
     public List<Path> calcPaths( QueryGraph queryGraph, RoutingAlgorithmFactory algoFactory, AlgorithmOptions algoOpts )
     {
-        boolean withViaTurnPenalty = ghRequest.getHints().getBool("pass_through", false);
+        boolean withViaTurnPenalty = ghRequest.getHints().getBool(Routing.PASS_THROUGH, false);
         if (withViaTurnPenalty)
             throw new IllegalStateException("Alternative paths and a viaTurnPenalty at the same time is currently not supported");
 
@@ -58,12 +60,15 @@ final public class AlternativeRoutingTemplate extends ViaRoutingTemplate
         if (pathList.isEmpty())
             throw new RuntimeException("Empty paths for alternative route calculation not expected");
 
-        // if alternative route calculation was done then create the responses from single paths
+        // if alternative route calculation was done then create the responses from single paths        
+        PointList wpList = getWaypoints();
+        altResponse.setWaypoints(wpList);
         ghResponse.add(altResponse);
         pathMerger.doWork(altResponse, Collections.singletonList(pathList.get(0)), tr);
         for (int index = 1; index < pathList.size(); index++)
         {
             PathWrapper tmpAltRsp = new PathWrapper();
+            tmpAltRsp.setWaypoints(wpList);
             ghResponse.add(tmpAltRsp);
             pathMerger.doWork(tmpAltRsp, Collections.singletonList(pathList.get(index)), tr);
         }

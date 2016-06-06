@@ -1,9 +1,9 @@
 /*
- *  Licensed to GraphHopper and Peter Karich under one or more contributor
+ *  Licensed to GraphHopper GmbH under one or more contributor
  *  license agreements. See the NOTICE file distributed with this work for 
  *  additional information regarding copyright ownership.
  * 
- *  GraphHopper licenses this file to you under the Apache License, 
+ *  GraphHopper GmbH licenses this file to you under the Apache License, 
  *  Version 2.0 (the "License"); you may not use this file except in 
  *  compliance with the License. You may obtain a copy of the License at
  * 
@@ -30,14 +30,16 @@ import com.graphhopper.routing.util.tour.SinglePointHeadingTour;
 import com.graphhopper.routing.util.tour.TourStrategy;
 import com.graphhopper.storage.index.LocationIndex;
 import com.graphhopper.storage.index.QueryResult;
-import com.graphhopper.util.*;
+import com.graphhopper.util.Helper;
+import com.graphhopper.util.Parameters;
+import com.graphhopper.util.Parameters.Algorithms.RoundTrip;
+import com.graphhopper.util.PathMerger;
+import com.graphhopper.util.Translation;
 import com.graphhopper.util.shapes.GHPoint;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of calculating a route with one or more round trip (route with identical start and
@@ -45,15 +47,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author Peter Karich
  */
-public class RoundTripRoutingTemplate implements RoutingTemplate
+public class RoundTripRoutingTemplate extends AbstractRoutingTemplate implements RoutingTemplate
 {
     private final int maxRetries;
     private final GHRequest ghRequest;
     private final GHResponse ghResponse;
     private PathWrapper altResponse;
-    private final LocationIndex locationIndex;
-    // result from lookup
-    private List<QueryResult> queryResults;
+    private final LocationIndex locationIndex;    
     // result from route
     private List<Path> pathList;
 
@@ -83,6 +83,8 @@ public class RoundTripRoutingTemplate implements RoutingTemplate
         queryResults = new ArrayList<>(2 + strategy.getNumberOfGeneratedPoints());
         EdgeFilter edgeFilter = new DefaultEdgeFilter(encoder);
         QueryResult startQR = locationIndex.findClosest(start.lat, start.lon, edgeFilter);
+        if (!startQR.isValid())
+            ghResponse.addError(new IllegalArgumentException("Cannot find point 0: " + start));
         queryResults.add(startQR);
 
         GHPoint last = points.get(0);
@@ -115,7 +117,7 @@ public class RoundTripRoutingTemplate implements RoutingTemplate
         AvoidEdgesWeighting avoidPathWeighting = new AvoidEdgesWeighting(algoOpts.getWeighting());
         avoidPathWeighting.setEdgePenaltyFactor(5);
         algoOpts = AlgorithmOptions.start(algoOpts).
-                algorithm(AlgorithmOptions.DIJKSTRA_BI).
+                algorithm(Parameters.Algorithms.DIJKSTRA_BI).
                 weighting(avoidPathWeighting).build();
         long visitedNodesSum = 0L;
         QueryResult start = queryResults.get(0);
@@ -154,6 +156,7 @@ public class RoundTripRoutingTemplate implements RoutingTemplate
     public boolean isReady( PathMerger pathMerger, Translation tr )
     {
         altResponse = new PathWrapper();
+        altResponse.setWaypoints(getWaypoints());
         ghResponse.add(altResponse);
         pathMerger.doWork(altResponse, pathList, tr);
         // with potentially retrying, including generating new route points, for now disabled

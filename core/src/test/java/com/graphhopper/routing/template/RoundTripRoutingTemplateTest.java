@@ -1,9 +1,9 @@
 /*
- *  Licensed to GraphHopper and Peter Karich under one or more contributor
+ *  Licensed to GraphHopper GmbH under one or more contributor
  *  license agreements. See the NOTICE file distributed with this work for 
  *  additional information regarding copyright ownership.
  * 
- *  GraphHopper licenses this file to you under the Apache License, 
+ *  GraphHopper GmbH licenses this file to you under the Apache License, 
  *  Version 2.0 (the "License"); you may not use this file except in 
  *  compliance with the License. You may obtain a copy of the License at
  * 
@@ -27,6 +27,7 @@ import com.graphhopper.storage.index.LocationIndex;
 import com.graphhopper.storage.index.LocationIndexTree;
 import com.graphhopper.storage.index.QueryResult;
 import com.graphhopper.util.Helper;
+import static com.graphhopper.util.Parameters.Algorithms.DIJKSTRA_BI;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.Test;
@@ -62,7 +63,7 @@ public class RoundTripRoutingTemplateTest
         QueryGraph qGraph = new QueryGraph(g);
         qGraph.lookup(qr4, qr5);
         rTripRouting.setQueryResults(Arrays.asList(qr5, qr4, qr5));
-        List<Path> paths = rTripRouting.calcPaths(qGraph, new RoutingAlgorithmFactorySimple(), new AlgorithmOptions("dijkstrabi", carFE, weighting, tMode));
+        List<Path> paths = rTripRouting.calcPaths(qGraph, new RoutingAlgorithmFactorySimple(), new AlgorithmOptions(DIJKSTRA_BI, carFE, weighting, tMode));
         assertEquals(2, paths.size());
         assertEquals(Helper.createTList(5, 6, 3, 4), paths.get(0).calcNodes());
         assertEquals(Helper.createTList(4, 8, 7, 6, 5), paths.get(1).calcNodes());
@@ -70,7 +71,7 @@ public class RoundTripRoutingTemplateTest
         qGraph = new QueryGraph(g);
         qGraph.lookup(qr4, qr6);
         rTripRouting.setQueryResults(Arrays.asList(qr6, qr4, qr6));
-        paths = rTripRouting.calcPaths(qGraph, new RoutingAlgorithmFactorySimple(), new AlgorithmOptions("dijkstrabi", carFE, weighting, tMode));
+        paths = rTripRouting.calcPaths(qGraph, new RoutingAlgorithmFactorySimple(), new AlgorithmOptions(DIJKSTRA_BI, carFE, weighting, tMode));
         assertEquals(2, paths.size());
         assertEquals(Helper.createTList(6, 3, 4), paths.get(0).calcNodes());
         assertEquals(Helper.createTList(4, 8, 7, 6), paths.get(1).calcNodes());

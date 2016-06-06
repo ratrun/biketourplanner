@@ -309,11 +309,11 @@ function checkInput() {
         if (translate.isI18nIsInitialized()) {
             var input = div.find(".pointInput");
             if (i === 0)
-                $(input).attr("placeholder", translate.tr("fromHint"));
+                $(input).attr("placeholder", translate.tr("from_hint"));
             else if (i === (len - 1))
-                $(input).attr("placeholder", translate.tr("toHint"));
+                $(input).attr("placeholder", translate.tr("to_hint"));
             else
-                $(input).attr("placeholder", translate.tr("viaHint"));
+                $(input).attr("placeholder", translate.tr("via_hint"));
         }
     }
 }
@@ -386,7 +386,7 @@ function setFlag(coord, index) {
             this._openPopup();
         };
         var _tempItem = {
-            text: 'Set as Start',
+            text: translate.tr('set_start'),
             callback: setToStart,
             index: 1,
             state: 2
@@ -584,7 +584,7 @@ function routeLatLng(request, doQuery) {
                 routeInfo.text(path.description);
                 routeInfo.append("<br/>");
             }
-            routeInfo.append(translate.tr("routeInfo", [tmpDist, tmpTime]));
+            routeInfo.append(translate.tr("route_info", [tmpDist, tmpTime]));
             if (request.hasElevation()) {
                 routeInfo.append(translate.createEleInfoString(path.ascend, path.descend));
             }
@@ -628,19 +628,19 @@ function mySubmit() {
     $.each(location_points, function (index) {
         if (index === 0) {
             fromStr = $(this).val();
-            if (fromStr !== translate.tr("fromHint") && fromStr !== "")
+            if (fromStr !== translate.tr("from_hint") && fromStr !== "")
                 allStr.push(fromStr);
             else
                 inputOk = false;
         } else if (index === (len - 1)) {
             toStr = $(this).val();
-            if (toStr !== translate.tr("toHint") && toStr !== "")
+            if (toStr !== translate.tr("to_hint") && toStr !== "")
                 allStr.push(toStr);
             else
                 inputOk = false;
         } else {
             viaStr = $(this).val();
-            if (viaStr !== translate.tr("viaHint") && viaStr !== "")
+            if (viaStr !== translate.tr("via_hint") && viaStr !== "")
                 allStr.push(viaStr);
             else
                 inputOk = false;
@@ -650,11 +650,11 @@ function mySubmit() {
         // TODO print warning
         return;
     }
-    if (fromStr === translate.tr("fromHint")) {
+    if (fromStr === translate.tr("from_hint")) {
         // no special function
         return;
     }
-    if (toStr === translate.tr("toHint")) {
+    if (toStr === translate.tr("to_hint")) {
         // lookup area
         ghRequest.from.setStr(fromStr);
         $.when(resolveFrom()).done(function () {

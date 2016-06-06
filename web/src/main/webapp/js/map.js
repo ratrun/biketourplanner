@@ -1,5 +1,6 @@
 var mainTemplate = require('./main-template.js');
 var tileLayers = require('./config/tileLayers.js');
+var translate = require('./translate.js');
 
 var routingLayer;
 var map;
@@ -46,20 +47,20 @@ function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selec
     map = L.map('map', {
         layers: [defaultLayer],
         contextmenu: true,
-        contextmenuWidth: 145,
+        contextmenuWidth: 150,
         contextmenuItems: [{
                 separator: true,
                 index: 3,
                 state: ['set_default']
             }, {
-                text: 'Show coordinates',
+                text: translate.tr('show_coords'),
                 callback: function (e) {
                     alert(e.latlng.lat + "," + e.latlng.lng);
                 },
                 index: 4,
                 state: [1, 2, 3]
             }, {
-                text: 'Center map here',
+                text: translate.tr('center_map'),
                 callback: function (e) {
                     map.panTo(e.latlng);
                 },
@@ -77,19 +78,19 @@ function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selec
     addOverlayLayer('Drinking water', ['poi_drinking_water'], 8);
     
     var _startItem = {
-        text: 'Set as start',
+        text: translate.tr('set_start'),
         callback: setStartCoord,
         disabled: false,
         index: 0
     };
     var _intItem = {
-        text: 'Set intermediate',
+        text: translate.tr('set_intermediate'),
         callback: setIntermediateCoord,
         disabled: true,
         index: 1
     };
     var _endItem = {
-        text: 'Set as end',
+        text: translate.tr('set_end'),
         callback: setEndCoord,
         disabled: false,
         index: 2

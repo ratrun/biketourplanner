@@ -1,14 +1,14 @@
 /*
- *  Licensed to GraphHopper and Peter Karich under one or more contributor
+ *  Licensed to GraphHopper GmbH under one or more contributor
  *  license agreements. See the NOTICE file distributed with this work for 
  *  additional information regarding copyright ownership.
- *
- *  GraphHopper licenses this file to you under the Apache License, 
+ * 
+ *  GraphHopper GmbH licenses this file to you under the Apache License, 
  *  Version 2.0 (the "License"); you may not use this file except in 
  *  compliance with the License. You may obtain a copy of the License at
- *
+ * 
  *       http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,6 +19,7 @@ package com.graphhopper.routing.util;
 
 import com.graphhopper.reader.OSMWay;
 import com.graphhopper.reader.osm.conditional.ConditionalTagsInspector;
+import com.graphhopper.reader.osm.conditional.DateRangeParser;
 import com.graphhopper.util.BitUtil;
 import com.graphhopper.util.EdgeIteratorState;
 import com.graphhopper.util.PMap;
@@ -52,12 +53,12 @@ public class MotorcycleFlagEncoder extends CarFlagEncoder
     public MotorcycleFlagEncoder( PMap properties )
     {
         this(
-                (int) properties.getLong("speedBits", 5),
-                properties.getDouble("speedFactor", 5),
-                properties.getBool("turnCosts", false) ? 1 : 0
+                (int) properties.getLong("speed_bits", 5),
+                properties.getDouble("speed_factor", 5),
+                properties.getBool("turn_costs", false) ? 1 : 0
         );
         this.properties = properties;
-        this.setBlockFords(properties.getBool("blockFords", true));
+        this.setBlockFords(properties.getBool("block_fords", true));
     }
 
     public MotorcycleFlagEncoder( String propertiesStr )
@@ -118,7 +119,7 @@ public class MotorcycleFlagEncoder extends CarFlagEncoder
         // forestry stuff
         defaultSpeedMap.put("track", 15);
 
-        conditionalTagsInspector = new ConditionalTagsInspector(restrictions, restrictedValues, intendedValues);
+        conditionalTagsInspector = new ConditionalTagsInspector(DateRangeParser.createCalendar(), restrictions, restrictedValues, intendedValues);
     }
 
     @Override

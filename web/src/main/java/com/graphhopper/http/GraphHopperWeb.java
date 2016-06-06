@@ -1,9 +1,9 @@
 /*
- *  Licensed to GraphHopper and Peter Karich under one or more contributor
+ *  Licensed to GraphHopper GmbH under one or more contributor
  *  license agreements. See the NOTICE file distributed with this work for 
  *  additional information regarding copyright ownership.
  * 
- *  GraphHopper licenses this file to you under the Apache License, 
+ *  GraphHopper GmbH licenses this file to you under the Apache License, 
  *  Version 2.0 (the "License"); you may not use this file except in 
  *  compliance with the License. You may obtain a copy of the License at
  * 
@@ -121,11 +121,11 @@ public class GraphHopperWeb implements GraphHopperAPI
             }
 
             boolean tmpInstructions = request.getHints().getBool("instructions", instructions);
-            boolean tmpCalcPoints = request.getHints().getBool("calcPoints", calcPoints);
+            boolean tmpCalcPoints = request.getHints().getBool("calc_points", calcPoints);
 
             if (tmpInstructions && !tmpCalcPoints)
                 throw new IllegalStateException("Cannot calculate instructions without points (only points without instructions). "
-                        + "Use calcPoints=false and instructions=false to disable point and instruction calculation");
+                        + "Use calc_points=false and instructions=false to disable point and instruction calculation");
 
             boolean tmpElevation = request.getHints().getBool("elevation", elevation);
 
@@ -174,6 +174,7 @@ public class GraphHopperWeb implements GraphHopperAPI
                 PathWrapper altRsp = createPathWrapper(path, tmpCalcPoints, tmpInstructions, tmpElevation);
                 res.add(altRsp);
             }
+
             return res;
 
         } catch (Exception ex)
@@ -185,18 +186,28 @@ public class GraphHopperWeb implements GraphHopperAPI
     public static PathWrapper createPathWrapper( JSONObject path,
                                                  boolean tmpCalcPoints, boolean tmpInstructions, boolean tmpElevation )
     {
-        PathWrapper altRsp = new PathWrapper();
-        altRsp.addErrors(readErrors(path));
-        if (altRsp.hasErrors())
-            return altRsp;
+        PathWrapper pathWrapper = new PathWrapper();
+        pathWrapper.addErrors(readErrors(path));
+        if (pathWrapper.hasErrors())
+            return pathWrapper;
 
         double distance = path.getDouble("distance");
         long time = path.getLong("time");
+
+        JSONArray snappedPoints = path.getJSONArray("snapped_waypoints");
+        PointList points = new PointList(snappedPoints.length(), tmpElevation);
+        for (int index = 0; index < snappedPoints.length(); index++)
+        {
+            JSONArray point = snappedPoints.getJSONArray(index);
+            points.add(WebHelper.toGHPoint(point));
+        }
+        pathWrapper.setWaypoints(points);
+
         if (tmpCalcPoints)
         {
             String pointStr = path.getString("points");
             PointList pointList = WebHelper.decodePolyline(pointStr, 100, tmpElevation);
-            altRsp.setPoints(pointList);
+            pathWrapper.setPoints(pointList);
 
             if (tmpInstructions)
             {
@@ -266,11 +277,11 @@ public class GraphHopperWeb implements GraphHopperAPI
                     instr.setDistance(instDist).setTime(instTime);
                     il.add(instr);
                 }
-                altRsp.setInstructions(il);
+                pathWrapper.setInstructions(il);
             }
         }
-        altRsp.setDistance(distance).setTime(time);
-        return altRsp;
+        pathWrapper.setDistance(distance).setTime(time);
+        return pathWrapper;
     }
 
     public static List<Throwable> readErrors( JSONObject json )

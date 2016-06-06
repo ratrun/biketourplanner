@@ -1,14 +1,14 @@
 /*
- *  Licensed to GraphHopper and Peter Karich under one or more contributor
+ *  Licensed to GraphHopper GmbH under one or more contributor
  *  license agreements. See the NOTICE file distributed with this work for 
  *  additional information regarding copyright ownership.
- *
- *  GraphHopper licenses this file to you under the Apache License, 
+ * 
+ *  GraphHopper GmbH licenses this file to you under the Apache License, 
  *  Version 2.0 (the "License"); you may not use this file except in 
  *  compliance with the License. You may obtain a copy of the License at
- *
+ * 
  *       http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,6 +20,7 @@ package com.graphhopper.routing.util;
 import com.graphhopper.reader.OSMRelation;
 import com.graphhopper.reader.OSMWay;
 import com.graphhopper.reader.osm.conditional.ConditionalTagsInspector;
+import com.graphhopper.reader.osm.conditional.DateRangeParser;
 import com.graphhopper.util.Helper;
 import com.graphhopper.util.InstructionAnnotation;
 import com.graphhopper.util.Translation;
@@ -201,7 +202,7 @@ public class BikeCommonFlagEncoder extends AbstractFlagEncoder
 
         setAvoidSpeedLimit(71);
 
-        conditionalTagsInspector = new ConditionalTagsInspector(restrictions, restrictedValues, intendedValues);
+        conditionalTagsInspector = new ConditionalTagsInspector(DateRangeParser.createCalendar(), restrictions, restrictedValues, intendedValues);
     }
 
     @Override
@@ -425,8 +426,8 @@ public class BikeCommonFlagEncoder extends AbstractFlagEncoder
 
         // Until now we assumed that the way is no pushing section
         // Now we check that, but only in case that our speed is bigger compared to the PUSHING_SECTION_SPEED
-        if (speed > PUSHING_SECTION_SPEED && 
-                (way.hasTag("highway", pushingSectionsHighways) || way.hasTag("bicycle", "dismount")))
+        if (speed > PUSHING_SECTION_SPEED
+                && (way.hasTag("highway", pushingSectionsHighways) || way.hasTag("bicycle", "dismount")))
         {
             if (!way.hasTag("bicycle", intendedValues))
             {
@@ -434,13 +435,10 @@ public class BikeCommonFlagEncoder extends AbstractFlagEncoder
                     speed = PUSHING_SECTION_SPEED / 2;
                 else
                     speed = PUSHING_SECTION_SPEED;
-            } else 
-            {
-                if (way.hasTag("bicycle", "designated") || way.hasTag("bicycle", "official"))
-                    speed = getHighwaySpeed("cycleway");
-                else                
-                    speed = PUSHING_SECTION_SPEED * 2;
-            }
+            } else if (way.hasTag("bicycle", "designated") || way.hasTag("bicycle", "official"))
+                speed = getHighwaySpeed("cycleway");
+            else
+                speed = PUSHING_SECTION_SPEED * 2;
         }
 
         return speed;
@@ -560,7 +558,7 @@ public class BikeCommonFlagEncoder extends AbstractFlagEncoder
             else
                 weightToPrioMap.put(100d, PREFER.getValue());
         }
-        
+
         if ("cycleway".equals(highway))
             weightToPrioMap.put(100d, VERY_NICE.getValue());
 

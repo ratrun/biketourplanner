@@ -1,9 +1,9 @@
 /*
- *  Licensed to GraphHopper and Peter Karich under one or more contributor
+ *  Licensed to GraphHopper GmbH under one or more contributor
  *  license agreements. See the NOTICE file distributed with this work for 
  *  additional information regarding copyright ownership.
  * 
- *  GraphHopper licenses this file to you under the Apache License, 
+ *  GraphHopper GmbH licenses this file to you under the Apache License, 
  *  Version 2.0 (the "License"); you may not use this file except in 
  *  compliance with the License. You may obtain a copy of the License at
  * 
@@ -26,13 +26,10 @@ import com.graphhopper.routing.util.EdgeFilter;
 import com.graphhopper.routing.util.FlagEncoder;
 import com.graphhopper.storage.index.LocationIndex;
 import com.graphhopper.storage.index.QueryResult;
-import com.graphhopper.util.EdgeIteratorState;
-import com.graphhopper.util.PathMerger;
-import com.graphhopper.util.StopWatch;
-import com.graphhopper.util.Translation;
+import com.graphhopper.util.*;
+import com.graphhopper.util.Parameters.Routing;
 import com.graphhopper.util.shapes.GHPoint;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -40,14 +37,12 @@ import java.util.List;
  *
  * @author Peter Karich
  */
-public class ViaRoutingTemplate implements RoutingTemplate
+public class ViaRoutingTemplate extends AbstractRoutingTemplate implements RoutingTemplate
 {
     protected final GHRequest ghRequest;
     protected final GHResponse ghResponse;
     protected final PathWrapper altResponse = new PathWrapper();
-    private final LocationIndex locationIndex;
-    // result from lookup
-    private List<QueryResult> queryResults;
+    private final LocationIndex locationIndex;    
     // result from route
     protected List<Path> pathList;
 
@@ -62,10 +57,7 @@ public class ViaRoutingTemplate implements RoutingTemplate
     public List<QueryResult> lookup( List<GHPoint> points, FlagEncoder encoder )
     {
         if (points.size() < 2)
-        {
-            ghResponse.addError(new IllegalStateException("At least 2 points have to be specified, but was:" + points.size()));
-            return Collections.emptyList();
-        }
+            throw new IllegalArgumentException("At least 2 points have to be specified, but was:" + points.size());
 
         EdgeFilter edgeFilter = new DefaultEdgeFilter(encoder);
         queryResults = new ArrayList<>(points.size());
@@ -78,7 +70,7 @@ public class ViaRoutingTemplate implements RoutingTemplate
 
             queryResults.add(res);
         }
-
+       
         return queryResults;
     }
 
@@ -86,7 +78,7 @@ public class ViaRoutingTemplate implements RoutingTemplate
     public List<Path> calcPaths( QueryGraph queryGraph, RoutingAlgorithmFactory algoFactory, AlgorithmOptions algoOpts )
     {
         long visitedNodesSum = 0L;
-        boolean viaTurnPenalty = ghRequest.getHints().getBool("pass_through", false);
+        boolean viaTurnPenalty = ghRequest.getHints().getBool(Routing.PASS_THROUGH, false);
         int pointCounts = ghRequest.getPoints().size();
         pathList = new ArrayList<>(pointCounts - 1);
         QueryResult fromQResult = queryResults.get(0);
@@ -134,6 +126,9 @@ public class ViaRoutingTemplate implements RoutingTemplate
             // reset all direction enforcements in queryGraph to avoid influencing next path
             queryGraph.clearUnfavoredStatus();
 
+            if (algo.getVisitedNodes() >= algoOpts.getMaxVisitedNodes())
+                throw new IllegalArgumentException("No path found due to maximum nodes exceeded " + algoOpts.getMaxVisitedNodes());
+
             visitedNodesSum += algo.getVisitedNodes();
             fromQResult = toQResult;
         }
@@ -150,6 +145,7 @@ public class ViaRoutingTemplate implements RoutingTemplate
         if (ghRequest.getPoints().size() - 1 != pathList.size())
             throw new RuntimeException("There should be exactly one more points than paths. points:" + ghRequest.getPoints().size() + ", paths:" + pathList.size());
 
+        altResponse.setWaypoints(getWaypoints());
         ghResponse.add(altResponse);
         pathMerger.doWork(altResponse, pathList, tr);
         return true;
