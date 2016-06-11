@@ -136,7 +136,12 @@ module.exports.setHost = function (hostname) {
     // Get the list of served vector tile areas
     $.getJSON("http://" + host + ":3000/mbtilesareas.json", function( data ) {
         var i = 0;
-        $.each( data, function( key, val ) {
+        if (!mapboxgl.supported()) {
+             alert('Your browser does not support Mapbox GL');
+        }
+        else 
+        {
+          $.each( data, function( key, val ) {
                 var layerName = "Vector " + val.country.charAt(0).toUpperCase() + val.country.slice(1);
                 var url = "http://" + host + ":3000/" + val.country + "/{z}/{x}/{y}.pbf";
                 stylejsonObj.sources.mapbox.tiles[0] = url;
@@ -158,6 +163,7 @@ module.exports.setHost = function (hostname) {
                     module.exports.activeLayer = vectorlayer;
                 }
                 i++;
-        });
+          });
+        }
     });
 };
