@@ -92,7 +92,7 @@ public class GraphHopperIT
         PathWrapper arsp = rsp.getBest();
         assertEquals(3437.6, arsp.getDistance(), .1);
         assertEquals(89, arsp.getPoints().getSize());
-        
+
         assertEquals(43.7276852, arsp.getWaypoints().getLat(0), 1e-7);
         assertEquals(43.7495432, arsp.getWaypoints().getLat(1), 1e-7);
 
@@ -284,8 +284,8 @@ public class GraphHopperIT
         GHResponse rsp = hopper.route(req);
 
         PathWrapper arsp = rsp.getBest();
-        assertEquals(921.8, arsp.getDistance(), 10.);
-        assertEquals(38, arsp.getPoints().getSize());
+        assertEquals(873.6, arsp.getDistance(), 10.);
+        assertEquals(33, arsp.getPoints().getSize());
     }
 
     @Test
@@ -576,6 +576,7 @@ public class GraphHopperIT
                 addPoint(new GHPoint(43.741069, 7.426854)).
                 setVehicle(vehicle).setWeighting("fastest").
                 setAlgorithm(ROUND_TRIP);
+        rq.getHints().put(RoundTrip.HEADING, 50);
         rq.getHints().put(RoundTrip.DISTANCE, 1000);
         rq.getHints().put(RoundTrip.SEED, 0);
 
@@ -583,8 +584,9 @@ public class GraphHopperIT
 
         assertEquals(1, rsp.getAll().size());
         PathWrapper pw = rsp.getBest();
-        assertEquals(11.6, rsp.getBest().getTime() / 1000f / 60, 1);
-        assertEquals(49, pw.getPoints().size());
+        assertEquals(1.5, rsp.getBest().getDistance() / 1000f, 0.1);
+        assertEquals(17, rsp.getBest().getTime() / 1000f / 60, 1);
+        assertEquals(60, pw.getPoints().size());
     }
     
     @Test

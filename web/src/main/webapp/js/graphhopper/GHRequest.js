@@ -39,7 +39,7 @@ var GHRequest = function (host, api_key) {
     this.do_zoom = true;
     // use jsonp here if host allows CORS
     this.dataType = "json";
-    this.api_params = {"locale": "en", "vehicle": "car", "weighting": "fastest", "elevation": false, "ascendAvoidance": 0.0, "niceLevel": 3.0, "algorithm": "", "alternative_route": {"max_paths" : 1}, "round_trip" : {"distance" : 0}, "round_trip" : {"heading" : 180}};
+        this.api_params = {"locale": "en", "vehicle": "car", "weighting": "fastest", "elevation": false, "ascendAvoidance": 0.0, "niceLevel": 3.0, "algorithm": "", "alternative_route": {"max_paths" : 1}, "round_trip" : {"distance" : 0}, "heading" : 180};
 
     // register events
     this.route.addListener('route.add', function (evt) {
@@ -250,6 +250,12 @@ GHRequest.prototype.doRequest = function (url, callback) {
                         path.points = {
                             "type": "LineString",
                             "coordinates": tmpArray
+                        };
+
+                        var tmpSnappedArray = graphhopperTools.decodePath(path.snapped_waypoints, that.hasElevation());
+                        path.snapped_waypoints = {
+                            "type": "LineString",
+                            "coordinates": tmpSnappedArray
                         };
                     }
                 }

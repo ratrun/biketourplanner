@@ -724,7 +724,7 @@ $(function() {
         if ($(this).spinner('value') > 0)
         {
            ghRequest.api_params.algorithm = "roundTrip";
-           ghRequest.api_params.round_trip.heading = $(this).spinner('value');
+           ghRequest.api_params.heading = $(this).spinner('value');
            //routeLatLng(ghRequest, false);
         }
       }
