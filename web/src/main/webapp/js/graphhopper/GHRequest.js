@@ -254,7 +254,7 @@ GHRequest.prototype.doRequest = function (url, callback) {
 
                         var tmpSnappedArray = graphhopperTools.decodePath(path.snapped_waypoints, that.hasElevation());
                         path.snapped_waypoints = {
-                            "type": "LineString",
+                            "type": "MultiPoint",
                             "coordinates": tmpSnappedArray
                         };
                     }
