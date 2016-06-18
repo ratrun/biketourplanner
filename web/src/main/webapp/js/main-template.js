@@ -14,7 +14,7 @@ require('./lib/jquery.autocomplete.js');
 var mathTools = require('./tools/math.js');
 
 var ghenv = require("./options.js").options;
-console.log(ghenv.environment);
+console.log("Environment=" + ghenv.environment);
 
 var GHInput = require('./graphhopper/GHInput.js');
 var GHRequest = require('./graphhopper/GHRequest.js');
@@ -43,7 +43,7 @@ var format = require('./tools/format.js');
 var urlTools = require('./tools/url.js');
 var vehicle = require('./tools/vehicle.js');
 var tileLayers = require('./config/tileLayers.js');
-tileLayers.setHost(location.hostname);
+tileLayers.setHost("localhost");
 
 var debug = false;
 var ghRequest = new GHRequest(host, ghenv.routing.api_key);

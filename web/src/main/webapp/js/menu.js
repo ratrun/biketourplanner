@@ -17,6 +17,7 @@ var shutdownapp = false;
 var fs;
 var notifier;
 var activeOsmfile = localStorage.activeOsmfile;
+var gui;
 
 if (activeOsmfile === undefined)
     activeOsmfile = 'liechtenstein-latest.osm.pbf';
@@ -95,7 +96,7 @@ function startGraphhopperServer(win)
     //-Xms<size>        set initial Java heap size
     //-Xmx<size>        set maximum Java heap size
     graphhopper = exec('java.exe' , ['-Xmx' + maxreserved + 'm', '-Xms' + initialreserved + 'm', '-jar', 
-                       'graphhopper-web-0.7-SNAPSHOT-with-dep.jar', 
+                       'graphhopper-web-0.8-SNAPSHOT-with-dep.jar', 
                        'jetty.resourcebase=../', 
                        'jetty.port=8989', 
                        'config=config.properties', 
@@ -394,10 +395,10 @@ function webkitapp(win)
     helpSubMenu.append(separator);
     helpSubMenu.append(new gui.MenuItem({ label: 'About' ,
         click: function() {
-                            var params = {toolbar: false, resizable: false, show: true, height: 270, width: 450};
+                            var opt = {resizable: false, show: true, height: 270, width: 450};
                             if (aboutWindow == null)
                             {
-                                aboutWindow = gui.Window.open('about.html', params);
+                                aboutWindow = gui.Window.open("about.html", opt);
                                     aboutWindow.on('document-end', function() {
                                       aboutWindow.focus();
                                       // open link in default browser
@@ -445,7 +446,7 @@ var showHtmlNotification = function (icon, title, body, callback) {
   });
 };
 
- function chooseFile(name) {
+function chooseFile(name) {
     var chooser = $(name);
     chooser.unbind('change');
     chooser.change(function(evt) {
@@ -475,13 +476,15 @@ var showHtmlNotification = function (icon, title, body, callback) {
     });
     chooser.trigger('click');
 }
-// Test if we are running under nwjs. If so the window.require('nw.gui'); command succeeds, otherwise we get an exception
-try {
-     var gui = window.require('nw.gui');
-     var win = gui.Window.get();
-     webkitapp(win);
- }
- catch(err) {
-     // Ignore: We are not running under nw
- }
 
+// Test if we are running under nwjs
+try {
+  gui = nw;
+  var win = gui.Window.get();
+  //win.showDevTools();
+  webkitapp(win);
+}
+catch (err) 
+{
+  console.log("We are not running under nw" + err);
+}
