@@ -3571,7 +3571,7 @@
             "interactive": true,
             "minzoom": 16,
             "layout": {
-                "icon-image": "{maki}-11",
+                "icon-image": "{maki}-12",
                 "text-font": [
                     "Open Sans Semibold"
                 ],
@@ -3616,7 +3616,7 @@
             "interactive": true,
             "minzoom": 15,
             "layout": {
-                "icon-image": "{maki}-11",
+                "icon-image": "{maki}-12",
                 "text-font": [
                     "Open Sans Semibold"
                 ],
@@ -3661,7 +3661,7 @@
             "interactive": true,
             "minzoom": 14,
             "layout": {
-                "icon-image": "{maki}-11",
+                "icon-image": "{maki}-12",
                 "text-font": [
                     "Open Sans Semibold"
                 ],
@@ -3705,7 +3705,7 @@
         {
             "layout": {
                 "text-size": 12,
-                "icon-image": "{maki}-11",
+                "icon-image": "{maki}-12",
                 "text-font": [
                     "Open Sans Semibold"
                 ],
@@ -3738,7 +3738,7 @@
             "interactive": true,
             "minzoom": 13,
             "layout": {
-                "icon-image": "{maki}-11",
+                "icon-image": "{maki}-12",
                 "text-font": [
                     "Open Sans Semibold"
                 ],
@@ -3783,7 +3783,7 @@
             "interactive": true,
             "minzoom": 11,
             "layout": {
-                "icon-image": "{maki}-11",
+                "icon-image": "{maki}-12",
                 "text-font": [
                     "Open Sans Semibold"
                 ],
