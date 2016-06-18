@@ -3596,6 +3596,12 @@
                     "Point"
                 ],
                 [
+                    "!in",
+                    "tourism",
+                    "camp_site",
+                    "caravan_site"
+                ],
+                [
                     "==",
                     "scalerank",
                     4
@@ -3641,6 +3647,12 @@
                     "Point"
                 ],
                 [
+                    "!in",
+                    "tourism",
+                    "camp_site",
+                    "caravan_site"
+                ],
+                [
                     "==",
                     "scalerank",
                     3
@@ -3684,6 +3696,12 @@
                     "==",
                     "$type",
                     "Point"
+                ],
+                [
+                    "!in",
+                    "tourism",
+                    "camp_site",
+                    "caravan_site"
                 ],
                 [
                     "==",
