@@ -15,7 +15,6 @@ var tilesServerHasExited = true;
 var graphhopperServerHasExited = true;
 var shutdownapp = false;
 var fs;
-var notifier;
 var activeOsmfile = localStorage.activeOsmfile;
 var gui;
 
@@ -131,6 +130,7 @@ function startGraphhopperServer(win)
     graphhopper.on('close', function (code) {
         console.log('graphhopper child process closed with code ' + code + ' shutdownapp=' + shutdownapp);
         graphhopperServerHasExited = true;
+        showHtmlNotification("./img/mtb.png", 'Graphhopper routing server stopped !!' , '');
         if (shutdownapp)
            win.close();
     });
@@ -155,7 +155,6 @@ function startGraphhopperServer(win)
         }
         else
         {
-           notifier.closeAll();
            stopLocalVectorTileServer();
            stopGraphhopperServer();
         }
@@ -257,7 +256,12 @@ function webkitapp(win)
 {
     var menu = new gui.Menu({type: "menubar"});
     fs = global.require('fs');
-    notifier = global.require('nw-notify');
+
+    if (!fs.existsSync('graphhopper\\osmfiles\\' + activeOsmfile)) 
+    {
+       alert("OSM file " + activeOsmfile + " not found!");
+       localStorage.removeItem('activeOsmfile');
+    }
 
     // Create a sub-menu
     var mapSubMenu = new gui.Menu();
@@ -430,21 +434,41 @@ function webkitapp(win)
 
 }
 
-// NW-NOTIFY
-var showHtmlNotification = function (icon, title, body, callback) {
-  // give it nice look
-  notifier.setConfig({
-    displayTime: 6000
-  });
-
-  if (icon) icon = notifier.getAppPath() + icon;
-
-  notifier.notify({
-    title: title,
-    text: body,
-    image: icon,
-  });
+var showHtmlNotification = function (icon, title, body, callback) 
+{
+    var notif = showNotification(icon, title, body);
+    setTimeout(function () {
+      notif.close();
+    }, 6000);
 };
+
+
+var writeLog = function (msg) {
+  var logElement = $("#output");
+  logElement.innerHTML += msg + "<br>";
+  logElement.scrollTop = logElement.scrollHeight;
+};
+
+var showNotification = function (icon, title, body) {
+
+  var notification = new Notification(title, {icon: icon, body: body});
+/*
+  notification.onclick = function () {
+    writeLog("Notification clicked");
+  };
+
+  notification.onclose = function () {
+    writeLog("Notification closed");
+    NW.Window.get().focus();
+  };
+*/  
+
+  notification.onshow = function () {
+    writeLog("-----<br>" + title);
+  };
+
+  return notification;
+}
 
 function chooseFile(name) {
     var chooser = $(name);
