@@ -979,8 +979,10 @@ public class GraphHopper implements GraphHopperAPI
         {
             if (encoder.supports(CurvatureWeighting.class))
                 return new CurvatureWeighting(encoder, weightingMap);
-            else
-                return new FastestWeighting(encoder, weightingMap);
+
+        } else if ("short_fastest".equalsIgnoreCase(weighting))
+        {
+            return new ShortFastestWeighting(encoder, weightingMap);
         } else if ("elevation".equalsIgnoreCase(weighting))
         {
             if (encoder.supports(EleWeighting.class))
