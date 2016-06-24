@@ -39,28 +39,24 @@ var GHRequest = function (host, api_key) {
     this.do_zoom = true;
     // use jsonp here if host allows CORS
     this.dataType = "json";
-        this.api_params = {"locale": "en", "vehicle": "car", "weighting": "fastest", "elevation": false, "ascendAvoidance": 0.0, "niceLevel": 3.0, "algorithm": "", "alternative_route": {"max_paths" : 1}, "round_trip" : {"distance" : 0}, "heading" : 180};
+    this.api_params = {"locale": "en", "vehicle": "car", "weighting": "fastest", "elevation": false, "ascendAvoidance": 0.0, "niceLevel": 3.0, "algorithm": "", "alternative_route": {"max_paths" : 1}, "round_trip" : {"distance" : 0}, "heading" : 180};
 
     // register events
     this.route.addListener('route.add', function (evt) {
         this.to = this.route.last();
-        log("Foo just added.");
     }.bind(this));
     this.route.addListener('route.remove', function (evt) {
         this.from = this.route.first();
         this.to = this.route.last();
-        log("Foo just removed.");
     }.bind(this));
     this.route.addListener('route.move', function (evt) {
         this.from = this.route.first();
         this.to = this.route.last();
-        log("Foo just moved.");
     }.bind(this));
 
     this.route.addListener('route.reverse', function (evt) {
         this.from = this.route.first();
         this.to = this.route.last();
-        log("Foo just reversed.");
     }.bind(this));
 };
 
@@ -75,6 +71,7 @@ GHRequest.prototype.init = function (params) {
 
         if (key === "point" || key === "mathRandom" || key === "do_zoom" || key === "layer")
             continue;
+
         if ( key.indexOf('.') === -1 )
         {
             this.api_params[key] = val;
@@ -180,7 +177,9 @@ GHRequest.prototype.createGeocodeURL = function (host, prevIndex) {
     var path = this.createPath(tmpHost + "/geocode?limit=6&type=" + this.dataType + "&key=" + this.key);
     if (prevIndex >= 0 && prevIndex < this.route.size()) {
         var point = this.route.getIndex(prevIndex);
-        path += "&point=" + point.lat + "," + point.lng;
+        if (point.isResolved()) {
+            path += "&point=" + point.lat + "," + point.lng;
+        }
     }
     return path;
 };
@@ -278,7 +277,7 @@ GHRequest.prototype.doRequest = function (url, callback) {
                     hints: [{"message": msg, "details": details}]
                 };
             }
-            log(msg + " " + JSON.stringify(err));
+            console.log(msg + " " + JSON.stringify(err));
 
             callback(json);
         },
@@ -290,7 +289,7 @@ GHRequest.prototype.doRequest = function (url, callback) {
 
 GHRequest.prototype.getInfo = function () {
     var url = this.host + "/info?type=" + this.dataType + "&key=" + this.key;
-    log(url);
+    // console.log(url);
     return $.ajax({
         url: url,
         timeout: 3000,
@@ -316,7 +315,7 @@ GHRequest.prototype.fetchTranslationMap = function (urlLocaleParam) {
     if (this.key !== undefined)
         var keyparam= "&key=" + this.key;
     var url = this.host + "/i18n/" + urlLocaleParam + "?type=" + this.dataType + keyparam;
-    log(url);
+    // console.log(url);
     return $.ajax({
         url: url,
         timeout: 3000,

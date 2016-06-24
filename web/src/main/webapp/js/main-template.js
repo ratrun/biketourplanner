@@ -80,7 +80,7 @@ $(document).ready(function (e) {
             // https://github.com/defunkt/jquery-pjax/issues/143#issuecomment-6194330
 
             var state = History.getState();
-            log(state);
+            console.log(state);
             initFromParams(state.data, true);
         });
     }
@@ -96,6 +96,7 @@ $(document).ready(function (e) {
             .then(function (arg1, arg2) {
                 // init translation retrieved from first call (fetchTranslationMap)
                 var translations = arg1[0];
+                autocomplete.setLocale(translations.locale);
                 ghRequest.setLocale(translations.locale);
                 translate.init(translations);
 
@@ -166,8 +167,11 @@ $(document).ready(function (e) {
                      initFromParams(urlParams, true);
                 }, 1000);
 
+
+                checkInput();
             }, function (err) {
-                log(err);
+
+                console.log(err);
                 $('#error').html('GraphHopper API offline? <a href="http://graphhopper.com/maps">Refresh</a>' + '<br/>Status: ' + err.statusText + '<br/>' + 'host=' + host);
 
                 bounds = {
@@ -458,7 +462,7 @@ function routeLatLng(request, doQuery) {
     if (!doQuery && History.enabled) {
         // 2. important workaround for encoding problems in history.js
         var params = urlTools.parseUrl(urlForHistory);
-        log(params);
+        console.log(params);
         params.do_zoom = doZoom;
         // force a new request even if we have the same parameters
         params.mathRandom = Math.random();
@@ -486,7 +490,7 @@ function routeLatLng(request, doQuery) {
         routeResultsDiv.html("");
         if (json.message) {
             var tmpErrors = json.message;
-            log(tmpErrors);
+            console.log(tmpErrors);
             if (json.hints) {
                 for (var m = 0; m < json.hints.length; m++) {
                     routeResultsDiv.append("<div class='error'>" + json.hints[m].message + "</div>");

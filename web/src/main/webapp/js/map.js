@@ -26,7 +26,6 @@ function adjustMapSize() {
     mapDiv.width(width).height(height);
     $("#input").height(height);
 
-    console.log("adjustMapSize " + height + "x" + width);
 
     // reduce info size depending on how heigh the input_header is and reserve space for footer
     $(".instructions_info").css("max-height",
@@ -40,7 +39,7 @@ function adjustMapSize() {
 
 function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selectLayer) {
     adjustMapSize();
-    log("init map at " + JSON.stringify(bounds));
+    // console.log("init map at " + JSON.stringify(bounds));
     var defaultLayer = tileLayers.selectLayer(selectLayer);
 
     // default
@@ -99,7 +98,11 @@ function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selec
     menuIntermediate = map.contextmenu.insertItem(_intItem, _intItem.index);
     menuEnd = map.contextmenu.insertItem(_endItem, _endItem.index);
 
-    var zoomControl = new L.Control.Zoom({position: 'topleft'}).addTo(map);
+    var zoomControl = new L.Control.Zoom({
+        position: 'topleft',
+        zoomInTitle: translate.tr('zoom_in'),
+        zoomOutTitle: translate.tr('zoom_out')
+    }).addTo(map);
 
     new L.Control.loading({
         zoomControl: zoomControl

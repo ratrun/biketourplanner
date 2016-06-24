@@ -39,4 +39,4 @@ module.exports.getSignName = function (sign) {
         throw "did not find sign " + sign;
 };
 
-module.exports.browserTitle = "GraphHopper Maps - Driving Directions";
+module.exports.browserTitle = "Biketourplaner";
