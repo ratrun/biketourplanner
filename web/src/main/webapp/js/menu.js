@@ -254,6 +254,7 @@ function deletegraph(dir)
 // Here we define the functionality for the graphhopper webkit application
 function webkitapp(win)
 {
+    gui.App.clearCache();
     var menu = new gui.Menu({type: "menubar"});
     fs = global.require('fs');
 

@@ -3025,6 +3025,7 @@
                 ]
             ],
             "minzoom": 12,
+            "maxzoom": 16,
             "layout": {
                 "icon-image": "campsite-18",
                 "text-font": [
@@ -3100,6 +3101,7 @@
                 ]
             ],
             "minzoom": 12,
+            "maxzoom": 16,
             "layout": {
                 "icon-image": "lodging-18",
                 "text-font": [
@@ -3232,6 +3234,7 @@
                 ]
             ],
             "minzoom": 7,
+            "maxzoom": 12,
             "layout": {
                 "icon-image": "building-12",
                 "visibility": "none"
@@ -3277,6 +3280,174 @@
                 "text-halo-color": "#ffffff",
                 "text-halo-width": 1,
                 "text-halo-blur": 0.5
+            }
+        },
+        {
+            "id": "poi_supermarket",
+            "type": "symbol",
+            "source": "bicyclenodes",
+            "source-layer": "bicyclenodes",
+            "filter": [
+                "all",
+                [
+                    "==",
+                    "$type",
+                    "Point"
+                ],
+                [
+                    "==",
+                    "amenity",
+                    "supermarket"
+                ]
+            ],
+            "minzoom": 10,
+            "maxzoom": 16,
+            "layout": {
+                "icon-image": "supermarket-12",
+                "visibility": "none"
+            }
+        },
+        {
+            "id": "poi_hospital",
+            "type": "symbol",
+            "source": "bicyclenodes",
+            "source-layer": "bicyclenodes",
+            "filter": [
+                "all",
+                [
+                    "==",
+                    "$type",
+                    "Point"
+                ],
+                [
+                    "==",
+                    "amenity",
+                    "hospital"
+                ]
+            ],
+            "minzoom": 7,
+            "maxzoom": 12,
+            "layout": {
+                "icon-image": "hospital2-12",
+                "visibility": "none"
+            }
+        },
+        {
+            "id": "poi_label_hospital",
+            "type": "symbol",
+            "source": "bicyclenodes",
+            "source-layer": "bicyclenodes",
+            "filter": [
+                "all",
+                [
+                    "==",
+                    "$type",
+                    "Point"
+                ],
+                [
+                    "==",
+                    "amenity",
+                    "hospital"
+                ]
+            ],
+            "minzoom": 12,
+            "maxzoom": 16,
+            "layout": {
+                "icon-image": "hospital2-18",
+                "text-font": [
+                    "Open Sans Semibold"
+                ],
+                "text-field": "{name}",
+                "text-max-width": 9,
+                "text-padding": 2,
+                "text-offset": [
+                    0,
+                    0.6
+                ],
+                "text-anchor": "top",
+                "text-size": 12,
+                "visibility": "none"
+            },
+            "paint": {
+                "text-color": "#666",
+                "text-halo-color": "#ffffff",
+                "text-halo-width": 1,
+                "text-halo-blur": 0.5
+            }
+        },
+        {
+            "id": "poi_fuel",
+            "type": "symbol",
+            "source": "bicyclenodes",
+            "source-layer": "bicyclenodes",
+            "filter": [
+                "all",
+                [
+                    "==",
+                    "$type",
+                    "Point"
+                ],
+                [
+                    "==",
+                    "amenity",
+                    "fuel"
+                ]
+            ],
+            "minzoom": 7,
+            "maxzoom": 16,
+            "layout": {
+                "icon-image": "fuel-12",
+                "visibility": "none"
+            }
+        },
+        {
+            "id": "poi_restaurant",
+            "type": "symbol",
+            "source": "bicyclenodes",
+            "source-layer": "bicyclenodes",
+            "filter": [
+                "all",
+                [
+                    "==",
+                    "$type",
+                    "Point"
+                ],
+                [
+                    "==",
+                    "amenity",
+                    "restaurant"
+                ]
+            ],
+            "minzoom": 7,
+            "maxzoom": 16,
+            "layout": {
+                "icon-image": "restaurant-12",
+                "visibility": "none"
+            }
+        },
+        {
+            "id": "poi_fast_food",
+            "type": "symbol",
+            "source": "bicyclenodes",
+            "source-layer": "bicyclenodes",
+            "filter": [
+                "all",
+                [
+                    "==",
+                    "$type",
+                    "Point"
+                ],
+                [
+                    "==",
+                    "amenity",
+                    "fast_food"
+                ]
+            ],
+            "minzoom": 7,
+            "maxzoom": 16,
+            "layout": {
+                "icon-image": "fast_food-12",
+                "visibility": "none"
             }
         },
         {
@@ -3662,12 +3833,6 @@
                     "Point"
                 ],
                 [
-                    "!in",
-                    "tourism",
-                    "camp_site",
-                    "caravan_site"
-                ],
-                [
                     "==",
                     "scalerank",
                     4
@@ -3713,12 +3878,6 @@
                     "Point"
                 ],
                 [
-                    "!in",
-                    "tourism",
-                    "camp_site",
-                    "caravan_site"
-                ],
-                [
                     "==",
                     "scalerank",
                     3
@@ -3762,12 +3921,6 @@
                     "==",
                     "$type",
                     "Point"
-                ],
-                [
-                    "!in",
-                    "tourism",
-                    "camp_site",
-                    "caravan_site"
                 ],
                 [
                     "==",
