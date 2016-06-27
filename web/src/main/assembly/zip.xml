@@ -16,6 +16,9 @@
             <excludes>
                 <exclude>webapp/ratrun-mbtiles-server/**</exclude>
                 <exclude>webapp/node_modules/**</exclude>
+                <exclude>webapp/graphhopper/graph/**</exclude>
+                <exclude>webapp/graphhopper/osmfiles/**</exclude>
+                <exclude>webapp/graphhopper/srtmprovider/**</exclude>
             </excludes>
         </fileSet>
         <fileSet>
