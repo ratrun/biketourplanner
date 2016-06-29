@@ -3296,14 +3296,14 @@
                 ],
                 [
                     "==",
-                    "amenity",
+                    "shop",
                     "supermarket"
                 ]
             ],
             "minzoom": 10,
             "maxzoom": 16,
             "layout": {
-                "icon-image": "supermarket-12",
+                "icon-image": "shop-12",
                 "visibility": "none"
             }
         },
@@ -3393,7 +3393,7 @@
                     "fuel"
                 ]
             ],
-            "minzoom": 7,
+            "minzoom": 10,
             "maxzoom": 16,
             "layout": {
                 "icon-image": "fuel-12",
@@ -3418,7 +3418,7 @@
                     "restaurant"
                 ]
             ],
-            "minzoom": 7,
+            "minzoom": 10,
             "maxzoom": 16,
             "layout": {
                 "icon-image": "restaurant-12",
@@ -3443,10 +3443,10 @@
                     "fast_food"
                 ]
             ],
-            "minzoom": 7,
+            "minzoom": 10,
             "maxzoom": 16,
             "layout": {
-                "icon-image": "fast_food-12",
+                "icon-image": "fast-food-12",
                 "visibility": "none"
             }
         },

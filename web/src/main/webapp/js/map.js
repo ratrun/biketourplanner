@@ -74,14 +74,13 @@ function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selec
     addOverlayLayer('Campsite', ['poi_campsites', 'poi_campsites_label'], 8);
     addOverlayLayer('Bicycle shop', [ 'poi_bicycle_shops', 'poi_label_bicycle_shops'], 8);
     addOverlayLayer('Alpine hut', [ 'poi_alpine_hut', 'poi_label_alpine_hut'], 8);
-    addOverlayLayer('Drinking water', ['poi_drinking_water'], 8);
     addOverlayLayer('Hospital', ['poi_hospital', 'poi_label_hospital' ], 8);
-/*
-    addOverlayLayer('Supermarket', ['poi_supermarket'], 9);
-    addOverlayLayer('Restaurant', ['poi_restaurant'], 10);
-    addOverlayLayer('Fast food', ['poi_fast_food'], 10);
-    addOverlayLayer('Fuel', ['poi_fuel'], 8);
-*/
+    addOverlayLayer('Drinking water', ['poi_drinking_water'], 11);    
+    addOverlayLayer('Supermarket', ['poi_supermarket'], 11);
+    addOverlayLayer('Restaurant', ['poi_restaurant'], 11);
+    addOverlayLayer('Fast food', ['poi_fast_food'], 11);
+    addOverlayLayer('Fuel', ['poi_fuel'], 11);
+
     var _startItem = {
         text: translate.tr('set_start'),
         callback: setStartCoord,
