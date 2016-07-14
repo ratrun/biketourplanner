@@ -124,15 +124,41 @@ module.exports.selectLayer = function (layerName) {
     return defaultLayer;
 };
 
-// Remove the following block in case that you do not intend to run a local vector tile server. 
+// Remove the following blocks in case that you do not intend to run a local vector tile server. 
 // The code does not break anything, but is unnecessary then.
 var stylejsonObj = require('../../vectorstyles/bright-v9.json');
+
+function addVectorLayer(layerName, url) {
+    stylejsonObj.sources.mapbox.tiles[0] = url;
+    stylejsonObj.sprite = "http://" + host + ":8989/assets/bright-v8";
+    stylejsonObj.glyphs = "http://" + host + ":8989/assets/font/{fontstack}/{range}.pbf";
+    styleTileURL[layerName] = url;
+    var vectorlayer = L.mapboxGL({
+                              attribution: osmAttr + " © <a href='https://www.mapbox.com/about/maps/'>Mapbox</a>",
+                              style: stylejsonObj
+                           });
+    availableVectorTileLayers[layerName] = vectorlayer;
+    lastlayerName = localStorage.lastlayerName;
+    if (lastlayerName === undefined)
+        lastlayerName = layerName;
+    if (layerName === lastlayerName) // Select the default
+    {
+        module.exports.activeLayerName = layerName;
+        module.exports.defaultLayer = vectorlayer;
+        module.exports.activeLayer = vectorlayer;
+    }
+}
 
 module.exports.setHost = function (hostname) {
     host = hostname;
     if (hostname === "")
         host = "localhost";
     console.log("tileLayers module.exports.setHost host=" + host + " hostname=" + hostname);
+
+    if (mapboxgl.supported()) {
+        addVectorLayer("Osm2VectorTiles.org", "http://osm2vectortiles-0.tileserver.com/v2/{z}/{x}/{y}.pbf");
+    }
+
     // Get the list of served vector tile areas
     $.getJSON("http://" + host + ":3000/mbtilesareas.json", function( data ) {
         var i = 0;
@@ -141,27 +167,10 @@ module.exports.setHost = function (hostname) {
         }
         else 
         {
-          $.each( data, function( key, val ) {
+            $.each( data, function( key, val ) {
                 var layerName = "Vector " + val.country.charAt(0).toUpperCase() + val.country.slice(1);
                 var url = "http://" + host + ":3000/" + val.country + "/{z}/{x}/{y}.pbf";
-                stylejsonObj.sources.mapbox.tiles[0] = url;
-                stylejsonObj.sprite = "http://" + host + ":8989/assets/bright-v8";
-                stylejsonObj.glyphs = "http://" + host + ":8989/assets/font/{fontstack}/{range}.pbf";
-                styleTileURL[layerName] = url;
-                var vectorlayer = L.mapboxGL({
-                                          attribution: osmAttr + " © <a href='https://www.mapbox.com/about/maps/'>Mapbox</a>",
-                                          style: stylejsonObj
-                                       });
-                availableVectorTileLayers[layerName] = vectorlayer;
-                lastlayerName = localStorage.lastlayerName;
-                if (lastlayerName === undefined)
-                    lastlayerName = layerName;
-                if (layerName === lastlayerName) // Select the default
-                {
-                    module.exports.activeLayerName = layerName;
-                    module.exports.defaultLayer = vectorlayer;
-                    module.exports.activeLayer = vectorlayer;
-                }
+                addVectorLayer(layerName, url);
                 i++;
           });
         }
