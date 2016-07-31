@@ -99,7 +99,7 @@ function startGraphhopperServer(win)
                        'jetty.resourcebase=../', 
                        'jetty.port=8989', 
                        'config=config.properties', 
-                       'osmreader.osm=osmfiles/' + activeOsmfile, 
+                       'datareader.osm=osmfiles/' + activeOsmfile, 
                        'graph.location=graph'], {
        cwd: 'graphhopper',
        detached: false

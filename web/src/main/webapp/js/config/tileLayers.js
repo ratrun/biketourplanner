@@ -15,16 +15,6 @@ var omniscale = L.tileLayer.wms('https://maps.omniscale.net/v1/mapsgraph-bf48cc0
     attribution: osmAttr + ', &copy; <a href="http://maps.omniscale.com/">Omniscale</a>'
 });
 
-var mapquest = L.tileLayer('http://otile{s}.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png', {
-    attribution: osmAttr + ', <a href="http://open.mapquest.co.uk" target="_blank">MapQuest</a>',
-    subdomains: '1234'
-});
-
-var mapquestAerial = L.tileLayer('http://otile{s}.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.png', {
-    attribution: osmAttr + ', <a href="http://open.mapquest.co.uk" target="_blank">MapQuest</a>',
-    subdomains: '1234'
-});
-
 var openMapSurfer = L.tileLayer('http://korona.geog.uni-heidelberg.de/tiles/roads/x={x}&y={y}&z={z}', {
     attribution: osmAttr + ', <a href="http://korona.geog.uni-heidelberg.de/contact.html">GIScience Heidelberg</a>'
 });
@@ -70,6 +60,21 @@ var esriAerial = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/servic
     maxZoom: 18
 });
 
+
+var availableTileLayers = {
+    "Omniscale": omniscale,
+    "OpenStreetMap": osm,
+    "Esri Aerial": esriAerial,
+    "TF Transport": thunderTransport,
+    "TF Cycle": thunderCycle,
+    "TF Outdoors": thunderOutdoors,
+    "Lyrk": lyrk,
+    "WanderReitKarte": wrk,
+    "OpenMapSurfer": openMapSurfer,
+    "Sorbian Language": sorbianLang,
+    "OpenStreetMap.de": osmde
+};
+
 module.exports.activeLayerName = "Omniscale";
 module.exports.defaultLayer = omniscale;
 module.exports.activeLayer = module.exports.defaultLayer;
@@ -78,8 +83,6 @@ var availableRasterTileLayers = {};
 var availableVectorTileLayers = {};
 // availableTileLayers["Lyrk"] = lyrk;
 availableRasterTileLayers["Omniscale"] = omniscale;
-availableRasterTileLayers["MapQuest"] = mapquest;
-availableRasterTileLayers["MapQuest Aerial"] = mapquestAerial;
 availableRasterTileLayers["Esri Aerial"] = esriAerial;
 availableRasterTileLayers["OpenMapSurfer"] = openMapSurfer;
 availableRasterTileLayers["TF Transport"] = thunderTransport;
