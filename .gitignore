@@ -41,3 +41,4 @@ local.properties
 *.zip
 .DS_Store
 /core/nbproject/
+/biketourplaner/nbproject/private/
