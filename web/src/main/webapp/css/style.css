@@ -15,6 +15,7 @@ body {
 #input {
     float: left;
     margin-left: 10px;
+    font-size: small;
     /*padding-right: 15px; */
 }
 
@@ -390,16 +391,6 @@ td img.pic {
     display: block;    
 }
 
-.input-ascend .input-niceLevel .input-roundtrip .input-alternativeRoutesMaxPaths label {
-    display: inline-block;
-    font-size: smaller;
-    vertical-align: middle;
-}
-
-.ui-slider-ascend .ui-slider-niceLevel .ui-input-roundtrip .ui-slider-alternativeRoutesMaxPaths { 
-    background: transparent;
-}
-
 #roundtripcontrol{
     display: none;
     font-size: smaller;
@@ -409,18 +400,21 @@ td img.pic {
 #ascendcontrol{
     display: none;
     font-size: smaller;
+    margin-right: 10px;
     visibility: hidden;
 }
 
 #niceLevelcontrol{
     display: none;
     font-size: smaller;
+    margin-right: 10px;
     visibility: hidden;
 }
 
 #alternativeRoutecontrol{
     display: none;
     font-size: smaller;
+    margin-right: 10px;
     visibility: hidden;
 }
 
@@ -478,5 +472,15 @@ td img.pic {
         width: 350px;
         overflow: auto;
         background: rgba(255, 255, 255, 0.8);
+}
+
+#roundtripdistance {
+    margin-right: 5px;
+    margin-left: 5px;
+}
+
+#roundtripheading {
+    margin-right: 5px;
+    margin-left: 5px;
 }
 
