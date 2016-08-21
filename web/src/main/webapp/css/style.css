@@ -19,7 +19,15 @@ body {
     /*padding-right: 15px; */
 }
 
-#info {    
+#routingOptions{
+ /*   display: none; */
+}
+
+#tripDiv{
+    display: none;
+}
+
+#info {
     margin-top: 10px;
     display: none;
     padding: 5px;
@@ -29,7 +37,15 @@ body {
     padding-right: 5px;
 }
 
-.route_results {    
+#triptree {
+    padding: 10px;
+}
+
+#triptree a {
+    padding-right: 5px;
+}
+
+.route_results {
     max-height: 40%;
 }
 
@@ -143,8 +159,8 @@ body {
 }
 #options {
     padding-bottom: 10px;
-    padding-left: 20px;
-    padding-right: 20px;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 .vehicle-info-link {
     padding-top: 3px;
@@ -156,7 +172,7 @@ body {
 }
 #header_img {
     padding-top: 15px;
-    padding-left: 20px;
+    padding-left: 10px;
     padding-bottom: 15px;
 }
 #header_img img {
@@ -187,6 +203,35 @@ body {
 #searchButton:hover {
     cursor: pointer;
 }
+
+#storeDiv {
+    margin-top: -15px;
+    margin-left: 60px;
+}
+
+#storeButton {
+    margin-bottom: 5px;
+    margin-left: 5px;
+    margin-right: 5px;
+    float: left;
+}
+
+#storeButton:hover {
+    cursor: pointer;
+}
+
+#addtripButton {
+    float: right;
+    margin-bottom: 5px;
+    margin-right: 5px;
+}
+
+#changeTripButton {
+    float: left;
+    margin-bottom: 5px;
+    margin-left: 5px;
+}
+
 .clear {
     clear: both;
 }
@@ -400,6 +445,7 @@ td img.pic {
 #ascendcontrol{
     display: none;
     font-size: smaller;
+    margin-left: 5px;
     margin-right: 10px;
     visibility: hidden;
 }
@@ -407,6 +453,7 @@ td img.pic {
 #niceLevelcontrol{
     display: none;
     font-size: smaller;
+    margin-left: 5px;
     margin-right: 10px;
     visibility: hidden;
 }
@@ -414,6 +461,7 @@ td img.pic {
 #alternativeRoutecontrol{
     display: none;
     font-size: smaller;
+    margin-left: 5px;
     margin-right: 10px;
     visibility: hidden;
 }

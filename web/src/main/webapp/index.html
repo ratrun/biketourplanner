@@ -20,17 +20,27 @@
         <script type="text/javascript" src="js/main.js?v=0.7.0"></script>
         <link rel="stylesheet" href="css/mapbox-gl.css?v=0.21.0" />
         <script src="js/mapbox-gl.js?v=0.21.0"></script>
+        <script type="text/javascript" src="js/lib/tree.jquery.js"></script>
+        <link rel="stylesheet" href="css/jqtree.css">
         <link rel="stylesheet" type="text/css" href="css/style.css" />
     </head>
     <body>
         <div id="input">
-            <div id="input_header">
+          <div id="input_header">
                 <div id="header_img">
                     <a class="no_link" href="https://github.com/ratrun">
                         <img alt="BikeTourPlaner" src="./img/header.png"/>
                     </a>
                 </div>
+            <form id="tripForm">
+                <div id="tripDiv">
+                    <div id="tripTree"></div>
+                    <input id="changeTripButton" type="submit" value="Change trip">
+                    <input id="addtripButton" type="submit" value="+">
+                </div>
+            </form>
 
+            <div id="routingOptions">
                 <div id="options">
                     <span id="vehicles">
 
@@ -78,20 +88,20 @@
                       </div>
                     </div>
 
-                    <div class="clear"> </div>
                     <input id="searchButton" type="submit" value="Search">
                     </div>
                 </form>
                 <div id="export-link" class="left"><a href="/maps"><img src='img/link.png'></a></div>
                 <div id="gpxExportButton"><a href=""><img alt="gpx" src='img/gpx.png'></a></div>
+                <div id="storeDiv"> <input id="storeButton" type="submit" value="Store trip"></div>
                 <div id="hosting">Powered by <a href='https://graphhopper.com/#directions-api'>GraphHopper API</a></div>
-            </div>
-            <div class="clear"> </div>
-            <div id="info" class="small_text">
-            </div>
-            <div id="error" class="error">
-            </div>
 
+                <div class="clear"> </div>
+                <div id="info" class="small_text">
+                </div>
+                <div id="error" class="error">
+                </div>
+            </div>
 
             <div id="pointTemplate" class="hidden">
                 <div id="{id}_Div" class="pointDiv">
@@ -102,19 +112,21 @@
                     <div id="{id}_ResolveError" class="pointResolveError"></div>
                 </div>
             </div>
-        </div>
-        <div id="gpx_dialog" title="Included GPX data:">
-            <form id="GPXOptions" name="GPXOptions">
-                <label class="inline">
-                    <input type="checkbox" id="gpx_route" name="GPXOptions" value="route">Route</label>
-                <br>
-                <label class="inline">
-                    <input type="checkbox" id="gpx_track" name="GPXOptions" value="track" checked="checked">Track</label>
-                <br>
-                <label class="inline">
-                    <input type="checkbox" id="gpx_waypoints" name="GPXOptions" value="waypoints">Waypoints</label>
-                <br>
-            </form>
+
+          </div>
+            <div id="gpx_dialog" title="Included GPX data:">
+                <form id="GPXOptions" name="GPXOptions">
+                    <label class="inline">
+                        <input type="checkbox" id="gpx_route" name="GPXOptions" value="route">Route</label>
+                    <br>
+                    <label class="inline">
+                        <input type="checkbox" id="gpx_track" name="GPXOptions" value="track" checked="checked">Track</label>
+                    <br>
+                    <label class="inline">
+                        <input type="checkbox" id="gpx_waypoints" name="GPXOptions" value="waypoints">Waypoints</label>
+                    <br>
+                </form>
+            </div>
         </div>
         <div id="map_selection_dialog" title="Select map data:">
             <form id="MapChoice" name="MapChoice">
@@ -127,27 +139,5 @@
         <pre id='layerfeatures'></pre>
         <input style="display:none;" id="osmFileDialog" type="file" nwworkingdir="graphhopper\osmfiles"/>
         <input style="display:none;" id="mbtilesFileDialog" type="file" nwworkingdir="ratrun-mbtiles-server"/>
-        <!-- Piwik -->
-        <script type="text/javascript">
-            PIWIK = false;
-            if (PIWIK) {
-                var _paq = _paq || [];
-                _paq.push(['trackPageView']);
-                _paq.push(['enableLinkTracking']);
-                (function () {
-                    var url = "https://graphhopper.com/piwik/";
-                    _paq.push(['setTrackerUrl', url + 'piwik.php']);
-                    _paq.push(['setSiteId', 1]);
-                    var d = document, g = d.createElement('script'), s = d.getElementsByTagName('script')[0];
-                    g.type = 'text/javascript';
-                    g.defer = true;
-                    g.async = true;
-                    g.src = url + 'piwik.js';
-                    s.parentNode.insertBefore(g, s);
-                })();
-            }
-        </script>
-        <noscript><p><img src="https://graphhopper.com/piwik/piwik.php?idsite=1" style="border:0;" alt="" /></p></noscript>
-        <!-- End Piwik Code -->
     </body>
 </html>
