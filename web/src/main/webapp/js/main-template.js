@@ -13,7 +13,8 @@ require('./lib/jquery.history.js');
 require('./lib/jquery.autocomplete.js');
 var mathTools = require('./tools/math.js');
 
-var ghenv = require("./options.js").options;
+var ghenv = require("./config/options.js").options;
+
 console.log("Environment=" + ghenv.environment);
 
 var GHInput = require('./graphhopper/GHInput.js');
@@ -193,6 +194,7 @@ $(document).ready(function (e) {
             }, function (err) {
 
                 console.log(err);
+
                 $('#error').html('GraphHopper API offline? <a href="http://graphhopper.com/maps">Refresh</a>' + '<br/>Status: ' + err.statusText + '<br/>' + 'host=' + host);
 
                 bounds = {
@@ -649,7 +651,6 @@ function graphHopperSubmit() {
             allStr = [],
             inputOk = true;
     var location_points = $("#locationpoints > div.pointDiv > input.pointInput");
-    var len = location_points.size();
     $.each(location_points, function (index) {
         if (index === 0) {
             fromStr = $(this).val();

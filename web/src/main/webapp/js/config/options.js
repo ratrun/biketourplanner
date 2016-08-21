@@ -11,5 +11,6 @@
 exports.options = {
     environment: "development",
     routing: {host: 'http://localhost:8989'},
-    geocoding: {host: 'http://localhost:8989'}
+    geocoding: {host: 'http://localhost:8989'},
+    thunderforest: {api_key: ''}
 };
