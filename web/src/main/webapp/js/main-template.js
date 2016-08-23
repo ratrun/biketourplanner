@@ -109,6 +109,7 @@ $(document).ready(function (e) {
          $("#tripDiv").show();
          $("#changeTripButton").show();
          $("#addtripButton").show();
+         $(".route_result_tab").hide();
          $("#routingOptions").hide();
          return;
     });

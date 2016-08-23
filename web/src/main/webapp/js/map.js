@@ -26,7 +26,6 @@ function adjustMapSize() {
     mapDiv.width(width).height(height);
     $("#input").height(height);
 
-
     // reduce info size depending on how heigh the input_header is and reserve space for footer
     var instructionInfoMaxHeight = height - 60
             - $("#input_header").height() - $("#footer").height() - $(".route_description").height();
