@@ -532,3 +532,15 @@ td img.pic {
     margin-left: 5px;
 }
 
+
+.gray {
+    color: gray;
+}
+
+.plain_text_button {
+    font-size: small;
+    padding: 0px;
+    border: none;
+    background: none;
+    cursor: pointer;
+}

@@ -22,6 +22,7 @@ import com.graphhopper.GHResponse;
 import com.graphhopper.util.Helper;
 import com.graphhopper.util.InstructionList;
 import com.graphhopper.util.PointList;
+import com.graphhopper.util.exceptions.GHException;
 import com.graphhopper.util.shapes.BBox;
 import com.graphhopper.util.WayTypeInfo;
 import java.util.*;
@@ -63,6 +64,10 @@ public class SimpleRouteSerializer implements RouteSerializer
                 Map<String, String> map = new HashMap<String, String>();
                 map.put("message", getMessage(t));
                 map.put("details", t.getClass().getName());
+                if(t instanceof GHException)
+                {
+                    map.putAll(((GHException) t).getDetails());
+                }
                 errorHintList.add(map);
             }
             json.put("hints", errorHintList);
@@ -71,6 +76,8 @@ public class SimpleRouteSerializer implements RouteSerializer
             Map<String, Object> jsonInfo = new HashMap<String, Object>();
             json.put("info", jsonInfo);
             json.put("hints", rsp.getHints().toMap());
+            // If you replace GraphHopper with your own brand name, this is fine. 
+            // Still it would be highly appreciated if you mention us in your about page!
             jsonInfo.put("copyrights", Arrays.asList("GraphHopper", "OpenStreetMap contributors"));
 
             List<Map<String, Object>> jsonPathList = new ArrayList<Map<String, Object>>();

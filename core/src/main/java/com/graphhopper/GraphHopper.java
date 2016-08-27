@@ -37,6 +37,8 @@ import com.graphhopper.util.*;
 import static com.graphhopper.util.Parameters.Algorithms.*;
 import com.graphhopper.util.Parameters.CH;
 import com.graphhopper.util.Parameters.Routing;
+import com.graphhopper.util.exceptions.PointOutOfBoundsException;
+import com.graphhopper.util.shapes.BBox;
 import com.graphhopper.util.shapes.GHPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1068,6 +1070,10 @@ public class GraphHopper implements GraphHopperAPI
             List<GHPoint> points = request.getPoints();
             String algoStr = request.getAlgorithm().isEmpty() ? DIJKSTRA_BI : request.getAlgorithm();
 
+            // TODO Maybe we should think about a isRequestValid method that checks all that stuff that we could do to fail fast
+            // For example see #734
+            checkIfPointsAreInBounds(points);
+
             RoutingTemplate routingTemplate;
             if (ROUND_TRIP.equalsIgnoreCase(algoStr))
                 routingTemplate = new RoundTripRoutingTemplate(request, ghRsp, locationIndex, maxRoundTripRetries);
@@ -1158,27 +1164,17 @@ public class GraphHopper implements GraphHopperAPI
         }
     }
 
-    List<QueryResult> lookup( List<GHPoint> points, FlagEncoder encoder, GHResponse rsp )
+    private void checkIfPointsAreInBounds( List<GHPoint> points )
     {
-        if (points.size() < 2)
+        BBox bounds = getGraphHopperStorage().getBounds();
+        for (int i = 0; i < points.size(); i++)
         {
-            rsp.addError(new IllegalStateException("At least 2 points have to be specified, but was:" + points.size()));
-            return Collections.emptyList();
+            GHPoint point = points.get(i);
+            if (!bounds.contains(point.getLat(), point.getLon()))
+            {
+                throw new PointOutOfBoundsException("Point " + i + " is ouf of bounds: " + point, i);
+            }
         }
-
-        EdgeFilter edgeFilter = new DefaultEdgeFilter(encoder);
-        List<QueryResult> qResults = new ArrayList<QueryResult>(points.size());
-        for (int placeIndex = 0; placeIndex < points.size(); placeIndex++)
-        {
-            GHPoint point = points.get(placeIndex);
-            QueryResult res = locationIndex.findClosest(point.lat, point.lon, edgeFilter);
-            if (!res.isValid())
-                rsp.addError(new IllegalArgumentException("Cannot find point " + placeIndex + ": " + point));
-
-            qResults.add(res);
-        }
-
-        return qResults;
     }
 
     protected LocationIndex createLocationIndex( Directory dir )
