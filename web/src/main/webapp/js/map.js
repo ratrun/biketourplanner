@@ -141,6 +141,11 @@ function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selec
         }
     });
 
+
+    scaleControl = L.control.scale({
+        imperial: false
+    }).addTo(map);
+
     $('#layerfeatures').hide();
     $("#layerfeatures").css("visibility","hidden");
 
@@ -379,6 +384,15 @@ module.exports.getMap = function () {
     return map;
 };
 
+module.exports.updateScale = function (useMiles) {
+    if (scaleControl === null) {
+       return;
+    }
+    scaleControl.removeFrom(map);
+    var options = useMiles ? {metric: false} : {imperial: false};
+    scaleControl = L.control.scale(options).addTo(map);
+};
+
 var FROM = 'from', TO = 'to';
 function getToFrom(index, ghRequest) {
     if (index === 0)
@@ -469,3 +483,4 @@ function addOverlayLayer(name, id, minzoom) {
     var layers_menu = document.getElementById('layer_menu');
     layers_menu.appendChild(link);
 }
+

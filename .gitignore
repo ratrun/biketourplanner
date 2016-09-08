@@ -18,7 +18,7 @@ android/libs/graphhopper-*-android.jar
 .idea/
 *iml
 debug.sh
-web/src/main/webapp/js/config/options_prod.js
+/web/src/main/webapp/js/config/options_prod.js
 *.pbf
 !/reader-osm/src/test/resources/com/graphhopper/reader/osm/*.pbf
 *.dem
@@ -41,4 +41,5 @@ local.properties
 *.zip
 .DS_Store
 /core/nbproject/
+/reader-overlay-data/nbproject/
 /biketourplaner/nbproject/private/

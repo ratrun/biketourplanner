@@ -17,9 +17,13 @@ function addInstruction(mapLayer, main, instr, instrIndex, lngLat, useMiles) {
             title = title + ", " + instr.annotation_text;
     }
 
+    var pathname = window.location.pathname;
+    var dirname = pathname.substring(0, pathname.lastIndexOf('/'));
+
     var instructionDiv = $("<tr class='instruction'/>");
     if (sign !== "continue") {
-        var indiPic = "<img class='pic' style='vertical-align: middle' src='./img/" + sign + ".png'/>";
+        var indiPic = "<img class='pic' style='vertical-align: middle' src='" +
+                dirname + "/img/" + sign + ".png'/>";
         instructionDiv.append("<td class='instr_pic'>" + indiPic + "</td>");
     } else
         instructionDiv.append("<td class='instr_pic'/>");
