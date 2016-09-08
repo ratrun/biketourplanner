@@ -35,21 +35,23 @@
             <form id="tripForm">
                 <div id="tripDiv">
                     <div id="tripTree"></div>
-                    <input id="changeTripButton" type="submit" value="Change trip">
-                    <input id="addtripButton" type="submit" value="+">
+                    <div id="divtripTreeButtons">
+                        <input id="changeTripButton" type="submit" value="Change trip">
+                        <input id="addTripButton" type="submit" value="+">
+                    </div>
                 </div>
             </form>
 
             <div id="routingOptions">
-                <div id="options">
+                <form id="locationform">
+                  <div id="options">
                     <span id="vehicles">
 
                     </span>
-                </div>
-                <form id="locationform">
-                    <div id="locationpoints">
-                        <div id="x_pointAdd" class="pointAdd"><img src="./img/point_add.png"/></div>
-                    </div>
+                  </div>
+                  <div id="locationpoints">
+                      <div id="x_pointAdd" class="pointAdd"><img src="./img/point_add.png"/></div>
+                  </div>
 
                   <div id="dynamicrouteoptions" style="clear:both;">
                     <div id="ascendcontrol">
@@ -94,7 +96,7 @@
                 </form>
                 <div id="export-link" class="left"><a href="/maps"><img src='img/link.png'></a></div>
                 <div id="gpxExportButton"><a href=""><img alt="gpx" src='img/gpx.png'></a></div>
-                <div id="storeDiv"> <input id="storeButton" type="submit" value="Store trip"></div>
+                <div id="saveDiv"> <input id="saveTripButton" type="submit" value="Save"></div>
                 <div id="hosting">Powered by <a href='https://graphhopper.com/#directions-api'>GraphHopper API</a></div>
             </div>
           </div>

@@ -19,12 +19,12 @@ body {
     /*padding-right: 15px; */
 }
 
-#routingOptions{
- /*   display: none; */
-}
-
 #tripDiv{
     display: none;
+}
+
+#divtripTreeButtons{
+    padding-top: 10px;
 }
 
 #info {
@@ -197,30 +197,30 @@ body {
 #searchButton {
     float: right;
     margin-bottom: 5px;
-    margin-right: 5px;
+    margin-right: 10px;
 }
 
 #searchButton:hover {
     cursor: pointer;
 }
 
-#storeDiv {
+#saveDiv {
     margin-top: -15px;
     margin-left: 60px;
 }
 
-#storeButton {
+#saveTripButton {
     margin-bottom: 5px;
-    margin-left: 5px;
+    margin-left: 40px;
     margin-right: 5px;
     float: left;
 }
 
-#storeButton:hover {
+#saveTripButton:hover {
     cursor: pointer;
 }
 
-#addtripButton {
+#addTripButton {
     float: right;
     margin-bottom: 5px;
     margin-right: 5px;

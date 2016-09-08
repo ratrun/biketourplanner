@@ -98,17 +98,37 @@ $(document).ready(function (e) {
         tripSubmit();
     });
 
-    $( "#addtripButton" ).click(function(e) {
-         e.preventDefault();
-         alert("addtripButton clicked");
-         return;
+    last_id = localStorage['last_id'];
+    if (last_id === undefined )
+        last_id = 100; // Leave room for 100 predefined root nodes
+    
+    $( "#addTripButton" ).click(function(e) {
+        e.preventDefault();
+        var $tree = $('#tripTree');
+        last_id +=1;
+         
+        var parent_node = $tree.tree('getNodeById', 1);
+
+        $tree.tree(
+            'appendNode',
+            {
+                name: 'new_node ' + last_id,
+                id: last_id
+            },
+            parent_node
+        );
+
+        localStorage['tripData'] = $tree.tree('toJson');
+        localStorage['last_id'] = last_id;
+       
+        return;
     });
 
-    $( "#storeButton" ).click(function(e) {
+    $( "#saveTripButton" ).click(function(e) {
          e.preventDefault();
          $("#tripDiv").show();
          $("#changeTripButton").show();
-         $("#addtripButton").show();
+         $("#addTripButton").show();
          $(".route_result_tab").hide();
          $("#routingOptions").hide();
          return;
@@ -675,6 +695,7 @@ function graphHopperSubmit() {
             allStr = [],
             inputOk = true;
     var location_points = $("#locationpoints > div.pointDiv > input.pointInput");
+    var len = location_points.size;
     $.each(location_points, function (index) {
         if (index === 0) {
             fromStr = $(this).val();
@@ -720,7 +741,7 @@ function graphHopperSubmit() {
 function tripSubmit() {
     $("#tripDiv").hide();
     $("#changeTripButton").hide();
-    $("#addtripButton").hide();
+    $("#addTripButton").hide();
     $("#routingOptions").show();
 }
 
@@ -817,33 +838,28 @@ function isProduction() {
 
 module.exports.setFlag = setFlag;
 
-$(function() {
-    var $tree = $('#tripTree');
-    var data = [
+// Retrieve tour data from localStorage
+var tripData = JSON.parse(localStorage.getItem("tripData"));
+if (tripData === null)
+{
+    tripData = [
         {
-            label: 'Einzeltouren' , id: 1 , 
-            children: [
-                { label: 'Rennrad' , id: 2 ,
-                    children: [
-                        {
-                           name: 'Tulln' , id: 3 
-                        }
-                    ]
-                },
-                { label: 'Mountainbike', id: 4}
-            ]
-        },
-        {
-            label: 'Mehrtagestouren', id: 6,
-            children: [
-                { name: 'Donauradweg', id: 7 }
-            ]
+            label: 'Single tour', id: 1,
+            children: []
         }
     ];
+    // Initialize tourData in localStorage
+    localStorage['tripData'] = JSON.stringify(tripData);
+}
+
+
+$(function() {
+    var $tree = $('#tripTree');
 
     $tree.tree({
-       data: data,
+       data: tripData,
        dragAndDrop: true,
+       autoOpen: 1,
        onCreateLi: function(node, $li) {
             // Append a link to the jqtree-element div.
             // The link has an url '#node-[id]' and a data property 'node-id'.
@@ -851,6 +867,15 @@ $(function() {
                 '<a href="#node-'+ node.id +'" class="edit" data-node-id="'+
                 node.id +'"> edit</a>;'
             );
+        },
+        onCanMove: function(node) {
+            if (! node.parent.parent) {
+                // Example: Cannot move root node
+                return false;
+            }
+            else {
+                return true;
+            }
         }
     });
 
@@ -869,6 +894,15 @@ $(function() {
                 alert(node.name);
             }
         }
-    );    
+    );
+
+    // Store data triggered from a move
+    $tree.bind(
+    'tree.move',
+    function(event) {
+       event.move_info.do_move();
+       localStorage['tripData'] = $tree.tree('toJson');
+    }
+);
 });
 
