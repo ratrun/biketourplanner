@@ -615,15 +615,15 @@ function routeLatLng(request, doQuery) {
             if (path.haswaytypeinfo === "yes")
             {
                 if (path.unpavedDistance !== 0)
-                    tmpwaytype += "<br/>Unpaved:" + translate.createDistanceString(path.unpavedDistance);
+                    tmpwaytype += "<br/>Unpaved:" + translate.createDistanceString(path.unpavedDistance, request.useMiles);
                 if (path.cyclewayDistance !== 0 )
-                    tmpwaytype += "<br/>Cycleway:" + translate.createDistanceString(path.cyclewayDistance);
+                    tmpwaytype += "<br/>Cycleway:" + translate.createDistanceString(path.cyclewayDistance, request.useMiles);
                 if (path.pushingSectionDistance !== 0)
-                    tmpwaytype += "<br/>Pushing:" + translate.createDistanceString(path.pushingSectionDistance);
+                    tmpwaytype += "<br/>Pushing:" + translate.createDistanceString(path.pushingSectionDistance, request.useMiles);
                 if (path.roadDistance !== 0)
-                    tmpwaytype += "<br/>Road:" + translate.createDistanceString(path.roadDistance);
+                    tmpwaytype += "<br/>Road:" + translate.createDistanceString(path.roadDistance, request.useMiles);
                 if (path.unspecificWayDistance !== 0)
-                    tmpwaytype += "<br/>Unspecific:" + translate.createDistanceString(path.unspecificWayDistance);
+                    tmpwaytype += "<br/>Unspecific:" + translate.createDistanceString(path.unspecificWayDistance, request.useMiles);
             }
 
             var routeInfo = $("<div class='route_description'>");
