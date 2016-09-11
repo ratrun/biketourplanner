@@ -55,7 +55,6 @@ function startLocalVectorTileServer(win)
 
     mbtiles.on('exit', function (code, signal) {
         console.log('tiles server child process exited with code ' + code +' signal=' + signal);
-        showHtmlNotification("./img/mtb.png", 'Tile server stopped !!' , '');
         tilesServerHasExited = true;
         setTimeout(function(){ 
               if (signal === 'SIGTERM')
@@ -67,6 +66,7 @@ function startLocalVectorTileServer(win)
                     showInstalledMapsMenuItem.enabled = false;
                     startTileServerMenuItem.enabled = true;
                     deleteMapMenuItem.enabled = true;
+                    showHtmlNotification("./img/mtb.png", 'Tile server stopped !' , '');
                 }
                 else
                    // We got this most likely during startup because the vector tile server is already active and the 
@@ -118,9 +118,12 @@ function startGraphhopperServer(win)
     graphhopper.stdout.on('data', function (data) {
         console.log('graphhopper stdout: ' + data);
         if (data.toString('utf-8').indexOf('creating graph') !==-1 )
-             showHtmlNotification("./img/mtb.png", "Creating graph", 'might take a while!');
+             showHtmlNotification("./img/mtb.png", "Creating routing data", 'might take a while!');
         if (data.toString('utf-8').indexOf('Started server at HTTP :8989') !==-1 )
-             showHtmlNotification("./img/mtb.png", "Graphhopper server", 'is ready...');
+        {
+             showHtmlNotification("./img/mtb.png", "Routing server", 'is ready...');
+             window.location.reload(true);
+        }
     });
 
     graphhopper.stderr.on('data', function (data) {
@@ -130,7 +133,7 @@ function startGraphhopperServer(win)
     graphhopper.on('close', function (code) {
         console.log('graphhopper child process closed with code ' + code + ' shutdownapp=' + shutdownapp);
         graphhopperServerHasExited = true;
-        showHtmlNotification("./img/mtb.png", 'Graphhopper routing server stopped !!' , '');
+        showHtmlNotification("./img/mtb.png", 'Routing server stopped !!' , '');
         if (shutdownapp)
            win.close();
     });
@@ -248,7 +251,7 @@ function deletegraph(dir)
     fs.unlinkSync(dir + '/nodes');
   }
   else
-      alert("Cannot delete graph as graphhopper server is running!");
+      alert("Cannot delete routing data as graphhopper server is still running!");
 };
 
 // Here we define the functionality for the graphhopper webkit application
@@ -453,16 +456,6 @@ var writeLog = function (msg) {
 var showNotification = function (icon, title, body) {
 
   var notification = new Notification(title, {icon: icon, body: body});
-/*
-  notification.onclick = function () {
-    writeLog("Notification clicked");
-  };
-
-  notification.onclose = function () {
-    writeLog("Notification closed");
-    NW.Window.get().focus();
-  };
-*/  
 
   notification.onshow = function () {
     writeLog("-----<br>" + title);

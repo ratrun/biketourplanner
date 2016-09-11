@@ -208,7 +208,7 @@ $(document).ready(function (e) {
                 setTimeout(function(){ 
                      // execute query
                      initFromParams(urlParams, true);
-                }, 1000);
+                }, 100);
 
                 checkInput();
             }, function (err) {
