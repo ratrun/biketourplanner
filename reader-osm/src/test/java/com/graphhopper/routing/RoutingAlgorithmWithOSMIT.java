@@ -17,49 +17,50 @@
  */
 package com.graphhopper.routing;
 
-import com.graphhopper.routing.util.TestAlgoCollector;
 import com.graphhopper.GraphHopper;
-import static com.graphhopper.GraphHopperIT.DIR;
 import com.graphhopper.reader.dem.SRTMProvider;
 import com.graphhopper.reader.osm.GraphHopperOSM;
 import com.graphhopper.routing.util.*;
-import com.graphhopper.routing.util.EncodingManager;
 import com.graphhopper.routing.util.TestAlgoCollector.AlgoHelperEntry;
 import com.graphhopper.routing.util.TestAlgoCollector.OneRun;
-import com.graphhopper.storage.*;
+import com.graphhopper.routing.weighting.ShortestWeighting;
+import com.graphhopper.routing.weighting.Weighting;
+import com.graphhopper.storage.CHGraph;
+import com.graphhopper.storage.Graph;
 import com.graphhopper.storage.index.LocationIndex;
 import com.graphhopper.storage.index.QueryResult;
 import com.graphhopper.util.GHUtility;
 import com.graphhopper.util.Helper;
-import static com.graphhopper.util.Parameters.Algorithms.*;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.junit.Assert.*;
-
-import org.junit.Before;
-import org.junit.Test;
+import static com.graphhopper.GraphHopperIT.DIR;
+import static com.graphhopper.util.Parameters.Algorithms.ASTAR;
+import static com.graphhopper.util.Parameters.Algorithms.DIJKSTRA_BI;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Try algorithms, indices and graph storages with real data
  * <p>
+ *
  * @author Peter Karich
  */
-public class RoutingAlgorithmWithOSMIT
-{    
+public class RoutingAlgorithmWithOSMIT {
     TestAlgoCollector testCollector;
 
     @Before
-    public void setUp()
-    {
+    public void setUp() {
         testCollector = new TestAlgoCollector("core integration tests");
     }
 
-    List<OneRun> createMonacoCar()
-    {
+    List<OneRun> createMonacoCar() {
         List<OneRun> list = new ArrayList<OneRun>();
         list.add(new OneRun(43.730729, 7.42135, 43.727697, 7.419199, 2580, 110));
         list.add(new OneRun(43.727687, 7.418737, 43.74958, 7.436566, 3588, 170));
@@ -79,8 +80,7 @@ public class RoutingAlgorithmWithOSMIT
     }
 
     @Test
-    public void testMonaco()
-    {
+    public void testMonaco() {
         Graph g = runAlgo(testCollector, DIR + "/monaco.osm.gz", "target/monaco-gh",
                 createMonacoCar(), "car", true, "car", "shortest", false);
 
@@ -96,8 +96,7 @@ public class RoutingAlgorithmWithOSMIT
     }
 
     @Test
-    public void testMonacoMotorcycle()
-    {
+    public void testMonacoMotorcycle() {
         List<OneRun> list = new ArrayList<OneRun>();
         list.add(new OneRun(43.730729, 7.42135, 43.727697, 7.419199, 2703, 119));
         list.add(new OneRun(43.727687, 7.418737, 43.74958, 7.436566, 3749, 170));
@@ -112,8 +111,7 @@ public class RoutingAlgorithmWithOSMIT
     }
 
     @Test
-    public void testMonacoMotorcycleCurvature()
-    {
+    public void testMonacoMotorcycleCurvature() {
         List<OneRun> list = new ArrayList<OneRun>();
         list.add(new OneRun(43.730729, 7.42135, 43.727697, 7.419199, 2703, 119));
         list.add(new OneRun(43.727687, 7.418737, 43.74958, 7.436566, 3749, 170));
@@ -128,8 +126,7 @@ public class RoutingAlgorithmWithOSMIT
     }
 
     @Test
-    public void testBike2_issue432()
-    {
+    public void testBike2_issue432() {
         List<OneRun> list = new ArrayList<OneRun>();
         list.add(new OneRun(52.349969, 8.013813, 52.349713, 8.013293, 56, 7));
         // reverse route avoids the location
@@ -141,8 +138,7 @@ public class RoutingAlgorithmWithOSMIT
     }
 
     @Test
-    public void testMonacoAllAlgorithmsWithBaseGraph()
-    {
+    public void testMonacoAllAlgorithmsWithBaseGraph() {
         String vehicle = "car";
         String graphFile = "target/monaco-gh";
         String osmFile = DIR + "/monaco.osm.gz";
@@ -170,21 +166,17 @@ public class RoutingAlgorithmWithOSMIT
 
         // set all normal algorithms to baseGraph of already prepared to see if all algorithms still work
         Graph baseGraphOfCHPrepared = chPrepare.getBaseGraph();
-        for (AlgoHelperEntry ahe : prepares)
-        {
-            if (!(ahe.getQueryGraph() instanceof CHGraph))
-            {
+        for (AlgoHelperEntry ahe : prepares) {
+            if (!(ahe.getQueryGraph() instanceof CHGraph)) {
                 ahe.setQueryGraph(baseGraphOfCHPrepared);
             }
         }
 
         List<OneRun> forEveryAlgo = createMonacoCar();
         EdgeFilter edgeFilter = new DefaultEdgeFilter(encoder);
-        for (AlgoHelperEntry entry : prepares)
-        {
+        for (AlgoHelperEntry entry : prepares) {
             LocationIndex idx = entry.getIdx();
-            for (OneRun oneRun : forEveryAlgo)
-            {
+            for (OneRun oneRun : forEveryAlgo) {
                 List<QueryResult> list = oneRun.getList(idx, edgeFilter);
                 testCollector.assertDistance(entry, list, oneRun);
             }
@@ -192,8 +184,7 @@ public class RoutingAlgorithmWithOSMIT
     }
 
     @Test
-    public void testOneWayCircleBug()
-    {
+    public void testOneWayCircleBug() {
         // export from http://www.openstreetmap.org/export#map=19/51.37605/-0.53155
         List<OneRun> list = new ArrayList<OneRun>();
         // going the bit longer way out of the circle
@@ -207,8 +198,7 @@ public class RoutingAlgorithmWithOSMIT
     }
 
     @Test
-    public void testMoscow()
-    {
+    public void testMoscow() {
         // extracted via ./graphhopper.sh extract "37.582641,55.805261,37.626929,55.824455"
         List<OneRun> list = new ArrayList<OneRun>();
         // choose perpendicular
@@ -226,8 +216,7 @@ public class RoutingAlgorithmWithOSMIT
     }
 
     @Test
-    public void testMoscowTurnCosts()
-    {
+    public void testMoscowTurnCosts() {
         List<OneRun> list = new ArrayList<OneRun>();
         list.add(new OneRun(55.813357, 37.5958585, 55.811042, 37.594689, 1043.99, 12));
         list.add(new OneRun(55.813159, 37.593884, 55.811278, 37.594217, 1048, 13));
@@ -240,8 +229,7 @@ public class RoutingAlgorithmWithOSMIT
     }
 
     @Test
-    public void testSidewalkNo()
-    {
+    public void testSidewalkNo() {
         List<OneRun> list = new ArrayList<OneRun>();
         // roundabout contains sidewalk=no which should be avoided
         list.add(new OneRun(57.154888, -2.101822, 57.153445, -2.099869, 329, 31));
@@ -256,8 +244,7 @@ public class RoutingAlgorithmWithOSMIT
     }
 
     @Test
-    public void testMonacoFastest()
-    {
+    public void testMonacoFastest() {
         List<OneRun> list = createMonacoCar();
         list.get(0).setLocs(1, 117);
         list.get(0).setDistance(1, 2584);
@@ -272,8 +259,7 @@ public class RoutingAlgorithmWithOSMIT
 
 
     @Test
-    public void testMonacoMixed()
-    {
+    public void testMonacoMixed() {
         // Additional locations are inserted because of new crossings from foot to highway paths!
         // Distance is the same.
         List<OneRun> list = createMonacoCar();
@@ -288,8 +274,7 @@ public class RoutingAlgorithmWithOSMIT
         assertEquals(testCollector.toString(), 0, testCollector.errors.size());
     }
 
-    List<OneRun> createMonacoFoot()
-    {
+    List<OneRun> createMonacoFoot() {
         List<OneRun> list = new ArrayList<OneRun>();
         list.add(new OneRun(43.730729, 7.421288, 43.727697, 7.419199, 1566, 92));
         list.add(new OneRun(43.727687, 7.418737, 43.74958, 7.436566, 3438, 136));
@@ -299,8 +284,7 @@ public class RoutingAlgorithmWithOSMIT
     }
 
     @Test
-    public void testMonacoFoot()
-    {
+    public void testMonacoFoot() {
         Graph g = runAlgo(testCollector, DIR + "/monaco.osm.gz", "target/monaco-gh",
                 createMonacoFoot(), "foot", true, "foot", "shortest", false);
         assertEquals(testCollector.toString(), 0, testCollector.errors.size());
@@ -315,8 +299,7 @@ public class RoutingAlgorithmWithOSMIT
     }
 
     @Test
-    public void testMonacoFoot3D()
-    {
+    public void testMonacoFoot3D() {
         // most routes have same number of points as testMonaceFoot results but longer distance due to elevation difference
         List<OneRun> list = createMonacoFoot();
         list.get(0).setDistance(1, 1627);
@@ -333,8 +316,7 @@ public class RoutingAlgorithmWithOSMIT
     }
 
     @Test
-    public void testNorthBayreuthHikeFastestAnd3D()
-    {
+    public void testNorthBayreuthHikeFastestAnd3D() {
         List<OneRun> list = new ArrayList<OneRun>();
         // prefer hiking route 'Teufelsloch Unterwaiz' and 'Rotmain-Wanderweg'        
         list.add(new OneRun(49.974972, 11.515657, 49.991022, 11.512299, 2365, 66));
@@ -346,8 +328,7 @@ public class RoutingAlgorithmWithOSMIT
     }
 
     @Test
-    public void testMonacoBike3D_twoSpeedsPerEdge()
-    {
+    public void testMonacoBike3D_twoSpeedsPerEdge() {
         List<OneRun> list = new ArrayList<OneRun>();
         // 1. alternative: go over steps 'Rampe Major' => 1.7km vs. around 2.7km
         list.add(new OneRun(43.730864, 7.420771, 43.727687, 7.418737, 2710, 118));
@@ -371,8 +352,7 @@ public class RoutingAlgorithmWithOSMIT
     }
 
     @Test
-    public void testMonacoBike()
-    {
+    public void testMonacoBike() {
         List<OneRun> list = new ArrayList<OneRun>();
         list.add(new OneRun(43.730864, 7.420771, 43.727687, 7.418737, 1642, 87));
         list.add(new OneRun(43.727687, 7.418737, 43.74958, 7.436566, 3580, 168));
@@ -384,8 +364,7 @@ public class RoutingAlgorithmWithOSMIT
     }
 
     @Test
-    public void testMonacoMountainBike()
-    {
+    public void testMonacoMountainBike() {
         List<OneRun> list = new ArrayList<OneRun>();
         list.add(new OneRun(43.730864, 7.420771, 43.727687, 7.418737, 2594, 110));
         list.add(new OneRun(43.727687, 7.418737, 43.74958, 7.436566, 3653, 178));
@@ -402,8 +381,7 @@ public class RoutingAlgorithmWithOSMIT
     }
 
     @Test
-    public void testMonacoRacingBike()
-    {
+    public void testMonacoRacingBike() {
         List<OneRun> list = new ArrayList<OneRun>();
         list.add(new OneRun(43.730864, 7.420771, 43.727687, 7.418737, 2594, 111));
         list.add(new OneRun(43.727687, 7.418737, 43.74958, 7.436566, 3615, 184));
@@ -419,8 +397,7 @@ public class RoutingAlgorithmWithOSMIT
     }
 
     @Test
-    public void testKremsBikeRelation()
-    {
+    public void testKremsBikeRelation() {
         List<OneRun> list = new ArrayList<OneRun>();
         list.add(new OneRun(48.409523, 15.602394, 48.375466, 15.72916, 12491, 159));
         // 3109m is better as cyclepath is used
@@ -437,8 +414,7 @@ public class RoutingAlgorithmWithOSMIT
     }
 
     @Test
-    public void testKremsMountainBikeRelation()
-    {
+    public void testKremsMountainBikeRelation() {
         List<OneRun> list = new ArrayList<OneRun>();
         list.add(new OneRun(48.409523, 15.602394, 48.375466, 15.72916, 12574, 169));
         list.add(new OneRun(48.410061, 15.63951, 48.411386, 15.604899, 3101, 94));
@@ -453,8 +429,7 @@ public class RoutingAlgorithmWithOSMIT
         assertEquals(testCollector.toString(), 0, testCollector.errors.size());
     }
 
-    List<OneRun> createAndorra()
-    {
+    List<OneRun> createAndorra() {
         List<OneRun> list = new ArrayList<OneRun>();
         list.add(new OneRun(42.56819, 1.603231, 42.571034, 1.520662, 17708, 524));
         list.add(new OneRun(42.529176, 1.571302, 42.571034, 1.520662, 11408, 305));
@@ -462,24 +437,21 @@ public class RoutingAlgorithmWithOSMIT
     }
 
     @Test
-    public void testAndorra()
-    {
+    public void testAndorra() {
         runAlgo(testCollector, DIR + "/andorra.osm.gz", "target/andorra-gh",
                 createAndorra(), "car", true, "car", "shortest", false);
         assertEquals(testCollector.toString(), 0, testCollector.errors.size());
     }
 
     @Test
-    public void testAndorraPbf()
-    {
+    public void testAndorraPbf() {
         runAlgo(testCollector, DIR + "/andorra.osm.pbf", "target/andorra-gh",
                 createAndorra(), "car", true, "car", "shortest", false);
         assertEquals(testCollector.toString(), 0, testCollector.errors.size());
     }
 
     @Test
-    public void testAndorraFoot()
-    {
+    public void testAndorraFoot() {
         List<OneRun> list = createAndorra();
         list.get(0).setDistance(1, 16354);
         list.get(0).setLocs(1, 648);
@@ -492,8 +464,7 @@ public class RoutingAlgorithmWithOSMIT
     }
 
     @Test
-    public void testCampoGrande()
-    {
+    public void testCampoGrande() {
         // test not only NE quadrant of earth!
 
         // bzcat campo-grande.osm.bz2 
@@ -508,8 +479,7 @@ public class RoutingAlgorithmWithOSMIT
     }
 
     @Test
-    public void testMonacoVia()
-    {
+    public void testMonacoVia() {
         OneRun oneRun = new OneRun();
         oneRun.add(43.730729, 7.42135, 0, 0);
         oneRun.add(43.727697, 7.419199, 2581, 110);
@@ -524,8 +494,7 @@ public class RoutingAlgorithmWithOSMIT
     }
 
     @Test
-    public void testHarsdorf()
-    {
+    public void testHarsdorf() {
         List<OneRun> list = new ArrayList<OneRun>();
         // choose Unterloher Weg and the following residential + cycleway
         list.add(new OneRun(50.004333, 11.600254, 50.044449, 11.543434, 7023, 184));
@@ -535,8 +504,7 @@ public class RoutingAlgorithmWithOSMIT
     }
 
     @Test
-    public void testNeudrossenfeld()
-    {
+    public void testNeudrossenfeld() {
         List<OneRun> list = new ArrayList<OneRun>();
         // choose cycleway (Dreschenauer Straße)
         list.add(new OneRun(49.987132, 11.510496, 50.018839, 11.505024, 3985, 106));
@@ -551,16 +519,14 @@ public class RoutingAlgorithmWithOSMIT
 
     /**
      * @param testAlsoCH if true also the CH algorithms will be tested which needs preparation and
-     * takes a bit longer
+     *                   takes a bit longer
      */
-    Graph runAlgo( TestAlgoCollector testCollector, String osmFile,
-                   String graphFile, List<OneRun> forEveryAlgo, String importVehicles,
-                   boolean testAlsoCH, String vehicle, String weightStr, boolean is3D )
-    {
+    Graph runAlgo(TestAlgoCollector testCollector, String osmFile,
+                  String graphFile, List<OneRun> forEveryAlgo, String importVehicles,
+                  boolean testAlsoCH, String vehicle, String weightStr, boolean is3D) {
         AlgoHelperEntry algoEntry = null;
         OneRun tmpOneRun = null;
-        try
-        {
+        try {
             Helper.removeDir(new File(graphFile));
             GraphHopper hopper = new GraphHopperOSM().
                     setStoreOnFlush(true).
@@ -583,12 +549,10 @@ public class RoutingAlgorithmWithOSMIT
             Collection<AlgoHelperEntry> prepares = RoutingAlgorithmIT.createAlgos(hopper.getGraphHopperStorage(),
                     hopper.getLocationIndex(), encoder, testAlsoCH, tMode, weighting, hopper.getEncodingManager());
             EdgeFilter edgeFilter = new DefaultEdgeFilter(encoder);
-            for (AlgoHelperEntry entry : prepares)
-            {
+            for (AlgoHelperEntry entry : prepares) {
                 algoEntry = entry;
                 LocationIndex idx = entry.getIdx();
-                for (OneRun oneRun : forEveryAlgo)
-                {
+                for (OneRun oneRun : forEveryAlgo) {
                     tmpOneRun = oneRun;
                     List<QueryResult> list = oneRun.getList(idx, edgeFilter);
                     testCollector.assertDistance(algoEntry, list, oneRun);
@@ -596,22 +560,19 @@ public class RoutingAlgorithmWithOSMIT
             }
 
             return hopper.getGraphHopperStorage();
-        } catch (Exception ex)
-        {
+        } catch (Exception ex) {
             if (algoEntry == null)
                 throw new RuntimeException("cannot handle file " + osmFile + ", " + ex.getMessage(), ex);
 
             throw new RuntimeException("cannot handle " + algoEntry.toString() + ", for " + tmpOneRun
                     + ", file " + osmFile + ", " + ex.getMessage(), ex);
-        } finally
-        {
+        } finally {
             // Helper.removeDir(new File(graphFile));
         }
     }
 
     @Test
-    public void testMonacoParallel() throws IOException
-    {
+    public void testMonacoParallel() throws IOException {
         System.out.println("testMonacoParallel takes a bit time...");
         String graphFile = "target/monaco-gh";
         Helper.removeDir(new File(graphFile));
@@ -636,23 +597,17 @@ public class RoutingAlgorithmWithOSMIT
         int algosLength = 2;
         final Weighting weighting = new ShortestWeighting(encodingManager.getEncoder("car"));
         final EdgeFilter filter = new DefaultEdgeFilter(carEncoder);
-        for (int no = 0; no < MAX; no++)
-        {
-            for (int instanceNo = 0; instanceNo < instances.size(); instanceNo++)
-            {
-                String[] algos = new String[]
-                {
+        for (int no = 0; no < MAX; no++) {
+            for (int instanceNo = 0; instanceNo < instances.size(); instanceNo++) {
+                String[] algos = new String[]{
                     ASTAR, DIJKSTRA_BI
                 };
-                for (final String algoStr : algos)
-                {
+                for (final String algoStr : algos) {
                     // an algorithm is not thread safe! reuse via clear() is ONLY appropriated if used from same thread!
                     final int instanceIndex = instanceNo;
-                    Thread t = new Thread()
-                    {
+                    Thread t = new Thread() {
                         @Override
-                        public void run()
-                        {
+                        public void run() {
                             OneRun oneRun = instances.get(instanceIndex);
                             AlgorithmOptions opts = AlgorithmOptions.start().flagEncoder(carEncoder).weighting(weighting).algorithm(algoStr).build();
                             testCollector.assertDistance(new AlgoHelperEntry(g, g, opts, idx),
@@ -666,13 +621,10 @@ public class RoutingAlgorithmWithOSMIT
             }
         }
 
-        for (Thread t : threads)
-        {
-            try
-            {
+        for (Thread t : threads) {
+            try {
                 t.join();
-            } catch (InterruptedException ex)
-            {
+            } catch (InterruptedException ex) {
                 throw new RuntimeException(ex);
             }
         }

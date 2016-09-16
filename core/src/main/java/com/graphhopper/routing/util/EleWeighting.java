@@ -5,6 +5,7 @@ import com.graphhopper.util.EdgeIteratorState;
 import com.graphhopper.storage.NodeAccess;
 import com.graphhopper.util.Helper;
 import com.graphhopper.util.PMap;
+import com.graphhopper.routing.weighting.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

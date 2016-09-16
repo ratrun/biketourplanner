@@ -15,22 +15,22 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.graphhopper.routing.util;
+package com.graphhopper.routing.weighting;
 
 /**
- * Specifies a weight approximation between an node and the goalNode according to the specified weighting.
+ * Specifies a weight approximation between an node and the goalNode according to the specified
+ * weighting.
  * <p>
+ *
  * @author jansoe
  */
-public interface WeightApproximator
-{
-
+public interface WeightApproximator {
     /**
      * @return minimal weight fromNode to the goalNode
      */
-    double approximate( int fromNode );
+    double approximate(int fromNode);
 
-    void setGoalNode( int to );
+    void setGoalNode(int to);
 
     /**
      * makes a deep copy of itself

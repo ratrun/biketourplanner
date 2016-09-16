@@ -15,18 +15,19 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.graphhopper.routing.util;
+package com.graphhopper.routing.weighting;
 
+import com.graphhopper.routing.util.FlagEncoder;
 import com.graphhopper.util.EdgeIteratorState;
 import com.graphhopper.util.PMap;
 
 /**
  * Special weighting for (motor)bike
  * <p>
+ *
  * @author Peter Karich
  */
-public class PriorityWeighting extends FastestWeighting
-{
+public class PriorityWeighting extends FastestWeighting {
     /**
      * For now used only in BikeCommonFlagEncoder, FootEncoder and MotorcycleFlagEncoder
      */
@@ -34,13 +35,11 @@ public class PriorityWeighting extends FastestWeighting
     private double prioBoost;
     private final double minFactor;
 
-    public PriorityWeighting( FlagEncoder encoder )
-    {
+    public PriorityWeighting(FlagEncoder encoder) {
         this(encoder, new PMap(0));
     }
 
-    public PriorityWeighting( FlagEncoder encoder, PMap pMap )
-    {
+    public PriorityWeighting(FlagEncoder encoder, PMap pMap) {
         super(encoder, pMap);
         prioBoost = 2 * pMap.getDouble("niceLevel", 1.0);
         double maxPriority = 1; // BEST / BEST
@@ -48,14 +47,12 @@ public class PriorityWeighting extends FastestWeighting
     }
 
     @Override
-    public double getMinWeight( double distance )
-    {
+    public double getMinWeight(double distance) {
         return minFactor * super.getMinWeight(distance);
     }
 
     @Override
-    public double calcWeight( EdgeIteratorState edgeState, boolean reverse, int prevOrNextEdgeId )
-    {
+    public double calcWeight(EdgeIteratorState edgeState, boolean reverse, int prevOrNextEdgeId) {
         double weight = super.calcWeight(edgeState, reverse, prevOrNextEdgeId);
         if (Double.isInfinite(weight))
             return Double.POSITIVE_INFINITY;

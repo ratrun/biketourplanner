@@ -20,11 +20,9 @@ package com.graphhopper.routing.util;
 import com.graphhopper.util.PMap;
 
 /**
- *
  * @author Peter Karich
  */
-public interface FlagEncoderFactory
-{
+public interface FlagEncoderFactory {
     final String CAR = "car";
     final String BIKE = "bike";
     final String BIKE2 = "bike2";
@@ -33,7 +31,8 @@ public interface FlagEncoderFactory
     final String FOOT = "foot";
     final String HIKE = "hike";
     final String MOTORCYCLE = "motorcycle";
+    final String GENERIC = "generic";
     final FlagEncoderFactory DEFAULT = new DefaultFlagEncoderFactory();
 
-    FlagEncoder createFlagEncoder( String name, PMap configuration );
+    FlagEncoder createFlagEncoder(String name, PMap configuration);
 }

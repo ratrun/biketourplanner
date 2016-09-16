@@ -21,6 +21,7 @@ import com.graphhopper.util.InstructionList;
 import com.graphhopper.util.PointList;
 import com.graphhopper.util.WayTypeInfo;
 import com.graphhopper.util.shapes.BBox;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -28,10 +29,11 @@ import java.util.List;
 /**
  * This class holds the data like points and instructions of a Path.
  * <p>
+ *
  * @author Peter Karich
  */
-public class PathWrapper
-{
+public class PathWrapper {
+    private final List<Throwable> errors = new ArrayList<Throwable>(4);
     private List<String> description;
     private double distance;
     private double ascend;
@@ -42,28 +44,24 @@ public class PathWrapper
     private InstructionList instructions;
     private PointList waypointList = PointList.EMPTY;
     private PointList pointList = PointList.EMPTY;
-    private final List<Throwable> errors = new ArrayList<Throwable>(4);
     private WayTypeInfo wayTypeInfo;
 
     /**
      * @return the description of this route alternative to make it meaningful for the user e.g. it
      * displays one or two main roads of the route.
      */
-    public List<String> getDescription()
-    {
+    public List<String> getDescription() {
         if (description == null)
             return Collections.emptyList();
         return description;
     }
 
-    public PathWrapper setDescription( List<String> names )
-    {
+    public PathWrapper setDescription(List<String> names) {
         this.description = names;
         return this;
     }
 
-    public PathWrapper addDebugInfo( String debugInfo )
-    {
+    public PathWrapper addDebugInfo(String debugInfo) {
         if (debugInfo == null)
             throw new IllegalStateException("Debug information has to be none null");
 
@@ -74,13 +72,21 @@ public class PathWrapper
         return this;
     }
 
-    public String getDebugInfo()
-    {
+    public String getDebugInfo() {
         return debugInfo;
     }
 
-    public PathWrapper setPoints( PointList points )
-    {
+    /**
+     * This method returns all points on the path. Keep in mind that calculating the distance from
+     * these points might yield different results compared to getDistance as points could have been
+     * simplified on import or after querying.
+     */
+    public PointList getPoints() {
+        check("getPoints");
+        return pointList;
+    }
+
+    public PathWrapper setPoints(PointList points) {
         if (pointList != PointList.EMPTY)
             throw new IllegalStateException("Cannot call setPoint twice");
 
@@ -89,21 +95,17 @@ public class PathWrapper
     }
 
     /**
-     * This method returns all points on the path. Keep in mind that calculating the distance from
-     * these points might yield different results compared to getDistance as points could have been
-     * simplified on import or after querying.
+     * This method returns the input points snapped to the road network.
      */
-    public PointList getPoints()
-    {
-        check("getPoints");
-        return pointList;
+    public PointList getWaypoints() {
+        check("getWaypoints");
+        return waypointList;
     }
 
     /**
      * This method initializes this path with the snapped input points.
      */
-    public void setWaypoints( PointList wpList )
-    {
+    public void setWaypoints(PointList wpList) {
         if (waypointList != PointList.EMPTY)
             throw new IllegalStateException("Cannot call setWaypoints twice");
 
@@ -111,56 +113,40 @@ public class PathWrapper
     }
 
     /**
-     * This method returns the input points snapped to the road network.
-     */
-    public PointList getWaypoints()
-    {
-        check("getWaypoints");
-        return waypointList;
-    }
-
-    public PathWrapper setDistance( double distance )
-    {
-        this.distance = distance;
-        return this;
-    }
-
-    /**
      * This method returns the distance of the path. Always prefer this method over
      * getPoints().calcDistance
      * <p>
+     *
      * @return distance in meter
      */
-    public double getDistance()
-    {
+    public double getDistance() {
         check("getDistance");
         return distance;
     }
 
-    public PathWrapper setAscend( double ascend )
-    {
+    public PathWrapper setAscend( double ascend ) {
         if (ascend < 0)
             throw new IllegalArgumentException("ascend has to be strictly positive");
-
         this.ascend = ascend;
+        return this;
+    }
+
+    public PathWrapper setDistance(double distance) {
+        this.distance = distance;
         return this;
     }
 
     /**
      * This method returns the total elevation change (going upwards) in meter.
      * <p>
+     *
      * @return ascend in meter
      */
-    public double getAscend()
-    {
+    public double getAscend() {
         return ascend;
     }
 
-    public PathWrapper setDescend( double descend )
-    {
-        if (descend < 0)
-            throw new IllegalArgumentException("descend has to be strictly positive");
-
+    public PathWrapper setDescend( double descend ) {
         this.descend = descend;
         return this;
     }
@@ -168,15 +154,14 @@ public class PathWrapper
     /**
      * This method returns the total elevation change (going downwards) in meter.
      * <p>
+     *
      * @return decline in meter
      */
-    public double getDescend()
-    {
+    public double getDescend() {
         return descend;
     }
 
-    public PathWrapper setTime( long timeInMillis )
-    {
+    public PathWrapper setTime( long timeInMillis ) {
         this.time = timeInMillis;
         return this;
     }
@@ -184,16 +169,9 @@ public class PathWrapper
     /**
      * @return time in millis
      */
-    public long getTime()
-    {
+    public long getTime() {
         check("getTimes");
         return time;
-    }
-
-    public PathWrapper setRouteWeight( double weight )
-    {
-        this.routeWeight = weight;
-        return this;
     }
 
     /**
@@ -201,33 +179,33 @@ public class PathWrapper
      * only if you know what you are doing, e.g. only to compare routes gained with the same query
      * parameters like vehicle.
      */
-    public double getRouteWeight()
-    {
+    public double getRouteWeight() {
         check("getRouteWeight");
         return routeWeight;
+    }
+
+    public PathWrapper setRouteWeight(double weight) {
+        this.routeWeight = weight;
+        return this;
     }
 
     /**
      * Calculates the bounding box of this route response
      */
-    public BBox calcRouteBBox( BBox _fallback )
-    {
+    public BBox calcRouteBBox(BBox _fallback) {
         check("calcRouteBBox");
         BBox bounds = BBox.createInverse(_fallback.hasElevation());
         int len = pointList.getSize();
         if (len == 0)
             return _fallback;
 
-        for (int i = 0; i < len; i++)
-        {
+        for (int i = 0; i < len; i++) {
             double lat = pointList.getLatitude(i);
             double lon = pointList.getLongitude(i);
-            if (bounds.hasElevation())
-            {
+            if (bounds.hasElevation()) {
                 double ele = pointList.getEle(i);
                 bounds.update(lat, lon, ele);
-            } else
-            {
+            } else {
                 bounds.update(lat, lon);
             }
         }
@@ -235,8 +213,7 @@ public class PathWrapper
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         String str = "nodes:" + pointList.getSize() + "; " + pointList.toString();
         if (instructions != null && !instructions.isEmpty())
             str += ", " + instructions.toString();
@@ -247,13 +224,7 @@ public class PathWrapper
         return str;
     }
 
-    public void setInstructions( InstructionList instructions )
-    {
-        this.instructions = instructions;
-    }
-
-    public InstructionList getInstructions()
-    {
+    public InstructionList getInstructions() {
         check("getInstructions");
         if (instructions == null)
             throw new IllegalArgumentException("To access instructions you need to enable creation before routing");
@@ -261,10 +232,12 @@ public class PathWrapper
         return instructions;
     }
 
-    private void check( String method )
-    {
-        if (hasErrors())
-        {
+    public void setInstructions(InstructionList instructions) {
+        this.instructions = instructions;
+    }
+
+    private void check(String method) {
+        if (hasErrors()) {
             throw new RuntimeException("You cannot call " + method + " if response contains errors. Check this with ghResponse.hasErrors(). "
                     + "Errors are: " + getErrors());
         }
@@ -273,36 +246,30 @@ public class PathWrapper
     /**
      * @return true if this alternative response contains one or more errors
      */
-    public boolean hasErrors()
-    {
+    public boolean hasErrors() {
         return !errors.isEmpty();
     }
 
-    public List<Throwable> getErrors()
-    {
+    public List<Throwable> getErrors() {
         return errors;
     }
 
-    public PathWrapper addError( Throwable error )
-    {
+    public PathWrapper addError(Throwable error) {
         errors.add(error);
         return this;
     }
 
-    public PathWrapper addErrors( List<Throwable> errors )
-    {
+    public PathWrapper addErrors(List<Throwable> errors) {
         this.errors.addAll(errors);
         return this;
     }
 
-    public void setWayTypeInfo(WayTypeInfo wayTypeInfo)
-    {
+    public void setWayTypeInfo(WayTypeInfo wayTypeInfo) {
         this.wayTypeInfo = wayTypeInfo;
     }
-    
-    public WayTypeInfo getWayTypeInfo()
-    {
+
+    public WayTypeInfo getWayTypeInfo() {
         return wayTypeInfo;
     }
-    
+
 }

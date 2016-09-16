@@ -21,6 +21,7 @@ import com.graphhopper.routing.Path;
 import com.graphhopper.util.EdgeIteratorState;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
+import com.graphhopper.routing.weighting.*;
 
 /**
  * Rates already used Paths worse.

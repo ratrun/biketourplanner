@@ -15,38 +15,24 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.graphhopper.routing.util;
+package com.graphhopper.util;
 
-import com.graphhopper.util.EdgeIteratorState;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
- * Calculates the shortest route - independent of a vehicle as the calculation is based on the
- * distance only.
- * <p>
  * @author Peter Karich
  */
-public class ShortestWeighting extends AbstractWeighting
-{
-    public ShortestWeighting( FlagEncoder flagEncoder )
-    {
-        super(flagEncoder);
-    }
+public class ConfigMapTest {
+    @Test
+    public void testPut() {
+        ConfigMap instance = new ConfigMap();
+        instance.put("int_val", 1);
+        instance.put("test_pest", true);
 
-    @Override
-    public double getMinWeight( double currDistToGoal )
-    {
-        return currDistToGoal;
-    }
-
-    @Override
-    public double calcWeight( EdgeIteratorState edgeState, boolean reverse, int prevOrNextEdgeId )
-    {
-        return edgeState.getDistance();
-    }
-
-    @Override
-    public String getName()
-    {
-        return "shortest";
+        assertTrue(instance.get("test_pest", false));
+        assertFalse(instance.get("test_pest_", false));
+        assertEquals(1L, instance.getInt("int_val", 0));
     }
 }

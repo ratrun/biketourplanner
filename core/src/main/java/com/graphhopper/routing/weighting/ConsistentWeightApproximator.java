@@ -15,7 +15,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.graphhopper.routing.util;
+package com.graphhopper.routing.weighting;
 
 /**
  * Turns an unidirectional weight Approximation into a bidirectional consistent one.
@@ -24,30 +24,26 @@ package com.graphhopper.routing.util;
  * Mitoh, K. (1994). A fast algorithm for finding better routes by ai search techniques. In VNIS,
  * pages 291–296.
  * <p>
+ *
  * @author jansoe
  */
-public class ConsistentWeightApproximator
-{
+public class ConsistentWeightApproximator {
     private final WeightApproximator uniDirApproximatorForward, uniDirApproximatorReverse;
 
-    public ConsistentWeightApproximator( WeightApproximator weightApprox )
-    {
+    public ConsistentWeightApproximator(WeightApproximator weightApprox) {
         uniDirApproximatorForward = weightApprox;
         uniDirApproximatorReverse = weightApprox.duplicate();
     }
 
-    public void setSourceNode( int sourceNode )
-    {
+    public void setSourceNode(int sourceNode) {
         uniDirApproximatorReverse.setGoalNode(sourceNode);
     }
 
-    public void setGoalNode( int goalNode )
-    {
+    public void setGoalNode(int goalNode) {
         uniDirApproximatorForward.setGoalNode(goalNode);
     }
 
-    public double approximate( int fromNode, boolean reverse )
-    {
+    public double approximate(int fromNode, boolean reverse) {
         double weightApproximation = 0.5
                 * (uniDirApproximatorForward.approximate(fromNode) - uniDirApproximatorReverse.approximate(fromNode));
 

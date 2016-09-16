@@ -15,8 +15,9 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.graphhopper.routing.util;
+package com.graphhopper.routing.weighting;
 
+import com.graphhopper.routing.util.FlagEncoder;
 import com.graphhopper.util.EdgeIteratorState;
 import com.graphhopper.util.PMap;
 import com.graphhopper.util.Parameters.Routing;
@@ -28,37 +29,32 @@ import com.graphhopper.util.Parameters.Routing;
  *
  * @author Peter Karich
  */
-public class FastestWeighting extends AbstractWeighting
-{
+public class FastestWeighting extends AbstractWeighting {
     /**
      * Converting to seconds is not necessary but makes adding other penalties easier (e.g. turn
      * costs or traffic light costs etc)
      */
-    protected final static double SPEED_CONV = 3.6;    
+    protected final static double SPEED_CONV = 3.6;
     private final double headingPenalty;
     private final double maxSpeed;
 
-    public FastestWeighting( FlagEncoder encoder, PMap pMap )
-    {
+    public FastestWeighting(FlagEncoder encoder, PMap pMap) {
         super(encoder);
         headingPenalty = pMap.getDouble(Routing.HEADING_PENALTY, Routing.DEFAULT_HEADING_PENALTY);
         maxSpeed = encoder.getMaxSpeed() / SPEED_CONV;
     }
 
-    public FastestWeighting( FlagEncoder encoder )
-    {
+    public FastestWeighting(FlagEncoder encoder) {
         this(encoder, new PMap(0));
     }
 
     @Override
-    public double getMinWeight( double distance )
-    {
+    public double getMinWeight(double distance) {
         return distance / maxSpeed;
     }
 
     @Override
-    public double calcWeight( EdgeIteratorState edge, boolean reverse, int prevOrNextEdgeId )
-    {
+    public double calcWeight(EdgeIteratorState edge, boolean reverse, int prevOrNextEdgeId) {
         double speed = reverse ? flagEncoder.getReverseSpeed(edge.getFlags()) : flagEncoder.getSpeed(edge.getFlags());
         if (speed == 0)
             return Double.POSITIVE_INFINITY;
@@ -66,16 +62,15 @@ public class FastestWeighting extends AbstractWeighting
         double time = edge.getDistance() / speed * SPEED_CONV;
 
         // add direction penalties at start/stop/via points
-        boolean penalizeEdge = edge.getBoolean(EdgeIteratorState.K_UNFAVORED_EDGE, reverse, false);
-        if (penalizeEdge)
+        boolean unfavoredEdge = edge.getBool(EdgeIteratorState.K_UNFAVORED_EDGE, false);
+        if (unfavoredEdge)
             time += headingPenalty;
 
         return time;
     }
 
     @Override
-    public String getName()
-    {
+    public String getName() {
         return "fastest";
     }
 }

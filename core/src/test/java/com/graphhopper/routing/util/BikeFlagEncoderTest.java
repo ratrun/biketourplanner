@@ -20,29 +20,25 @@ package com.graphhopper.routing.util;
 import com.graphhopper.reader.ReaderNode;
 import com.graphhopper.reader.ReaderRelation;
 import com.graphhopper.reader.ReaderWay;
+import com.graphhopper.routing.weighting.PriorityWeighting;
+import org.junit.Test;
 
 import static com.graphhopper.routing.util.BikeCommonFlagEncoder.PUSHING_SECTION_SPEED;
 import static com.graphhopper.routing.util.PriorityCode.*;
-
-import org.junit.Test;
-
 import static org.junit.Assert.*;
 
 /**
  * @author Peter Karich
  * @author ratrun
  */
-public class BikeFlagEncoderTest extends AbstractBikeFlagEncoderTester
-{
+public class BikeFlagEncoderTest extends AbstractBikeFlagEncoderTester {
     @Override
-    protected BikeCommonFlagEncoder createBikeEncoder()
-    {
+    protected BikeCommonFlagEncoder createBikeEncoder() {
         return (BikeCommonFlagEncoder) new EncodingManager("bike,mtb").getEncoder("bike");
     }
 
     @Test
-    public void testGetSpeed()
-    {
+    public void testGetSpeed() {
         long result = encoder.setProperties(10, true, true);
         assertEquals(10, encoder.getSpeed(result), 1e-1);
         ReaderWay way = new ReaderWay(1);
@@ -218,8 +214,7 @@ public class BikeFlagEncoderTest extends AbstractBikeFlagEncoderTester
     }
 
     @Test
-    public void testHandleWayTags()
-    {
+    public void testHandleWayTags() {
         ReaderWay way = new ReaderWay(1);
         String wayType;
         way.setTag("highway", "track");
@@ -263,8 +258,7 @@ public class BikeFlagEncoderTest extends AbstractBikeFlagEncoderTester
     }
 
     @Test
-    public void testOneway()
-    {
+    public void testOneway() {
         ReaderWay way = new ReaderWay(1);
         way.setTag("highway", "tertiary");
         long flags = encoder.handleWayTags(way, encoder.acceptWay(way), 0);
@@ -340,8 +334,7 @@ public class BikeFlagEncoderTest extends AbstractBikeFlagEncoderTester
     }
 
     @Test
-    public void testHandleWayTagsInfluencedByRelation()
-    {
+    public void testHandleWayTagsInfluencedByRelation() {
         ReaderWay osmWay = new ReaderWay(1);
         osmWay.setTag("highway", "road");
         long allowed = encoder.acceptBit;
@@ -407,8 +400,7 @@ public class BikeFlagEncoderTest extends AbstractBikeFlagEncoderTester
     }
 
     @Test
-    public void testUnchangedRelationShouldNotInfluencePriority()
-    {
+    public void testUnchangedRelationShouldNotInfluencePriority() {
         ReaderWay osmWay = new ReaderWay(1);
         osmWay.setTag("highway", "secondary");
         assertPriority(REACH_DEST.getValue(), osmWay);
@@ -421,8 +413,7 @@ public class BikeFlagEncoderTest extends AbstractBikeFlagEncoderTester
 
     @Test
     @Override
-    public void testSacScale()
-    {
+    public void testSacScale() {
         ReaderWay way = new ReaderWay(1);
         way.setTag("highway", "path");
         way.setTag("sac_scale", "hiking");
@@ -446,8 +437,7 @@ public class BikeFlagEncoderTest extends AbstractBikeFlagEncoderTester
     }
 
     @Test
-    public void testCalcPriority()
-    {
+    public void testCalcPriority() {
         long allowed = encoder.acceptBit;
         ReaderWay osmWay = new ReaderWay(1);
         ReaderRelation osmRel = new ReaderRelation(1);
@@ -480,8 +470,7 @@ public class BikeFlagEncoderTest extends AbstractBikeFlagEncoderTester
     }
 
     @Test
-    public void testMaxSpeed()
-    {
+    public void testMaxSpeed() {
         ReaderWay way = new ReaderWay(1);
         way.setTag("highway", "secondary");
         way.setTag("maxspeed", "10");
@@ -514,8 +503,7 @@ public class BikeFlagEncoderTest extends AbstractBikeFlagEncoderTester
     }
 
     @Test
-    public void testTurnFlagEncoding_DefaultNoRestrictionsAndNoCosts()
-    {
+    public void testTurnFlagEncoding_DefaultNoRestrictionsAndNoCosts() {
         // default is disabled turn costs and no restrictions
         long flags_r0 = encoder.getTurnFlags(true, 0);
         long flags_0 = encoder.getTurnFlags(false, 0);
@@ -537,8 +525,7 @@ public class BikeFlagEncoderTest extends AbstractBikeFlagEncoderTester
     }
 
     @Test
-    public void testTurnFlagEncoding_withCosts()
-    {
+    public void testTurnFlagEncoding_withCosts() {
         encoder = new BikeFlagEncoder(4, 2, 127);
         new EncodingManager(encoder);
 
@@ -557,12 +544,10 @@ public class BikeFlagEncoderTest extends AbstractBikeFlagEncoderTester
         assertFalse(encoder.isTurnRestricted(flags_20));
 
         long flags_r220 = encoder.getTurnFlags(true, 0);
-        try
-        {
+        try {
             encoder.getTurnFlags(false, 220);
             assertTrue(false);
-        } catch (Exception ex)
-        {
+        } catch (Exception ex) {
         }
         long flags_126 = encoder.getTurnFlags(false, 126);
         assertTrue(Double.isInfinite(encoder.getTurnCost(flags_r220)));
@@ -575,8 +560,7 @@ public class BikeFlagEncoderTest extends AbstractBikeFlagEncoderTester
     // Issue 407 : Always block kissing_gate execpt for mountainbikes
     @Test
     @Override
-    public void testBarrierAccess()
-    {
+    public void testBarrierAccess() {
         // kissing_gate without bicycle tag
         ReaderNode node = new ReaderNode(1, -1, -1);
         node.setTag("barrier", "kissing_gate");
@@ -592,8 +576,7 @@ public class BikeFlagEncoderTest extends AbstractBikeFlagEncoderTester
     }
 
     @Test
-    public void testClassBicycle()
-    {
+    public void testClassBicycle() {
         ReaderWay way = new ReaderWay(1);
         way.setTag("highway", "tertiary");
         way.setTag("class:bicycle", "3");

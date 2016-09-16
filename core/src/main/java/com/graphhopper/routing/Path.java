@@ -19,10 +19,10 @@ package com.graphhopper.routing;
 
 import com.graphhopper.routing.util.DefaultEdgeFilter;
 import com.graphhopper.routing.util.FlagEncoder;
-import com.graphhopper.storage.SPTEntry;
 import com.graphhopper.routing.util.BikeCommonFlagEncoder;
 import com.graphhopper.storage.Graph;
 import com.graphhopper.storage.NodeAccess;
+import com.graphhopper.storage.SPTEntry;
 import com.graphhopper.util.*;
 import com.graphhopper.util.WayTypeInfo;
 import gnu.trove.list.TIntList;
@@ -37,35 +37,34 @@ import java.util.List;
  * edge determination faster and less complex as there could be several edges (u,v) especially for
  * graphs with shortcuts.
  * <p>
+ *
  * @author Peter Karich
  * @author Ottavio Campana
  * @author jan soe
  */
-public class Path
-{
+public class Path {
     private static final AngleCalc AC = Helper.ANGLE_CALC;
-    private List<String> description;
+    final StopWatch extractSW = new StopWatch("extract");
     protected Graph graph;
-    private FlagEncoder encoder;
     protected double distance;
     // we go upwards (via SPTEntry.parent) from the goal node to the origin node
     protected boolean reverseOrder = true;
     protected long time;
-    private boolean found;
     /**
      * Shortest path tree entry
      */
     protected SPTEntry sptEntry;
-    final StopWatch extractSW = new StopWatch("extract");
-    private int fromNode = -1;
     protected int endNode = -1;
+    private List<String> description;
+    private FlagEncoder encoder;
+    private boolean found;
+    private int fromNode = -1;
     private TIntList edgeIds;
     private double weight;
     private NodeAccess nodeAccess;
     private WayTypeInfo wayTypeInfo = new WayTypeInfo();
 
-    public Path( Graph graph, FlagEncoder encoder )
-    {
+    public Path(Graph graph, FlagEncoder encoder) {
         this.weight = Double.MAX_VALUE;
         this.graph = graph;
         this.nodeAccess = graph.getNodeAccess();
@@ -76,8 +75,7 @@ public class Path
     /**
      * Populates an unextracted path instances from the specified path p.
      */
-    Path( Path p )
-    {
+    Path(Path p) {
         this(p.graph, p.encoder);
         weight = p.weight;
         edgeIds = new TIntArrayList(p.edgeIds);
@@ -88,69 +86,63 @@ public class Path
      * @return the description of this route alternative to make it meaningful for the user e.g. it
      * displays one or two main roads of the route.
      */
-    public List<String> getDescription()
-    {
+    public List<String> getDescription() {
         if (description == null)
             return Collections.emptyList();
         return description;
     }
 
-    public Path setDescription( List<String> description )
-    {
+    public Path setDescription(List<String> description) {
         this.description = description;
         return this;
     }
 
-    public Path setSPTEntry( SPTEntry sptEntry )
-    {
+    public Path setSPTEntry(SPTEntry sptEntry) {
         this.sptEntry = sptEntry;
         return this;
     }
 
-    protected void addEdge( int edge )
-    {
+    protected void addEdge(int edge) {
         edgeIds.add(edge);
     }
 
-    protected Path setEndNode( int end )
-    {
+    protected Path setEndNode(int end) {
         endNode = end;
-        return this;
-    }
-
-    /**
-     * We need to remember fromNode explicitly as its not saved in one edgeId of edgeIds.
-     */
-    protected Path setFromNode( int from )
-    {
-        fromNode = from;
         return this;
     }
 
     /**
      * @return the first node of this Path.
      */
-    private int getFromNode()
-    {
+    private int getFromNode() {
         if (fromNode < 0)
             throw new IllegalStateException("Call extract() before retrieving fromNode");
 
         return fromNode;
     }
 
-    public boolean isFound()
-    {
+    /**
+     * We need to remember fromNode explicitly as its not saved in one edgeId of edgeIds.
+     */
+    protected Path setFromNode(int from) {
+        fromNode = from;
+        return this;
+    }
+
+    public int getEdgeCount() {
+        return edgeIds.size();
+    }
+
+    public boolean isFound() {
         return found;
     }
 
-    public Path setFound( boolean found )
-    {
+    public Path setFound(boolean found) {
         this.found = found;
         return this;
     }
 
-    void reverseOrder()
-    {
+    void reverseOrder() {
         if (!reverseOrder)
             throw new IllegalStateException("Switching order multiple times is not supported");
 
@@ -161,29 +153,25 @@ public class Path
     /**
      * @return distance in meter
      */
-    public double getDistance()
-    {
+    public double getDistance() {
         return distance;
     }
 
     /**
      * @return time in millis
      */
-    public long getTime()
-    {
+    public long getTime() {
         return time;
     }
 
     /**
      * This weight will be updated during the algorithm. The initial value is maximum double.
      */
-    public double getWeight()
-    {
+    public double getWeight() {
         return weight;
     }
 
-    public Path setWeight( double w )
-    {
+    public Path setWeight(double w) {
         this.weight = w;
         return this;
     }
@@ -191,16 +179,14 @@ public class Path
     /**
      * Extracts the Path from the shortest-path-tree determined by sptEntry.
      */
-    public Path extract()
-    {
+    public Path extract() {
         if (isFound())
             throw new IllegalStateException("Extract can only be called once");
 
         extractSW.start();
         SPTEntry goalEdge = sptEntry;
         setEndNode(goalEdge.adjNode);
-        while (EdgeIterator.Edge.isValid(goalEdge.edge))
-        {
+        while (EdgeIterator.Edge.isValid(goalEdge.edge)) {
             processEdge(goalEdge.edge, goalEdge.adjNode);
             goalEdge = goalEdge.parent;
         }
@@ -214,32 +200,29 @@ public class Path
     /**
      * Yields the final edge of the path
      */
-    public EdgeIteratorState getFinalEdge()
-    {
+    public EdgeIteratorState getFinalEdge() {
         return graph.getEdgeIteratorState(edgeIds.get(edgeIds.size() - 1), endNode);
     }
 
     /**
      * @return the time it took to extract the path in nano (!) seconds
      */
-    public long getExtractTime()
-    {
+    public long getExtractTime() {
         return extractSW.getNanos();
     }
 
-    public String getDebugInfo()
-    {
+    public String getDebugInfo() {
         return extractSW.toString();
     }
 
     /**
      * Calls getDistance and adds the edgeId.
      */
-    protected void processEdge( int edgeId, int adjNode )
-    {
+    protected void processEdge(int edgeId, int adjNode) {
         EdgeIteratorState iter = graph.getEdgeIteratorState(edgeId, adjNode);
         double dist = iter.getDistance();
         distance += dist;
+        // TODO calculate time based on weighting -> weighting.calcMillis
         time += calcMillis(dist, iter.getFlags(), false);
         addEdge(edgeId);
     }
@@ -248,9 +231,8 @@ public class Path
      * Calculates the time in millis for the specified distance in meter and speed (in km/h) via
      * flags.
      */
-    // FIXME: How to adopt the speed from ele difference dynamically? : Provide the edge as well and a put EdgeIteratorState to encoder.getSpeed ?? Note: elevation aware speed is independent from the eleAvoidance parameter, but requires the flatSpeed and the physical parameters as input!
-    protected long calcMillis( double distance, long flags, boolean revert )
-    {
+     // FIXME: How to adopt the speed from ele difference dynamically? : Provide the edge as well and a put EdgeIteratorState to encoder.getSpeed ?? Note: elevation aware speed is independent from the eleAvoidance parameter, but requires the flatSpeed and the physical parameters as input!    
+    protected long calcMillis(double distance, long flags, boolean revert) {
         if (revert && !encoder.isBackward(flags)
                 || !revert && !encoder.isForward(flags))
             throw new IllegalStateException("Calculating time should not require to read speed from edge in wrong direction. "
@@ -267,26 +249,17 @@ public class Path
     }
 
     /**
-     * The callback used in forEveryEdge.
-     */
-    private static interface EdgeVisitor
-    {
-        void next( EdgeIteratorState edgeBase, int index );
-    }
-
-    /**
      * Iterates over all edges in this path sorted from start to end and calls the visitor callback
      * for every edge.
      * <p>
+     *
      * @param visitor callback to handle every edge. The edge is decoupled from the iterator and can
-     * be stored.
+     *                be stored.
      */
-    private void forEveryEdge( EdgeVisitor visitor )
-    {
+    private void forEveryEdge(EdgeVisitor visitor) {
         int tmpNode = getFromNode();
         int len = edgeIds.size();
-        for (int i = 0; i < len; i++)
-        {
+        for (int i = 0; i < len; i++) {
             EdgeIteratorState edgeBase = graph.getEdgeIteratorState(edgeIds.get(i), tmpNode);
             if (edgeBase == null)
                 throw new IllegalStateException("Edge " + edgeIds.get(i) + " was empty when requested with node " + tmpNode
@@ -302,17 +275,14 @@ public class Path
     /**
      * Returns the list of all edges.
      */
-    public List<EdgeIteratorState> calcEdges()
-    {
+    public List<EdgeIteratorState> calcEdges() {
         final List<EdgeIteratorState> edges = new ArrayList<EdgeIteratorState>(edgeIds.size());
         if (edgeIds.isEmpty())
             return edges;
 
-        forEveryEdge(new EdgeVisitor()
-        {
+        forEveryEdge(new EdgeVisitor() {
             @Override
-            public void next( EdgeIteratorState eb, int i )
-            {
+            public void next(EdgeIteratorState eb, int i) {
                 edges.add(eb);
             }
         });
@@ -322,13 +292,10 @@ public class Path
     /**
      * @return the uncached node indices of the tower nodes in this path.
      */
-    public TIntList calcNodes()
-    {
+    public TIntList calcNodes() {
         final TIntArrayList nodes = new TIntArrayList(edgeIds.size() + 1);
-        if (edgeIds.isEmpty())
-        {
-            if (isFound())
-            {
+        if (edgeIds.isEmpty()) {
+            if (isFound()) {
                 nodes.add(endNode);
             }
             return nodes;
@@ -336,11 +303,9 @@ public class Path
 
         int tmpNode = getFromNode();
         nodes.add(tmpNode);
-        forEveryEdge(new EdgeVisitor()
-        {
+        forEveryEdge(new EdgeVisitor() {
             @Override
-            public void next( EdgeIteratorState eb, int i )
-            {
+            public void next(EdgeIteratorState eb, int i) {
                 nodes.add(eb.getAdjNode());
             }
         });
@@ -350,15 +315,13 @@ public class Path
     /**
      * This method calculated a list of points for this path
      * <p>
+     *
      * @return this path its geometry
      */
-    public PointList calcPoints()
-    {
+    public PointList calcPoints() {
         final PointList points = new PointList(edgeIds.size() + 1, nodeAccess.is3D());
-        if (edgeIds.isEmpty())
-        {
-            if (isFound())
-            {
+        if (edgeIds.isEmpty()) {
+            if (isFound()) {
                 points.add(graph.getNodeAccess(), endNode);
             }
             return points;
@@ -366,14 +329,11 @@ public class Path
 
         int tmpNode = getFromNode();
         points.add(nodeAccess, tmpNode);
-        forEveryEdge(new EdgeVisitor()
-        {
+        forEveryEdge(new EdgeVisitor() {
             @Override
-            public void next( EdgeIteratorState eb, int index )
-            {
+            public void next(EdgeIteratorState eb, int index) {
                 PointList pl = eb.fetchWayGeometry(2);
-                for (int j = 0; j < pl.getSize(); j++)
-                {
+                for (int j = 0; j < pl.getSize(); j++) {
                     points.add(pl, j);
                 }
             }
@@ -384,21 +344,17 @@ public class Path
     /**
      * @return the list of instructions for this path.
      */
-    public InstructionList calcInstructions( final Translation tr )
-    {
+    public InstructionList calcInstructions(final Translation tr) {
         final InstructionList ways = new InstructionList(edgeIds.size() / 4, tr);
-        if (edgeIds.isEmpty())
-        {
-            if (isFound())
-            {
+        if (edgeIds.isEmpty()) {
+            if (isFound()) {
                 ways.add(new FinishInstruction(nodeAccess, endNode));
             }
             return ways;
         }
 
         final int tmpNode = getFromNode();
-        forEveryEdge(new EdgeVisitor()
-        {
+        forEveryEdge(new EdgeVisitor() {
             /*
              * We need three points to make directions
              *
@@ -431,8 +387,7 @@ public class Path
             private EdgeExplorer outEdgeExplorer = graph.createEdgeExplorer(new DefaultEdgeFilter(encoder, false, true));
 
             @Override
-            public void next( EdgeIteratorState edge, int index )
-            {
+            public void next(EdgeIteratorState edge, int index) {
                 // baseNode is the current node and adjNode is the next
                 int adjNode = edge.getAdjNode();
                 int baseNode = edge.getBaseNode();
@@ -444,12 +399,10 @@ public class Path
                 PointList wayGeo = edge.fetchWayGeometry(3);
                 boolean isRoundabout = encoder.isBool(flags, FlagEncoder.K_ROUNDABOUT);
 
-                if (wayGeo.getSize() <= 2)
-                {
+                if (wayGeo.getSize() <= 2) {
                     latitude = adjLat;
                     longitude = adjLon;
-                } else
-                {
+                } else {
                     latitude = wayGeo.getLatitude(1);
                     longitude = wayGeo.getLongitude(1);
                     assert java.lang.Double.compare(prevLat, nodeAccess.getLatitude(baseNode)) == 0;
@@ -467,23 +420,19 @@ public class Path
                     prevName = name;
                     prevAnnotation = annotation;
 
-                } else if (isRoundabout)
-                // remark: names and annotations within roundabout are ignored
-                {
+                } else if (isRoundabout) {
+                    // remark: names and annotations within roundabout are ignored
                     if (!prevInRoundabout) //just entered roundabout
                     {
                         int sign = Instruction.USE_ROUNDABOUT;
                         RoundaboutInstruction roundaboutInstruction = new RoundaboutInstruction(sign, name,
                                 annotation, new PointList(10, nodeAccess.is3D()));
-                        if (prevName != null)
-                        {
+                        if (prevName != null) {
                             // check if there is an exit at the same node the roundabout was entered
                             EdgeIterator edgeIter = outEdgeExplorer.setBaseNode(baseNode);
-                            while (edgeIter.next())
-                            {
+                            while (edgeIter.next()) {
                                 if ((edgeIter.getAdjNode() != prevNode)
-                                        && !encoder.isBool(edgeIter.getFlags(), FlagEncoder.K_ROUNDABOUT))
-                                {
+                                        && !encoder.isBool(edgeIter.getFlags(), FlagEncoder.K_ROUNDABOUT)) {
                                     roundaboutInstruction.increaseExitNumber();
                                     break;
                                 }
@@ -512,10 +461,8 @@ public class Path
                     // Add passed exits to instruction. A node is counted if there is at least one outgoing edge
                     // out of the roundabout
                     EdgeIterator edgeIter = outEdgeExplorer.setBaseNode(adjNode);
-                    while (edgeIter.next())
-                    {
-                        if (!encoder.isBool(edgeIter.getFlags(), FlagEncoder.K_ROUNDABOUT))
-                        {
+                    while (edgeIter.next()) {
+                        if (!encoder.isBool(edgeIter.getFlags(), FlagEncoder.K_ROUNDABOUT)) {
                             ((RoundaboutInstruction) prevInstruction).increaseExitNumber();
                             break;
                         }
@@ -545,8 +492,7 @@ public class Path
                     prevName = name;
                     prevAnnotation = annotation;
 
-                } else if ((!name.equals(prevName)) || (!annotation.equals(prevAnnotation)))
-                {
+                } else if ((!name.equals(prevName)) || (!annotation.equals(prevAnnotation))) {
                     prevOrientation = AC.calcOrientation(doublePrevLat, doublePrevLong, prevLat, prevLon);
                     double orientation = AC.calcOrientation(prevLat, prevLon, latitude, longitude);
                     orientation = AC.alignOrientation(prevOrientation, orientation);
@@ -554,21 +500,18 @@ public class Path
                     double absDelta = Math.abs(delta);
                     int sign;
 
-                    if (absDelta < 0.2)
-                    {
+                    if (absDelta < 0.2) {
                         // 0.2 ~= 11°
                         sign = Instruction.CONTINUE_ON_STREET;
 
-                    } else if (absDelta < 0.8)
-                    {
+                    } else if (absDelta < 0.8) {
                         // 0.8 ~= 40°
                         if (delta > 0)
                             sign = Instruction.TURN_SLIGHT_LEFT;
                         else
                             sign = Instruction.TURN_SLIGHT_RIGHT;
 
-                    } else if (absDelta < 1.8)
-                    {
+                    } else if (absDelta < 1.8) {
                         // 1.8 ~= 103°
                         if (delta > 0)
                             sign = Instruction.TURN_LEFT;
@@ -587,12 +530,10 @@ public class Path
 
                 updatePointsAndInstruction(edge, wayGeo);
 
-                if (wayGeo.getSize() <= 2)
-                {
+                if (wayGeo.getSize() <= 2) {
                     doublePrevLat = prevLat;
                     doublePrevLong = prevLon;
-                } else
-                {
+                } else {
                     int beforeLast = wayGeo.getSize() - 2;
                     doublePrevLat = wayGeo.getLatitude(beforeLast);
                     doublePrevLong = wayGeo.getLongitude(beforeLast);
@@ -604,10 +545,8 @@ public class Path
                 prevLon = adjLon;
 
                 boolean lastEdge = index == edgeIds.size() - 1;
-                if (lastEdge)
-                {
-                    if (isRoundabout)
-                    {
+                if (lastEdge) {
+                    if (isRoundabout) {
                         // calc angle between roundabout entrance and finish
                         double orientation = AC.calcOrientation(doublePrevLat, doublePrevLong, prevLat, prevLon);
                         orientation = AC.alignOrientation(prevOrientation, orientation);
@@ -619,12 +558,10 @@ public class Path
                 }
             }
 
-            private void updatePointsAndInstruction( EdgeIteratorState edge, PointList pl )
-            {
+            private void updatePointsAndInstruction(EdgeIteratorState edge, PointList pl) {
                 // skip adjNode
                 int len = pl.size() - 1;
-                for (int i = 0; i < len; i++)
-                {
+                for (int i = 0; i < len; i++) {
                     prevInstruction.getPoints().add(pl, i);
                 }
                 double newDist = edge.getDistance();
@@ -654,16 +591,13 @@ public class Path
      }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "distance:" + getDistance() + ", edges:" + edgeIds.size();
     }
 
-    public String toDetailsString()
-    {
+    public String toDetailsString() {
         String str = "";
-        for (int i = 0; i < edgeIds.size(); i++)
-        {
+        for (int i = 0; i < edgeIds.size(); i++) {
             if (i > 0)
                 str += "->";
 
@@ -671,4 +605,12 @@ public class Path
         }
         return toString() + ", found:" + isFound() + ", " + str;
     }
+
+    /**
+     * The callback used in forEveryEdge.
+     */
+    private static interface EdgeVisitor {
+        void next(EdgeIteratorState edgeBase, int index);
+    }
+
 }
