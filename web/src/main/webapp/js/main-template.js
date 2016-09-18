@@ -99,27 +99,20 @@ $(document).ready(function (e) {
         tripSubmit();
     });
 
-    last_id = localStorage['last_id'];
-    if (last_id === undefined )
-        last_id = 100; // Leave room for 100 predefined root nodes
+    last_id = parseInt(localStorage['last_id']);
+    if (isNaN(last_id))
+        last_id = 1; // Start with 1
     
     $( "#addTripButton" ).click(function(e) {
         e.preventDefault();
         var $tree = $('#tripTree');
-        last_id +=1;
+        last_id += 1;
          
-        var parent_node = $tree.tree('getNodeById', 1);
+        $tree.jstree().create_node('#' ,  { "id" : last_id, "text" : "Tour " + last_id }, "last", function(){
+              //console.log("Node added");
+        });
 
-        $tree.tree(
-            'appendNode',
-            {
-                name: 'new_node ' + last_id,
-                id: last_id
-            },
-            parent_node
-        );
-
-        localStorage['tripData'] = $tree.tree('toJson');
+        localStorage['tripData'] = JSON.stringify($tree.jstree(true).get_json('#', { 'flat': true }));
         localStorage['last_id'] = last_id;
        
         return;
@@ -231,6 +224,13 @@ $(document).ready(function (e) {
     $(window).resize(function () {
         mapLayer.adjustMapSize();
     });
+
+    $(window).on('beforeunload', function(){
+        // Save eventually altered trip data
+        localStorage['tripData'] = JSON.stringify($('#tripTree').jstree(true).get_json('#', { 'flat': true }));
+        //return 'Are you sure you want to leave?';
+    });
+
     $("#locationpoints").sortable({
         items: ".pointDiv",
         cursor: "n-resize",
@@ -857,67 +857,23 @@ module.exports.setFlag = setFlag;
 var tripData = JSON.parse(localStorage.getItem("tripData"));
 if (tripData === null)
 {
-    tripData = [
-        {
-            label: 'Single tour', id: 1,
-            children: []
-        }
-    ];
+    tripData = [];
     // Initialize tourData in localStorage
     localStorage['tripData'] = JSON.stringify(tripData);
 }
 
-
 $(function() {
-    var $tree = $('#tripTree');
-
-    $tree.tree({
-       data: tripData,
-       dragAndDrop: true,
-       autoOpen: 1,
-       onCreateLi: function(node, $li) {
-            // Append a link to the jqtree-element div.
-            // The link has an url '#node-[id]' and a data property 'node-id'.
-            $li.find('.jqtree-element').append(
-                '<a href="#node-'+ node.id +'" class="edit" data-node-id="'+
-                node.id +'"> edit</a>;'
-            );
-        },
-        onCanMove: function(node) {
-            if (! node.parent.parent) {
-                // Example: Cannot move root node
-                return false;
-            }
-            else {
-                return true;
-            }
-        }
-    });
+    var $tree = $('#tripTree').jstree({
+       "plugins" : [ "themes", "contextmenu", "dnd", "state", "types" ],
+       'core' : {
+       "check_callback" : true,
+       'data' : tripData,
+       }});
 
     // Handle a click
-    $tree.on(
-        'click', '.edit',
-        function(e) {
-            // Get the id from the 'node-id' data property
-            var node_id = $(e.target).data('node-id');
+    $tree.on("changed.jstree", function (e, data) {
+        console.log("changed.jstree" + data.selected);
+    });
 
-            // Get the node from the tree
-            var node = $tree.tree('getNodeById', node_id);
-
-            if (node) {
-                // Display the node name
-                alert(node.name);
-            }
-        }
-    );
-
-    // Store data triggered from a move
-    $tree.bind(
-    'tree.move',
-    function(event) {
-       event.move_info.do_move();
-       localStorage['tripData'] = $tree.tree('toJson');
-    }
-);
 });
 

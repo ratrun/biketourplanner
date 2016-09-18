@@ -37,14 +37,6 @@ body {
     padding-right: 5px;
 }
 
-#triptree {
-    padding: 10px;
-}
-
-#triptree a {
-    padding-right: 5px;
-}
-
 .route_results {
     max-height: 40%;
 }
