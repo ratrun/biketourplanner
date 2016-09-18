@@ -317,7 +317,7 @@ GHRequest.prototype.fetchTranslationMap = function (urlLocaleParam) {
         this.host = "http://localhost:8989";
     var keyparam = "";
     if (this.key !== undefined)
-        var keyparam= "&key=" + this.key;
+        var keyparam = "&key=" + this.key;
     var url = this.host + "/i18n/" + urlLocaleParam + "?type=" + this.dataType + keyparam;
     // console.log(url);
     return $.ajax({
