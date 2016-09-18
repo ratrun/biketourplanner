@@ -212,12 +212,6 @@ body {
     cursor: pointer;
 }
 
-#addTripButton {
-    float: right;
-    margin-bottom: 5px;
-    margin-right: 5px;
-}
-
 #changeTripButton {
     float: left;
     margin-bottom: 5px;

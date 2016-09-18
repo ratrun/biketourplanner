@@ -103,29 +103,31 @@ $(document).ready(function (e) {
     if (isNaN(last_id))
         last_id = 1; // Start with 1
     
-    $( "#addTripButton" ).click(function(e) {
-        e.preventDefault();
-        var $tree = $('#tripTree');
-        last_id += 1;
-         
-        $tree.jstree().create_node('#' ,  { "id" : last_id, "text" : "Tour " + last_id }, "last", function(){
-              //console.log("Node added");
-        });
-
-        localStorage['tripData'] = JSON.stringify($tree.jstree(true).get_json('#', { 'flat': true }));
-        localStorage['last_id'] = last_id;
-       
-        return;
-    });
-
     $( "#saveTripButton" ).click(function(e) {
-         e.preventDefault();
-         $("#tripDiv").show();
-         $("#changeTripButton").show();
-         $("#addTripButton").show();
-         $(".route_result_tab").hide();
-         $("#routingOptions").hide();
-         return;
+        e.preventDefault();
+        $("#tripDiv").show();
+        $("#changeTripButton").show();
+        $(".route_result_tab").hide();
+        $("#routingOptions").hide();
+        
+        if (ghRequest.route.isResolved())
+        {
+            var $tree = $('#tripTree');
+            last_id += 1;
+
+            $tree.jstree().create_node('#' ,  { "id" : last_id, "text" : "Tour " + last_id, "data" : {"historyURL": ghRequest.createHistoryURL()}}, "last", function(){
+                console.log("Trip added for ghRequest URL=" + ghRequest.createHistoryURL());
+            });
+
+            localStorage['tripData'] = JSON.stringify($tree.jstree(true).get_json('#', { 'flat': true }));
+            localStorage['last_id'] = last_id;
+           
+            return;
+        }
+        else
+        {
+            return;
+        }
     });
 
     var urlParams = urlTools.parseUrlWithHisto();
@@ -756,8 +758,10 @@ function graphHopperSubmit() {
 function tripSubmit() {
     $("#tripDiv").hide();
     $("#changeTripButton").hide();
-    $("#addTripButton").hide();
     $("#routingOptions").show();
+    var CurrentNode = $("#tripTree").jstree("get_selected");
+    var historyURL = $('#tripTree').jstree(true).get_node(CurrentNode).data.historyURL;
+    window.location.href = historyURL;
 }
 
 $(function() {
@@ -863,17 +867,11 @@ if (tripData === null)
 }
 
 $(function() {
-    var $tree = $('#tripTree').jstree({
+    $('#tripTree').jstree({
        "plugins" : [ "themes", "contextmenu", "dnd", "state", "types" ],
        'core' : {
        "check_callback" : true,
        'data' : tripData,
        }});
-
-    // Handle a click
-    $tree.on("changed.jstree", function (e, data) {
-        console.log("changed.jstree" + data.selected);
-    });
-
 });
 
