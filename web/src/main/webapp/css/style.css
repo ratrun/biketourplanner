@@ -14,7 +14,7 @@ body {
 
 #input {
     float: left;
-    margin-left: 10px;
+    margin-left: 6px;
     font-size: small;
     /*padding-right: 15px; */
 }
@@ -43,7 +43,7 @@ body {
 
 #input {
     min-height: 400px;
-    max-width: 270px;
+    max-width: 240px;
 }
 
 .instructions_info {
@@ -55,7 +55,7 @@ body {
 }
 
 #input, #instructions {
-    width: 280px;
+    width: 240px;
 }
 
 .pointInput {
@@ -150,9 +150,9 @@ body {
     font-size: small;
 }
 #options {
-    padding-bottom: 10px;
-    padding-left: 10px;
-    padding-right: 10px;
+    padding-bottom: 8px;
+    padding-left: 2px;
+    padding-right: 4px;
 }
 .vehicle-info-link {
     padding-top: 3px;
@@ -168,7 +168,7 @@ body {
     padding-bottom: 15px;
 }
 #header_img img {
-    width: 230px;
+    width: 225px;
 }
 
 #gpx_dialog {
@@ -203,7 +203,7 @@ body {
 
 #saveTripButton {
     margin-bottom: 5px;
-    margin-left: 40px;
+    margin-left: 25px;
     margin-right: 5px;
     float: left;
 }
@@ -431,24 +431,24 @@ td img.pic {
 #ascendcontrol{
     display: none;
     font-size: smaller;
-    margin-left: 5px;
-    margin-right: 10px;
+    margin-left: 4px;
+    margin-right: 8px;
     visibility: hidden;
 }
 
 #niceLevelcontrol{
     display: none;
     font-size: smaller;
-    margin-left: 5px;
-    margin-right: 10px;
+    margin-left: 4px;
+    margin-right: 8px;
     visibility: hidden;
 }
 
 #alternativeRoutecontrol{
     display: none;
     font-size: smaller;
-    margin-left: 5px;
-    margin-right: 10px;
+    margin-left: 4px;
+    margin-right: 8px;
     visibility: hidden;
 }
 

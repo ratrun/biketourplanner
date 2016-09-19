@@ -12,7 +12,7 @@ var elevationControl = null;
 // called if window changes or before map is created
 function adjustMapSize() {
     var mapDiv = $("#map");
-    var width = $(window).width() - 280;
+    var width = $(window).width() - 250;
     if (width < 400) {
         width = 400;
         mapDiv.attr("style", "position: relative; float: right;");
