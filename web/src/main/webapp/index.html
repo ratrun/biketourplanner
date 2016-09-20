@@ -108,19 +108,19 @@
                 <div id="error" class="error"></div>
                 </form>
                 <div id="hosting">Powered by <a href='https://graphhopper.com/#directions-api'>GraphHopper API</a></div>
+                <div id="pointTemplate" class="hidden">
+                    <div id="{id}_Div" class="pointDiv">
+                        <img id="{id}_Indicator" class="hidden pointIndicator" src="img/loading.gif"/>
+                        <img id="{id}_Flag" class="pointFlag" src="img/marker-small-green.png"/>
+                        <input id="{id}_Input" class="pointInput" type="text" placeholder=""/>
+                        <div class="pointDelete"><img src="./img/point_delete.png"></div>
+                        <div class="clear"> </div>
+                        <div id="{id}_ResolveFound" class="pointResolveFound"></div>
+                        <div id="{id}_ResolveError" class="pointResolveError"></div>
+                    </div>
+                </div>                
             </div>
         </div>
-
-            <div id="pointTemplate" class="hidden">
-                <div id="{id}_Div" class="pointDiv">
-                    <input id="{id}_Input" class="pointInput" type="text" placeholder=""/>
-                    <div class="pointDelete"><img src="./img/point_delete.png"></div>
-                    <div class="clear"> </div>
-                    <div id="{id}_ResolveFound" class="pointResolveFound"></div>
-                    <div id="{id}_ResolveError" class="pointResolveError"></div>
-                </div>
-            </div>
-
             <div id="gpx_dialog" title="Included GPX data:">
                 <form id="GPXOptions" name="GPXOptions">
                     <label class="inline">
