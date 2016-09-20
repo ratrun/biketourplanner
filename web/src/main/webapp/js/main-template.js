@@ -108,7 +108,7 @@ $(document).ready(function (e) {
         $("#tripDiv").show();
         $("#changeTripButton").show();
         $(".route_result_tab").hide();
-        $("#routingOptions").hide();
+        $("#routingSettings").hide();
         
         if (ghRequest.route.isResolved())
         {
@@ -543,9 +543,14 @@ function routeLatLng(request, doQuery) {
     routeResultsDiv.html('<img src="img/indicator.gif"/> Search Route ...');
     request.doRequest(urlForAPI, function (json) {
         routeResultsDiv.html("");
+        $("#saveTripButton").prop('disabled', false);
         if (json.message) {
+            $("#saveTripButton").prop('disabled', true);
             var tmpErrors = json.message;
             console.log(tmpErrors);
+            mapLayer.setDisabledForMapsContextMenu('intermediate', false);
+            mapLayer.setDisabledForMapsContextMenu('start', false);
+            mapLayer.setDisabledForMapsContextMenu('end', false);
             if (json.hints) {
                 for (var m = 0; m < json.hints.length; m++) {
                     routeResultsDiv.append("<div class='error'>" + json.hints[m].message + "</div>");
@@ -758,10 +763,11 @@ function graphHopperSubmit() {
 function tripSubmit() {
     $("#tripDiv").hide();
     $("#changeTripButton").hide();
-    $("#routingOptions").show();
+    $("#routingSettings").show();
     var CurrentNode = $("#tripTree").jstree("get_selected");
     var historyURL = $('#tripTree').jstree(true).get_node(CurrentNode).data.historyURL;
-    window.location.href = historyURL;
+    if (historyURL)
+        window.location.href = historyURL;
 }
 
 $(function() {
@@ -874,4 +880,8 @@ $(function() {
        'data' : tripData,
        }});
 });
+
+ $( function() {
+    $( "#tabs" ).tabs({ active: 0 });
+ });
 
