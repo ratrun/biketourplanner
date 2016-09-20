@@ -37,6 +37,7 @@ function startLocalVectorTileServer(win)
     deleteMapMenuItem.enabled = false;
 
     console.log('mbtiles started: ' + mbtiles);
+
     mbtiles.on('error', function (err) {
       console.log('mbtiles error' + err);
     });
@@ -122,6 +123,8 @@ function startGraphhopperServer(win)
         if (data.toString('utf-8').indexOf('Started server at HTTP :8989') !==-1 )
         {
              showHtmlNotification("./img/mtb.png", "Routing server", 'is ready...');
+             //Reload page to dynamically adopt web GUI to the capabilities of the instance
+             console.log("Reloading page!!");
              window.location.reload(true);
         }
     });
@@ -430,12 +433,24 @@ function webkitapp(win)
         })
     );
 
-        // Append Menu to Window
+    // Append Menu to Window
     gui.Window.get().menu = menu;
 
-    startLocalVectorTileServer(win);
-    startGraphhopperServer(win);
-
+    // Check our two servers and start them in case that they are not responding quickly
+    var http = global.require('https');
+    var request = http.get({hostname: '127.0.0.1', port: 3000}, function (res) {
+    });
+    request.setTimeout( 100, function( ) {
+       console.log("Tileserver did not respond: Starting it!");
+       startLocalVectorTileServer(win);
+    });
+    
+    request = http.get({hostname: '127.0.0.1', port: 8989}, function (res) {
+    });
+    request.setTimeout( 100, function( ) {
+       console.log("Our Graphhopper routing server did not respond: Starting it!");
+       startGraphhopperServer(win);
+    });
 }
 
 var showHtmlNotification = function (icon, title, body, callback) 
