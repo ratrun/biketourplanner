@@ -761,13 +761,16 @@ function graphHopperSubmit() {
 }
 
 function tripSubmit() {
-    $("#tripDiv").hide();
-    $("#changeTripButton").hide();
-    $("#routingSettings").show();
     var CurrentNode = $("#tripTree").jstree("get_selected");
-    var historyURL = $('#tripTree').jstree(true).get_node(CurrentNode).data.historyURL;
-    if (historyURL)
-        window.location.href = historyURL;
+    if ($('#tripTree').jstree(true).get_node(CurrentNode).data) {
+        var historyURL = $('#tripTree').jstree(true).get_node(CurrentNode).data.historyURL;
+        if (historyURL) {
+           $("#tripDiv").hide();
+           $("#changeTripButton").hide();
+           $("#routingSettings").show();
+           window.location.href = historyURL;
+        }
+    }
 }
 
 $(function() {
@@ -879,9 +882,12 @@ $(function() {
        "check_callback" : true,
        'data' : tripData,
        }});
+    $("#tripTree").on("select_node.jstree",
+        function(evt, data){
+            $( "#changeTripButton" ).prop( "disabled", (data.node.data.historyURL === undefined) );
+    });   
 });
 
- $( function() {
-    $( "#tabs" ).tabs({ active: 0 });
- });
-
+$( function() {
+   $( "#tabs" ).tabs({ active: 0 });
+});
