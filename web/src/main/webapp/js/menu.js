@@ -161,6 +161,7 @@ function startGraphhopperServer(win)
         }
         else
         {
+           console.log("Calling stopLocalVectorTileServer();")
            stopLocalVectorTileServer();
            stopGraphhopperServer();
         }
@@ -186,11 +187,11 @@ function stopLocalVectorTileServer()
       $.getJSON("http://127.0.0.1:3000/4cede326-7166-4cbd-994f-699c6dc271e9", function( data ) {
                              console.log("Tile server stop response was" + data);
       });
+      stopTileServerMenuItem.enabled = false;
+      showInstalledMapsMenuItem.enabled = false;
+      startTileServerMenuItem.enabled = true;
+      deleteMapMenuItem.enabled = true;
    }
-   stopTileServerMenuItem.enabled = false;
-   showInstalledMapsMenuItem.enabled = false;
-   startTileServerMenuItem.enabled = true;
-   deleteMapMenuItem.enabled = true;
   }
 }
 
@@ -198,11 +199,14 @@ function stopGraphhopperServer()
 {
   if (!graphhopperServerHasExited)
   {   // Inform the graphhopper server to close
-      stopGraphhopperServerMenuItem.enabled = false;
-      changeGraphMenuItem.enabled = true;
-      startGraphhopperServerMenuItem.enabled = true;
       var res = graphhopper.kill('SIGTERM');
       console.log("graphhopper kill SIGTERM returned:" + res);
+      if (shutdownapp)
+      {
+          stopGraphhopperServerMenuItem.enabled = false;
+          changeGraphMenuItem.enabled = true;
+          startGraphhopperServerMenuItem.enabled = true;
+      }
   }
 }
 
