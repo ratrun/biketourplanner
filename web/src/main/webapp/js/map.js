@@ -168,6 +168,7 @@ function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selec
              delete properties.id;
              var displaytext=JSON.stringify(properties, null, 1).replace(/{/g,'').replace(/}/g,'');
              document.getElementById('layerfeatures').innerHTML = displaytext.replace(/\",/g,'').replace(/\"/g,'');
+             $('#layerfeatures').css('top', $('#layer_menu').position().top + $('#layer_menu').height() + 'px');
              var len = 0.5 + 1.5 * displaytext.split('\": \"').length;
              $('#layerfeatures').css('height', len  + 'em');
            }

@@ -265,6 +265,7 @@ function deletegraph(dir)
 function webkitapp(win)
 {
     gui.App.clearCache();
+    console.log("nwjs version:" + gui.process.versions['node-webkit']);
     var menu = new gui.Menu({type: "menubar"});
     fs = global.require('fs');
 
@@ -406,7 +407,7 @@ function webkitapp(win)
 
     // Create the help sub-menu
     var helpSubMenu = new gui.Menu();
-    helpSubMenu.append(new gui.MenuItem({ label: 'Help: Fixme' ,  enabled : false}));
+    //helpSubMenu.append(new gui.MenuItem({ label: 'Help: Fixme' ,  enabled : false}));
     helpSubMenu.append(separator);
     helpSubMenu.append(new gui.MenuItem({ label: 'About' ,
         click: function() {
