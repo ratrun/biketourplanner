@@ -8,6 +8,7 @@ var menuStart;
 var menuIntermediate;
 var menuEnd;
 var elevationControl = null;
+var initialActionsDone = false;
 
 // called if window changes or before map is created
 function adjustMapSize() {
@@ -41,12 +42,44 @@ function adjustMapSize() {
     // $("#info").css("height", height - $("#input_header").height() - 100);
 }
 
-function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selectLayer) {
-    adjustMapSize();
-    // console.log("init map at " + JSON.stringify(bounds));
-    var defaultLayer = tileLayers.selectLayer(selectLayer);
+function createBounds(bounds) {
+        map.fitBounds(new L.LatLngBounds(new L.LatLng(bounds.minLat, bounds.minLon),
+            new L.LatLng(bounds.maxLat, bounds.maxLon)));
 
+    //if (isProduction())
+    //    map.setView(new L.LatLng(0, 0), 2);
+
+    map.attributionControl.setPrefix('');
+
+    var myStyle = {
+        "color": 'black',
+        "weight": 2,
+        "opacity": 0.3
+    };
+    var geoJson = {
+        "type": "Feature",
+        "geometry": {
+            "type": "LineString",
+            "coordinates": [
+                [bounds.minLon, bounds.minLat],
+                [bounds.maxLon, bounds.minLat],
+                [bounds.maxLon, bounds.maxLat],
+                [bounds.minLon, bounds.maxLat],
+                [bounds.minLon, bounds.minLat]]
+        }
+    };
+
+    if (bounds.initialized)
+        L.geoJson(geoJson, {
+            "style": myStyle
+        }).addTo(map);
+
+    routingLayer = L.geoJson().addTo(map);
+}
+
+function initMap(setStartCoord, setIntermediateCoord, setEndCoord, selectLayer) {
     // default
+    var defaultLayer = tileLayers.selectLayer(selectLayer);
     map = L.map('map', {
         layers: [defaultLayer],
         minZoom: 2,
@@ -128,11 +161,7 @@ function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selec
         state: 3
     });
 
-    // Allow the tile server some time for startup
-    setTimeout(function(){ 
-        console.log("Constructing tile layer control");
-        L.control.layers(tileLayers.getAvailableTileLayers()/*, overlays*/).addTo(map);
-    }, 500);
+    L.control.layers(tileLayers.getAvailableTileLayers()/*, overlays*/).addTo(map);
 
     map.on('baselayerchange', function (a) {
         if (a.name) {
@@ -143,7 +172,6 @@ function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selec
             });
         }
     });
-
 
     scaleControl = L.control.scale({
         imperial: false
@@ -245,38 +273,8 @@ if (0 ===1)
 
     L.control.scale().addTo(map);
 
-    map.fitBounds(new L.LatLngBounds(new L.LatLng(bounds.minLat, bounds.minLon),
-            new L.LatLng(bounds.maxLat, bounds.maxLon)));
+    createBounds(bounds);
 
-    //if (isProduction())
-    //    map.setView(new L.LatLng(0, 0), 2);
-
-    map.attributionControl.setPrefix('');
-
-    var myStyle = {
-        "color": 'black',
-        "weight": 2,
-        "opacity": 0.3
-    };
-    var geoJson = {
-        "type": "Feature",
-        "geometry": {
-            "type": "LineString",
-            "coordinates": [
-                [bounds.minLon, bounds.minLat],
-                [bounds.maxLon, bounds.minLat],
-                [bounds.maxLon, bounds.maxLat],
-                [bounds.minLon, bounds.maxLat],
-                [bounds.minLon, bounds.minLat]]
-        }
-    };
-
-    if (bounds.initialized)
-        L.geoJson(geoJson, {
-            "style": myStyle
-        }).addTo(map);
-
-    routingLayer = L.geoJson().addTo(map);
     routingLayer.options = {
         // use style provided by the 'properties' entry of the geojson added by addDataToRoutingLayer
         style: function (feature) {
@@ -300,6 +298,17 @@ if (0 ===1)
             }],
         contextmenuAtiveState: 3
     };
+    initialActionsDone = true;
+}
+
+function multipleCallableInitMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selectLayer) {
+    adjustMapSize();
+    console.log("init map at " + JSON.stringify(bounds));
+    if (initialActionsDone) {
+        createBounds(bounds);
+    } else {
+        initMap(setStartCoord, setIntermediateCoord, setEndCoord, selectLayer);
+    }
 }
 
 function focus(coord, zoom, index) {
@@ -353,7 +362,7 @@ module.exports.removeLayerFromMap = function (layer) {
 };
 
 module.exports.focus = focus;
-module.exports.initMap = initMap;
+module.exports.multipleCallableInitMap = multipleCallableInitMap;
 module.exports.adjustMapSize = adjustMapSize;
 
 module.exports.addElevation = function (geoJsonFeature, useMiles) {

@@ -17,6 +17,8 @@ var shutdownapp = false;
 var fs;
 var activeOsmfile = localStorage.activeOsmfile;
 var gui;
+var main = require('./main-template.js');
+var runningUnderNW = false;
 
 if (activeOsmfile === undefined)
     activeOsmfile = 'liechtenstein-latest.osm.pbf';
@@ -35,6 +37,7 @@ function startLocalVectorTileServer(win)
     showInstalledMapsMenuItem.enabled = true;
     startTileServerMenuItem.enabled = false;
     deleteMapMenuItem.enabled = false;
+    showHtmlNotification("./img/mtb.png", 'Tile server started !' , '', 1000);
 
     console.log('mbtiles started: ' + mbtiles);
 
@@ -67,7 +70,7 @@ function startLocalVectorTileServer(win)
                     showInstalledMapsMenuItem.enabled = false;
                     startTileServerMenuItem.enabled = true;
                     deleteMapMenuItem.enabled = true;
-                    showHtmlNotification("./img/mtb.png", 'Tile server stopped !' , '');
+                    showHtmlNotification("./img/mtb.png", 'Tile server stopped !' , '', 1000);
                 }
                 else
                    // We got this most likely during startup because the vector tile server is already active and the 
@@ -81,6 +84,7 @@ function startLocalVectorTileServer(win)
     });
 }
 
+var graphopperServerStartedOnce = false;
 function startGraphhopperServer(win)
 {
     var os = global.require('os');
@@ -118,14 +122,20 @@ function startGraphhopperServer(win)
 
     graphhopper.stdout.on('data', function (data) {
         console.log('graphhopper stdout: ' + data);
-        if (data.toString('utf-8').indexOf('creating graph') !==-1 )
-             showHtmlNotification("./img/mtb.png", "Creating routing data", 'might take a while!');
+        if (data.toString('utf-8').indexOf('start creating graph from') !==-1 )
+             showHtmlNotification("./img/mtb.png", "Creating routing data", 'Going to take a while. You may press F12 and watch the console logs for details', 15000);
         if (data.toString('utf-8').indexOf('Started server at HTTP :8989') !==-1 )
         {
              showHtmlNotification("./img/mtb.png", "Routing server", 'is ready...');
-             //Reload page to dynamically adopt web GUI to the capabilities of the instance
-             console.log("Reloading page!!");
-             window.location.reload(true);
+             main.mainInit();
+             if (graphopperServerStartedOnce) {
+                 //FIXME: Understand why the "$.when(ghRequest.fetchTranslationMap(urlParams.locale), ghRequest.getInfo())" runs into a timeout once after a re-start of the graphhopper server.
+                 setTimeout(function() {
+                     //FIXME: Here ww simply run it once more and now $.when(ghRequest.fetchTranslationMap(urlParams.locale), ghRequest.getInfo())" works!!!, but no idea why.!
+                     main.mainInit();
+                 },4000);
+             }
+             graphopperServerStartedOnce = true;
         }
     });
 
@@ -136,9 +146,14 @@ function startGraphhopperServer(win)
     graphhopper.on('close', function (code) {
         console.log('graphhopper child process closed with code ' + code + ' shutdownapp=' + shutdownapp);
         graphhopperServerHasExited = true;
-        showHtmlNotification("./img/mtb.png", 'Routing server stopped !!' , '');
         if (shutdownapp)
            win.close();
+        else {
+          showHtmlNotification("./img/mtb.png", 'Routing server stopped !!' , '', 1000);
+          stopGraphhopperServerMenuItem.enabled = false;
+          changeGraphMenuItem.enabled = true;
+          startGraphhopperServerMenuItem.enabled = true;
+        }
     });
 
     graphhopper.on('exit', function (code, signal) {
@@ -201,12 +216,6 @@ function stopGraphhopperServer()
   {   // Inform the graphhopper server to close
       var res = graphhopper.kill('SIGTERM');
       console.log("graphhopper kill SIGTERM returned:" + res);
-      if (shutdownapp)
-      {
-          stopGraphhopperServerMenuItem.enabled = false;
-          changeGraphMenuItem.enabled = true;
-          startGraphhopperServerMenuItem.enabled = true;
-      }
   }
 }
 
@@ -265,6 +274,7 @@ function deletegraph(dir)
 function webkitapp(win)
 {
     gui.App.clearCache();
+    runningUnderNW = true;
     console.log("nwjs version:" + gui.process.versions['node-webkit']);
     var menu = new gui.Menu({type: "menubar"});
     fs = global.require('fs');
@@ -307,11 +317,11 @@ function webkitapp(win)
                                     draggable: false,
                                     buttons: {
                                         "Download": function () {
-                                        	  stopLocalVectorTileServer();
-                                            showHtmlNotification("./img/mtb.png", 'Starting download of' , selected_country_file_name);
+                                            stopLocalVectorTileServer();
+                                            showHtmlNotification("./img/mtb.png", 'Starting download of' , selected_country_file_name, 6000);
                                             download("https://osm2vectortiles-downloads.os.zhdk.cloud.switch.ch/v2.0/extracts/" + selected_country_file_name + ".mbtiles", "ratrun-mbtiles-server\\" + selected_country_file_name + ".mbtiles",
                                             function(result) {
-                                               showHtmlNotification("./img/mtb.png", 'Download result:', result);
+                                               showHtmlNotification("./img/mtb.png", 'Download result:', result, 6000);
                                                startLocalVectorTileServer(win);
                                             });
                                             $(this).dialog("close");
@@ -362,13 +372,13 @@ function webkitapp(win)
     var graphhopperSubMenu = new gui.Menu()
     var win = gui.Window.get();
 
-    stopGraphhopperServerMenuItem = new gui.MenuItem({ label: 'Stop Graphhopper server', enabled : graphhopperServerHasExited,
+    stopGraphhopperServerMenuItem = new gui.MenuItem({ label: 'Stop Graphhopper server', enabled : !graphhopperServerHasExited,
         click: function() { 
                              console.log('Stop Graphhopper server clicked');
                              stopGraphhopperServer();
                            }
     });
-    startGraphhopperServerMenuItem = new gui.MenuItem({ label: 'Start Graphhopper server', enabled : !graphhopperServerHasExited,
+    startGraphhopperServerMenuItem = new gui.MenuItem({ label: 'Start Graphhopper server', enabled : graphhopperServerHasExited,
         click: function() {  console.log('Start Graphhopper server clicked');
                              startGraphhopperServer(win);
                              this.enabled = false;
@@ -377,23 +387,22 @@ function webkitapp(win)
     //graphhopperSubMenu.append(new gui.MenuItem({ label: 'Change active graph: Fixme' ,  enabled : false} ));
     //graphhopperSubMenu.append(separator);
     //graphhopperSubMenu.append(new gui.MenuItem({ label: 'Change graph settings', enabled : false })); // ?? Needed ??
-    changeGraphMenuItem = new gui.MenuItem({ label: 'Change graph', enabled : !graphhopperServerHasExited,
+    graphhopperSubMenu.append(new gui.MenuItem({ label: 'Download OSM file',
+
+        click: function() {
+            var r = window.confirm("Confirm to open a window for downloading of an OSM pbf file.\nPlease store the file to the " + gui.process.cwd() + "graphhopper\\osmfiles\\ folder.");
+            if (r)
+                myWindow = gui.Window.open("http://download.geofabrik.de", {  position: 'center',  width: 1200,  height: 850 });
+        }
+    }));
+
+    changeGraphMenuItem = new gui.MenuItem({ label: 'Select routing region', enabled : !graphhopperServerHasExited,
         click: function() {
                              chooseFile('#osmFileDialog');
                           }
     });
     graphhopperSubMenu.append(changeGraphMenuItem);
-    graphhopperSubMenu.append(separator);
-    graphhopperSubMenu.append(new gui.MenuItem({ label: 'Download OSM data file: Fixme',
-        click: function() {
-            download("https://download.geofabrik.de/europe/liechtenstein-latest.osm.pbf", "graphhopper\\osmfiles\\liechtenstein-latest.osm.pbf",
-               function(result) {
-                   alert('Download OSM resulted in:' + result);
-               });
-        }
-    }));
 
-    graphhopperSubMenu.append(new gui.MenuItem({ label: 'Delete OSM data file' , enabled : false }));
     graphhopperSubMenu.append(separator);
     graphhopperSubMenu.append(stopGraphhopperServerMenuItem);
     graphhopperSubMenu.append(startGraphhopperServerMenuItem);
@@ -445,25 +454,42 @@ function webkitapp(win)
     var http = global.require('https');
     var request = http.get({hostname: '127.0.0.1', port: 3000}, function (res) {
     });
+
     request.setTimeout( 100, function( ) {
        console.log("Tileserver did not respond: Starting it!");
        startLocalVectorTileServer(win);
     });
-    
-    request = http.get({hostname: '127.0.0.1', port: 8989}, function (res) {
+
+    request.on("error", function(err) {
+        console.log("http://127.0.0.0:3000 is running as it responded with " + err);
+        tilesServerHasExited = false;
+        stopTileServerMenuItem.enabled = true;
+        showInstalledMapsMenuItem.enabled = true;
+        startTileServerMenuItem.enabled = false;
+        deleteMapMenuItem.enabled = false;
     });
+
     request.setTimeout( 100, function( ) {
        console.log("Our Graphhopper routing server did not respond: Starting it!");
        startGraphhopperServer(win);
     });
+
+    request.on("error", function(err) {
+        console.log("http://127.0.0.0:8989 is running as it responded with " + err);
+        graphhopperServerHasExited = false;
+        stopGraphhopperServerMenuItem.enabled = true;
+        changeGraphMenuItem.enabled = false;
+        startGraphhopperServerMenuItem.enabled = false;
+        tilesServerHasExited = false;
+    });
 }
 
-var showHtmlNotification = function (icon, title, body, callback) 
+var showHtmlNotification = function (icon, title, body, callback, timeout) 
 {
     var notif = showNotification(icon, title, body);
     setTimeout(function () {
       notif.close();
-    }, 6000);
+    }, timeout);
 };
 
 
@@ -526,3 +552,6 @@ catch (err)
 {
   console.log("We are not running under nw" + err);
 }
+
+module.exports.runningUnderNW = runningUnderNW;
+

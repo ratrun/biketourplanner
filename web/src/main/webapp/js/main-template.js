@@ -65,7 +65,8 @@ if (global.window) {
     };
 }
 
-$(document).ready(function (e) {
+function mainInit() {
+    console.log("mainInit() called");
     // fixing cross domain support e.g in Opera
     jQuery.support.cors = true;
 
@@ -131,8 +132,10 @@ $(document).ready(function (e) {
     });
 
     var urlParams = urlTools.parseUrlWithHisto();
+    ghRequest = new GHRequest(host, ghenv.routing.api_key);
     $.when(ghRequest.fetchTranslationMap(urlParams.locale), ghRequest.getInfo())
             .then(function (arg1, arg2) {
+                console.log("fetchTranslationMap and getInfo finished")
                 // init translation retrieved from first call (fetchTranslationMap)
                 var translations = arg1[0];
                 autocomplete.setLocale(translations.locale);
@@ -149,6 +152,8 @@ $(document).ready(function (e) {
                 bounds.maxLat = tmp[3];
                 nominatim.setBounds(bounds);
                 var vehiclesDiv = $("#vehicles");
+                vehiclesDiv.empty();
+                $('#error').empty();
 
                 function createButton(vehicle, hide) {
                     var button = $("<button class='vehicle-btn' title='" + translate.tr(vehicle) + "'/>");
@@ -196,22 +201,15 @@ $(document).ready(function (e) {
                     }
                 }
                 metaVersionInfo = messages.extractMetaVersionInfo(json);
-                setTimeout(function(){ 
-                     console.log("Calling delayed initMap1 with urlParams.layer:" + urlParams.layer);
-                     mapLayer.initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, urlParams.layer);
-                }, 100);
-
-                setTimeout(function(){ 
-                     // execute query
-                     initFromParams(urlParams, true);
-                }, 100);
+                mapLayer.multipleCallableInitMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, urlParams.layer);
+                initFromParams(urlParams, true);
 
                 checkInput();
             }, function (err) {
 
                 console.log(err);
 
-                $('#error').html('GraphHopper API offline? <a href="http://graphhopper.com/maps">Refresh</a>' + '<br/>Status: ' + err.statusText + '<br/>' + 'host=' + host);
+                $('#error').html('GraphHopper server offline? <a href="http://" + host + "/">Refresh</a>' + '<br/>Status: ' + err.statusText + '<br/>' + 'host=' + host);
 
                 bounds = {
                     "minLon": -180,
@@ -220,7 +218,7 @@ $(document).ready(function (e) {
                     "maxLat": 90
                 };
                 nominatim.setBounds(bounds);
-                mapLayer.initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord);
+                mapLayer.multipleCallableInitMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord);
             });
 
     $(window).resize(function () {
@@ -260,8 +258,15 @@ $(document).ready(function (e) {
     });
 
     checkInput();
-});
+}
 
+module.exports.mainInit = mainInit;
+
+$(document).ready(function () {
+    console.log("document ready");
+    if (!menu.runningUnderNW)
+       mainInit();
+});
 
 function initFromParams(params, doQuery) {
     ghRequest.init(params);

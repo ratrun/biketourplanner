@@ -293,14 +293,16 @@ GHRequest.prototype.doRequest = function (url, callback) {
 
 GHRequest.prototype.getInfo = function () {
     var url = this.host + "/info?type=" + this.dataType + "&key=" + this.key;
-    // console.log(url);
-    return $.ajax({
+    //console.log("GHRequest.prototype.getInfo url=" + url);
+    var res = $.ajax({
         url: url,
         timeout: 3000,
         type: "GET",
         dataType: this.dataType,
         crossDomain: true
     });
+    //console.log("GHRequest.prototype.getInfo res=" + JSON.stringify(res));
+    return res;
 };
 
 GHRequest.prototype.setLocale = function (locale) {
@@ -319,14 +321,16 @@ GHRequest.prototype.fetchTranslationMap = function (urlLocaleParam) {
     if (this.key !== undefined)
         var keyparam = "&key=" + this.key;
     var url = this.host + "/i18n/" + urlLocaleParam + "?type=" + this.dataType + keyparam;
-    // console.log(url);
-    return $.ajax({
+    //console.log("GHRequest.prototype.fetchTranslationMap url=" + url);
+    var res = $.ajax({
         url: url,
         timeout: 3000,
         type: "GET",
         dataType: this.dataType,
         crossDomain: true
     });
+    //console.log("GHRequest.prototype.fetchTranslationMap=" + JSON.stringify(res));
+    return res;
 };
 
 module.exports = GHRequest;
