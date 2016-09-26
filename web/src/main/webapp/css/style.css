@@ -201,7 +201,7 @@ body {
 
 #saveDiv {
     margin-top: -15px;
-    margin-left: 60px;
+    margin-left: 45px;
 }
 
 #saveTripButton {
@@ -238,12 +238,6 @@ body {
 #hosting a {
     text-decoration: none;
     color: #00cc33;
-}
-
-#export-link {
-    padding-left: 3px;
-    padding-top: 3px;
-    float: left;
 }
 
 tr.instruction {

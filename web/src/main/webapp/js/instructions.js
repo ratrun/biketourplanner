@@ -89,8 +89,6 @@ module.exports.create = function (mapLayer, path, urlForHistory, request) {
 
     hiddenDiv.append("<span>" + infoStr + "</span>");
 
-    var exportLink = $("#export-link a");
-    exportLink.attr('href', urlForHistory);
     var osmRouteLink = $("<br/><a>view on OSM</a>");
 
     var osmVehicle = "bicycle";
