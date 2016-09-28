@@ -77,7 +77,7 @@ function createBounds(bounds) {
     routingLayer = L.geoJson().addTo(map);
 }
 
-function initMap(setStartCoord, setIntermediateCoord, setEndCoord, selectLayer) {
+function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selectLayer) {
     // default
     var defaultLayer = tileLayers.selectLayer(selectLayer);
     map = L.map('map', {
@@ -307,7 +307,7 @@ function multipleCallableInitMap(bounds, setStartCoord, setIntermediateCoord, se
     if (initialActionsDone) {
         createBounds(bounds);
     } else {
-        initMap(setStartCoord, setIntermediateCoord, setEndCoord, selectLayer);
+        initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selectLayer);
     }
 }
 
