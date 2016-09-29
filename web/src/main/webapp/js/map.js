@@ -147,10 +147,6 @@ function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selec
         zoomOutTitle: translate.tr('zoom_out')
     }).addTo(map);
 
-    new L.Control.loading({
-        zoomControl: zoomControl
-    }).addTo(map);
-
     map.contextmenu.addSet({
         name: 'markers',
         state: 2
