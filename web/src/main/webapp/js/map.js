@@ -175,14 +175,15 @@ function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selec
 
     $('#layerfeatures').hide();
     $("#layerfeatures").css("visibility","hidden");
-
+/*
     map.on('mousemove', function (e) {
        var maplayer = tileLayers.activeLayer;
        if ((maplayer._glMap !== null) && (maplayer._glMap !== undefined))
        {
-           var pointarr = [e.containerPoint.x, e.containerPoint.y];
+           //var pointarr = [e.containerPoint.x, e.containerPoint.y];
            // see https://www.mapbox.com/mapbox-gl-js/example/queryrenderedfeatures/
-           var features = maplayer._glMap.queryRenderedFeatures(pointarr, {layers: ['poi_lodging', 'poi_lodging_label', 'poi_campsites', 'poi_campsites_label', 'poi_bicycle_shops', 'poi_label_bicycle_shops', 'poi_alpine_hut', 'poi_label_alpine_hut', 'poi_hospital', 'poi_label_hospital' ]});
+           var features = maplayer._glMap.queryRenderedFeatures(e.point, {layers: ['poi_lodging', 'poi_lodging_label', 'poi_campsites', 'poi_campsites_label', 'poi_bicycle_shops', 'poi_label_bicycle_shops', 'poi_alpine_hut', 'poi_label_alpine_hut', 'poi_hospital', 'poi_label_hospital' ]});
+           //var features = {length:0};
 
            if ( features.length !==0 )
            {
@@ -203,7 +204,7 @@ function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selec
            }
        }
     });
-
+*/
 /*
 if (0 ===1)
 {
