@@ -27,6 +27,7 @@ if (!host) {
         host = location.protocol + '//' + location.hostname + ":" + location.port;
     }
 }
+var seed = 0;
 
 var AutoComplete = require('./autocomplete.js');
 if (ghenv.environment === 'development')
@@ -128,6 +129,52 @@ function mainInit() {
         else
         {
             return;
+        }
+    });
+
+    $( "#roundTourButton" ).click(function(e) {
+      $("#roundTourButton").prop("disabled", true);
+      $("#ABTourButton").prop("disabled", false);
+      $("#roundtripcontrol").show();
+      $("#roundtripcontrol").css("visibility","visible");
+      $("#roundtripdistance").show();
+      $("#roundtripdistance").css("visibility","visible");
+      $("#roundtripdistance").spinner( "value", 40 );
+      ghRequest.api_params.round_trip.distance = 1000 * $("#roundtripdistance").spinner('value');
+      $("#alternativeRoutecontrol").hide();
+      $("#1_Div").hide();
+      ghRequest.api_params.algorithm = "roundTrip";
+      for (i=1;i<=ghRequest.route.size();i++){
+          ghRequest.route.removeSingle(i);
+      }
+      mapLayer.clearLayers();
+      mapLayer.setDisabledForMapsContextMenu('start', false);
+      mapLayer.setDisabledForMapsContextMenu('intermediate', true);
+      mapLayer.setDisabledForMapsContextMenu('end', true);
+      seed = 0;
+    });
+
+    $( "#ABTourButton" ).click(function(e) {
+      $("#roundTourButton").prop("disabled", false);
+      $("#ABTourButton").prop("disabled", true);
+      $("#roundtripcontrol").hide();
+      $("#roundtripdistance").hide();
+      $("#alternativeRoutecontrol").show();
+      $("#alternativeRoutecontrol").css("visibility","visible");
+      mapLayer.clearLayers();
+      $("#1_Div").show();
+      ghRequest.api_params.algorithm = "";
+      mapLayer.setDisabledForMapsContextMenu('start', false);
+      mapLayer.setDisabledForMapsContextMenu('intermediate', false);
+      mapLayer.setDisabledForMapsContextMenu('end', false);
+    });
+
+    $("#roundtripheading").knob({
+        'release' : function (v) { 
+            $("#useHeading").prop("checked",true);
+            ghRequest.api_params.heading = v;
+            seed = 0;
+            graphHopperSubmit();
         }
     });
 
@@ -424,7 +471,7 @@ function setEndCoord(e) {
 }
 
 function routeIfAllResolved(doQuery) {
-    if (ghRequest.route.isResolved()) {
+    if ((ghRequest.route.isResolved()) || (($("#roundTourButton").prop("disabled")))) {
         routeLatLng(ghRequest, doQuery);
         return true;
     }
@@ -481,16 +528,18 @@ function resolveTo() {
 
 function resolveIndex(index) {
     setFlag(ghRequest.route.getIndex(index), index);
-    if (index === 0) {
-        if (!ghRequest.to.isResolved())
-            mapLayer.setDisabledForMapsContextMenu('start', true);
-        else
-            mapLayer.setDisabledForMapsContextMenu('start', false);
-    } else if (index === (ghRequest.route.size() - 1)) {
-        if (!ghRequest.from.isResolved())
-            mapLayer.setDisabledForMapsContextMenu('end', true);
-        else
-            mapLayer.setDisabledForMapsContextMenu('end', false);
+    if (!$("#roundTourButton").prop("disabled")) {
+        if (index === 0) {
+            if (!ghRequest.to.isResolved())
+                mapLayer.setDisabledForMapsContextMenu('start', true);
+            else
+                mapLayer.setDisabledForMapsContextMenu('start', false);
+        } else if (index === (ghRequest.route.size() - 1)) {
+            if (!ghRequest.from.isResolved())
+                mapLayer.setDisabledForMapsContextMenu('end', true);
+            else
+                mapLayer.setDisabledForMapsContextMenu('end', false);
+        }
     }
 
     return nominatim.resolve(index, ghRequest.route.getIndex(index));
@@ -539,7 +588,10 @@ function routeLatLng(request, doQuery) {
     mapLayer.clearLayers();
     flagAll();
 
-    mapLayer.setDisabledForMapsContextMenu('intermediate', false);
+    if (!$("#roundTourButton").prop("disabled")) {
+        mapLayer.setDisabledForMapsContextMenu('intermediate', false);
+        mapLayer.setDisabledForMapsContextMenu('end', true);
+    }
 
     $("#vehicles button").removeClass("selectvehicle");
     $("button#" + request.getVehicle().toLowerCase()).addClass("selectvehicle");
@@ -553,9 +605,10 @@ function routeLatLng(request, doQuery) {
             $("#saveTripButton").prop('disabled', true);
             var tmpErrors = json.message;
             console.log(tmpErrors);
-            mapLayer.setDisabledForMapsContextMenu('intermediate', false);
+            var roundtripActive = !$("#roundTourButton").prop("disabled");
             mapLayer.setDisabledForMapsContextMenu('start', false);
-            mapLayer.setDisabledForMapsContextMenu('end', false);
+            mapLayer.setDisabledForMapsContextMenu('intermediate', roundtripActive);
+            mapLayer.setDisabledForMapsContextMenu('end', roundtripActive);
             if (json.hints) {
                 for (var m = 0; m < json.hints.length; m++) {
                     routeResultsDiv.append("<div class='error'>" + json.hints[m].message + "</div>");
@@ -715,6 +768,13 @@ function routeLatLng(request, doQuery) {
     });
 }
 
+/**
+ * Returns a random number between min (inclusive) and max (exclusive)
+ */
+function getRandomArbitrary(min, max) {
+    return Math.random() * (max - min) + min;
+}
+
 function graphHopperSubmit() {
     var fromStr,
             toStr,
@@ -760,6 +820,17 @@ function graphHopperSubmit() {
         });
         return;
     }
+    if($("#roundTourButton").prop("disabled"))
+    {
+        ghRequest.api_params.round_trip.seed = seed;
+        seed ++;
+        if (seed==3)
+           seed = 0;
+        ghRequest.api_params.round_trip.distance = 1000 * $("#roundtripdistance").spinner('value');
+        if (!$("#useHeading").prop("checked")) 
+           ghRequest.api_params.heading = getRandomArbitrary(0,360);
+    }
+
     // route!
     if (inputOk)
         resolveCoords(allStr);
@@ -814,11 +885,11 @@ $(function() {
 $(function() {
     $( "#roundtripdistance" ).spinner({
       min: 0,
-      step: 10.0,      
+      step: 10.0,
       change: function( event, ui ) {
+        seed = 0;
         if ($(this).spinner('value') > 0)
         {
-           ghRequest.api_params.algorithm = "roundTrip";
            ghRequest.api_params.round_trip.distance = 1000 * $(this).spinner('value');
            //routeLatLng(ghRequest, false);
         }
@@ -826,21 +897,6 @@ $(function() {
     });
 });
 
-$(function() {
-    $( "#roundtripheading" ).spinner({
-      min: 0.0,
-      max: 360.0,
-      step: 20.0,
-      change: function( event, ui ) {
-        if ($(this).spinner('value') > 0)
-        {
-           ghRequest.api_params.algorithm = "roundTrip";
-           ghRequest.api_params.heading = $(this).spinner('value');
-           //routeLatLng(ghRequest, false);
-        }
-      }
-    });
-});
 
 $(function() {
     $( "#slider-range-alternativeRoutesMaxPaths" ).slider({

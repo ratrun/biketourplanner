@@ -40,7 +40,7 @@ var GHRequest = function (host, api_key) {
     this.useMiles = false;
     // use jsonp here if host allows CORS
     this.dataType = "json";
-    this.api_params = {"locale": "en", "vehicle": "car", "weighting": "fastest", "elevation": false, "ascendAvoidance": 0.0, "niceLevel": 3.0, "algorithm": "", "alternative_route": {"max_paths" : 1}, "round_trip" : {"distance" : 0}, "heading" : 180};
+    this.api_params = {"locale": "en", "vehicle": "car", "weighting": "fastest", "elevation": false, "ascendAvoidance": 0.0, "niceLevel": 3.0, "algorithm": "", "alternative_route": {"max_paths" : 1}, "round_trip" : {"distance" : 0, "seed" : 0}, "heading" : 180};
 
     // register events
     this.route.addListener('route.add', function (evt) {
@@ -140,12 +140,12 @@ GHRequest.prototype.initVehicle = function (vehicle) {
         $("#niceLevelcontrol").css("visibility","visible");
         $("#alternativeRoutecontrol").show();
         $("#alternativeRoutecontrol").css("visibility","visible");
-        $("#roundtripcontrol").show();
-        $("#roundtripcontrol").css("visibility","visible");
-        $("#roundtripdistance").show();
-        $("#roundtripdistance").css("visibility","visible");
-    }
-    else
+        $("#ABTourButton").show();
+        $("#ABTourButton").css("visibility","visible");
+        $("#ABTourButton").prop( "disabled", true );
+        $("#roundTourButton").show();
+        $("#roundTourButton").css("visibility","visible");
+    } else
         this.api_params.CHEnabled = true;
 
     if (featureSet && featureSet.elevation) {

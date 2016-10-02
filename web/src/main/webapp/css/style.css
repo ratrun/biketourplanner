@@ -224,21 +224,6 @@ body {
 .clear {
     clear: both;
 }
-#hosting {
-    display: none;
-    /*    float: left;*/
-    padding-top: 4px;
-    padding-bottom: 10px;
-    /* color: #666666; */
-    font-size: smaller;
-    opacity: 0.8;
-    width: 200px;
-}
-
-#hosting a {
-    text-decoration: none;
-    color: #00cc33;
-}
 
 tr.instruction {
     cursor: pointer;
@@ -509,11 +494,9 @@ td img.pic {
     margin-left: 5px;
 }
 
-#roundtripheading {
-    margin-right: 5px;
-    margin-left: 5px;
+#headingknob{
+    padding-left: 70px;
 }
-
 
 .gray {
     color: gray;
@@ -537,5 +520,21 @@ td img.pic {
 
 #routingSettings{
     padding: 0px;
+}
+
+#tourTypeSelection{
+    padding-top: 4px;
+    padding-left: 25px;
+    padding-right: 25px;
+}
+
+#ABTourButton{
+  float: left;
+  visibility: hidden;
+}
+
+#roundTourButton{
+  float: right;
+  visibility: hidden;
 }
 

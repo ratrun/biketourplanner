@@ -21,6 +21,7 @@
         <link rel="stylesheet" href="css/mapbox-gl.css?v=0.25.0" />
         <script src="js/mapbox-gl.js?v=0.25.0"></script>
         <script type="text/javascript" src="js/lib/jstree.min.js"></script>
+        <script type="text/javascript" src="js/lib/jquery.knob.min.js"></script>
         <link rel="stylesheet" href="css/jstree.css"/>
         <link rel="stylesheet" type="text/css" href="css/style.css" />
     </head>
@@ -50,7 +51,11 @@
 
             <div id="routingOptions" class="tabcontent">
                 <form id="locationform">
-                 <div id="routingSettings">
+                 <div id="tourTypeSelection" style="clear:both;">
+                   <input id="ABTourButton" type="submit" value="Route">
+                   <input id="roundTourButton" type="submit" value="Roundtour">
+                 </div>
+                 <div id="routingSettings" style="clear:both;">
                   <div id="options">
                     <span id="vehicles">
 
@@ -79,34 +84,38 @@
                       </div>
                     </div>
 
-                    <div id="roundtripcontrol">
-                      <div class="input-roundtrip">
+                    <div id="roundtripcontrol" style="clear:both;">
                       <label for="roundtripdistance">Roundtrip distance:</label>
-                      <input id="roundtripdistance" style="border:0; width: 45px; font-size:smaller;" name="value"><br>
-                      <label for="roundtripheading">Direction:</label>
-                      <input id="roundtripheading" style="border:0; width: 45px; font-size:smaller;" name="value">
+                      <input id="roundtripdistance" style="border:0; width:45px; font-size:smaller;" name="value"><br>
+                      <input id="useHeading" type="checkbox">Set cardinal direction<br>
+                      <div id="headingknob">
+                      <input id="roundtripheading" class="dial" data-thickness="1" data-width="100" data-height="100" data-min="0" data-max="360" value="0" data-displayInput=false data-cursor=true data-fgColor="#47d147" data-bgColor="#f6f6f6"><br>
                       </div>
+                       <span class="left"></span> <br><br>
                     </div>
 
-                    <div id="alternativeRoutecontrol">
+                    <div id="alternativeRoutecontrol" style="clear:both;">
                       <div class="input-alternativeRoute">
                         <span class="left"></span> <br>
                         <label for="alternativeRoutesMaxPaths">Alternatives:</label>
                         <input type="text" id="alternativeRoutesMaxPaths" readonly style="border:0; width: 25px; font-size:100%;"><br><br>
                         <div id="slider-range-alternativeRoutesMaxPaths" style="background-color: #dfe5e7; "></div>
-                        <span class="left"></span> <br>
+                        <span class="left"></span> <br><br>
                       </div>
                     </div>
                   </div>
-                  <div id="gpxExportButton" class="left"><a href=""><img alt="gpx" src='img/gpx.png'></a></div>
-                  <div id="saveDiv"> <input id="saveTripButton" type="submit" value="Save to library" disabled="disabled" ></div>
-                  <input id="searchButton" type="submit" value="Search">
+
+                  <div id="divbuttons" style="clear:both;">
+                   <div id="gpxExportButton" class="left"><a href=""><img alt="gpx" src='img/gpx.png'></a></div>
+                   <div id="saveDiv"> <input id="saveTripButton" type="submit" value="Save to library" disabled="disabled" ></div>
+                   <input id="searchButton" type="submit" value="Search">
+                  </div>
+
                 </div>
                 </form>
                 <div class="clear"> </div>
                 <div id="info" class="small_text"></div>
                 <div id="error" class="error"></div>
-                <div id="hosting">Powered by <a href='https://graphhopper.com/#directions-api'>GraphHopper API</a></div>
                 <div id="pointTemplate" class="hidden">
                     <div id="{id}_Div" class="pointDiv">
                         <img id="{id}_Indicator" class="hidden pointIndicator" src="img/loading.gif"/>
