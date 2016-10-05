@@ -13,6 +13,8 @@ require('./lib/jquery.history.js');
 require('./lib/jquery.autocomplete.js');
 var mathTools = require('./tools/math.js');
 
+var ghServerRespondedOk = false;
+
 var ghenv = require("./config/options.js").options;
 
 console.log("Environment=" + ghenv.environment);
@@ -46,7 +48,6 @@ var format = require('./tools/format.js');
 var urlTools = require('./tools/url.js');
 var vehicle = require('./tools/vehicle.js');
 var tileLayers = require('./config/tileLayers.js');
-tileLayers.setHost("localhost");
 
 var debug = false;
 var ghRequest = new GHRequest(host, ghenv.routing.api_key);
@@ -67,6 +68,7 @@ if (global.window) {
 }
 
 function mainInit() {
+    tileLayers.setHost("localhost");
     console.log("mainInit() called");
     // fixing cross domain support e.g in Opera
     jQuery.support.cors = true;
@@ -182,7 +184,8 @@ function mainInit() {
     ghRequest = new GHRequest(host, ghenv.routing.api_key);
     $.when(ghRequest.fetchTranslationMap(urlParams.locale), ghRequest.getInfo())
             .then(function (arg1, arg2) {
-                console.log("fetchTranslationMap and getInfo finished")
+                ghServerRespondedOk = true;
+                console.log("fetchTranslationMap and getInfo finished. ghServerRespondedOk = " + ghServerRespondedOk);
                 // init translation retrieved from first call (fetchTranslationMap)
                 var translations = arg1[0];
                 autocomplete.setLocale(translations.locale);
@@ -253,7 +256,7 @@ function mainInit() {
 
                 checkInput();
             }, function (err) {
-
+                ghServerRespondedOk = false;
                 console.log(err);
 
                 $('#error').html('GraphHopper server offline? <a href="http://" + host + "/">Refresh</a>' + '<br/>Status: ' + err.statusText + '<br/>' + 'host=' + host);
@@ -308,6 +311,17 @@ function mainInit() {
 }
 
 module.exports.mainInit = mainInit;
+
+function getghServerRespondedOk()
+{
+    return ghServerRespondedOk;
+}
+function resetServerRespondedOk()
+{
+    ghServerRespondedOk = false;
+}
+module.exports.getghServerRespondedOk = getghServerRespondedOk;
+module.exports.resetServerRespondedOk = resetServerRespondedOk;
 
 $(document).ready(function () {
     console.log("document ready");

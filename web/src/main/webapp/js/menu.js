@@ -19,19 +19,26 @@ var activeOsmfile = localStorage.activeOsmfile;
 var gui;
 var main = require('./main-template.js');
 var runningUnderNW = false;
+var path = require('path');
+var osplatform;
 
 if (activeOsmfile === undefined)
     activeOsmfile = 'liechtenstein-latest.osm.pbf';
 
 function startLocalVectorTileServer(win)
 {
-    tilesServerHasExited = false;
     // On Windows only ???
     var exec = global.require('child_process').spawn;
-    mbtiles = exec('../node.exe' , ['server.js'], {
+    var exename = "../node.exe";
+    if (osplatform === "linux")
+        exename = "../nodejs";
+    console.log("Launching " + exename);
+    mbtiles = exec(exename , ['server.js'], {
        cwd: 'ratrun-mbtiles-server',
        detached: false
     });
+    tilesServerHasExited = false;
+    console.log(exename + " started.");
 
     stopTileServerMenuItem.enabled = true;
     showInstalledMapsMenuItem.enabled = true;
@@ -50,11 +57,12 @@ function startLocalVectorTileServer(win)
     });
 
     mbtiles.stderr.on('data', function (data) {
-        console.log('mbtiles stderr: ' + data);
+        console.log('mbtiles data: ' + data);
     });
 
     mbtiles.on('close', function (code) {
         console.log('tiles server child process closed with code ' + code);
+        tilesServerHasExited = true;
     });
 
     mbtiles.on('exit', function (code, signal) {
@@ -85,21 +93,24 @@ function startLocalVectorTileServer(win)
 }
 
 var graphopperServerStartedOnce = false;
+
 function startGraphhopperServer(win)
 {
     var os = global.require('os');
     console.log('Starting graphhopper');
-    const initialpercent = 40; // Intitial percentage of heap space of total available RAM to reserve for graphhopper
-    const maxpercent = 80; // Max percentage of total available RAM to reserve as max heap space for graphhopper
+    var initialpercent = 40; // Intitial percentage of heap space of total available RAM to reserve for graphhopper
+    var maxpercent = 80; // Max percentage of total available RAM to reserve as max heap space for graphhopper
     var initialreserved = Math.trunc((os.totalmem() * (initialpercent/100))/(1024*1000));
     var maxreserved = Math.trunc((os.totalmem() * (maxpercent/100))/(1024*1000));
     console.log('Installed RAM:' + os.totalmem() + ' Bytes. Initial heap ' + initialpercent + '%=' + initialreserved + 'MB, max heap ' + maxpercent + '%=' +  maxreserved +'MB');
     // On Windows only ???
     var exec = global.require('child_process').spawn;
-
+    var exename = "java.exe";
+    if (osplatform === "linux")
+        exename = "java";
     //-Xms<size>        set initial Java heap size
     //-Xmx<size>        set maximum Java heap size
-    graphhopper = exec('java.exe' , ['-Xmx' + maxreserved + 'm', '-Xms' + initialreserved + 'm', '-jar', 
+    graphhopper = exec( exename , ['-Xmx' + maxreserved + 'm', '-Xms' + initialreserved + 'm', '-jar', 
                        'graphhopper-web-0.8-SNAPSHOT-with-dep.jar', 
                        'jetty.resourcebase=../', 
                        'jetty.port=8989', 
@@ -126,14 +137,20 @@ function startGraphhopperServer(win)
              showHtmlNotification("./img/mtb.png", "Creating routing data", 'Going to take a while. You may press F12 and watch the console logs for details', 15000);
         if (data.toString('utf-8').indexOf('Started server at HTTP :8989') !==-1 )
         {
+             console.log("Routing server is ready!");
              showHtmlNotification("./img/mtb.png", "Routing server", 'is ready...');
+             main.resetServerRespondedOk();
              main.mainInit();
              if (graphopperServerStartedOnce) {
-                 //FIXME: Understand why the "$.when(ghRequest.fetchTranslationMap(urlParams.locale), ghRequest.getInfo())" runs into a timeout once after a re-start of the graphhopper server.
-                 setTimeout(function() {
-                     //FIXME: Here ww simply run it once more and now $.when(ghRequest.fetchTranslationMap(urlParams.locale), ghRequest.getInfo())" works!!!, but no idea why.!
-                     main.mainInit();
-                 },4000);
+                 //FIXME: Windows specific workaround: understand why the "$.when(ghRequest.fetchTranslationMap(urlParams.locale), ghRequest.getInfo())" runs into a timeout after a re-start of the graphhopper server and needs some time.
+                 for(var i=0; i<10; i++) {
+                     setTimeout(function() {
+                         //FIXME: Here we simply run it once again and now $.when(ghRequest.fetchTranslationMap(urlParams.locale), ghRequest.getInfo())" works!!!, but no idea why.!
+                         console.log("Check main.ghServerRespondedOk=" + main.getghServerRespondedOk());
+                         if (!main.getghServerRespondedOk())
+                            main.mainInit();
+                     },1000 + i*1000);
+                 }
              }
              graphopperServerStartedOnce = true;
         }
@@ -176,9 +193,10 @@ function startGraphhopperServer(win)
         }
         else
         {
-           console.log("Calling stopLocalVectorTileServer();")
-           stopLocalVectorTileServer();
-           stopGraphhopperServer();
+           if (!tilesServerHasExited)
+              stopLocalVectorTileServer();
+           if (!graphhopperServerHasExited)
+              stopGraphhopperServer();
         }
     });
 
@@ -189,16 +207,18 @@ function startGraphhopperServer(win)
 
 function stopLocalVectorTileServer()
 {
-  if (!tilesServerHasExited)
-  {
-   if (shutdownapp)
-   {
-      // Inform the tile server via SIGTERM to close
-      var res = mbtiles.kill('SIGTERM');
-      console.log("mbtiles kill SIGTERM returned:" + res);
+  console.log("stopLocalVectorTileServer mbtiles=" + mbtiles);
+  var mapLayer = require('./map.js');
+  mapLayer.clearLayers();
+  if (!tilesServerHasExited) {
+   if (shutdownapp) {
+      if (mbtiles !== undefined) {
+          // Inform the tile server via SIGTERM to close
+          var res = mbtiles.kill('SIGTERM');
+          console.log("mbtiles kill SIGTERM returned:" + res);
+      }
    }
-   else
-   {  // Call special shutdown URL
+   else { // Call special shutdown URL
       $.getJSON("http://127.0.0.1:3000/4cede326-7166-4cbd-994f-699c6dc271e9", function( data ) {
                              console.log("Tile server stop response was" + data);
       });
@@ -212,10 +232,14 @@ function stopLocalVectorTileServer()
 
 function stopGraphhopperServer()
 {
-  if (!graphhopperServerHasExited)
-  {   // Inform the graphhopper server to close
-      var res = graphhopper.kill('SIGTERM');
-      console.log("graphhopper kill SIGTERM returned:" + res);
+  console.log("stopGraphhopperServer graphhopper=" + graphhopper);
+  var mapLayer = require('./map.js');
+  mapLayer.clearLayers();
+  if (!graphhopperServerHasExited) {   // Inform the graphhopper server to close
+      if (graphhopper !==undefined) {
+          var res = graphhopper.kill('SIGTERM');
+          console.log("graphhopper kill SIGTERM returned:" + res);
+      }
   }
 }
 
@@ -275,16 +299,19 @@ function webkitapp(win)
 {
     gui.App.clearCache();
     runningUnderNW = true;
-    console.log("nwjs version:" + gui.process.versions['node-webkit']);
+    var os = global.require('os');
+    osplatform = os.platform();
+    console.log("System:" + osplatform + " nwjs version:" + gui.process.versions['node-webkit']);
     var menu = new gui.Menu({type: "menubar"});
     fs = global.require('fs');
-
-    if (!fs.existsSync('graphhopper\\osmfiles\\' + activeOsmfile)) 
+    var activeOSMfilePath = path.normalize('graphhopper/osmfiles/' + activeOsmfile);
+    console.log("Checking "+ activeOSMfilePath);
+    if (!fs.existsSync(activeOSMfilePath)) 
     {
-       alert("OSM file " + activeOsmfile + " not found!");
+       alert("OSM file " + activeOSMfilePath + " not found!");
        localStorage.removeItem('activeOsmfile');
     }
-
+    console.log("OSMFile check for " + activeOSMfilePath + " passed");
     // Create a sub-menu
     var mapSubMenu = new gui.Menu();
     var separator = new gui.MenuItem({ type: 'separator' , enabled : false });
@@ -390,7 +417,7 @@ function webkitapp(win)
     graphhopperSubMenu.append(new gui.MenuItem({ label: 'Download OSM file',
 
         click: function() {
-            var r = window.confirm("Confirm to open a window for downloading of an OSM pbf file.\nPlease store the file to the " + gui.process.cwd() + "graphhopper\\osmfiles\\ folder.");
+            var r = window.confirm("Confirm to open a window for downloading of an OSM pbf file.\nPlease store the file to the " + gui.process.cwd() + path.normalize('graphhopper/osmfiles/') + "folder.");
             if (r)
                 myWindow = gui.Window.open("http://download.geofabrik.de", {  position: 'center',  width: 1200,  height: 850 });
         }
@@ -456,31 +483,51 @@ function webkitapp(win)
     });
 
     request.setTimeout( 100, function( ) {
-       console.log("Tileserver did not respond: Starting it!");
-       startLocalVectorTileServer(win);
+       if (tilesServerHasExited) {
+          console.log("Tileserver was stopped and did not respond: Starting it!");
+          startLocalVectorTileServer(win);
+       } else
+          console.log("Error: Tileserver request timeout");
     });
 
     request.on("error", function(err) {
-        console.log("http://127.0.0.0:3000 is running as it responded with " + err);
-        tilesServerHasExited = false;
-        stopTileServerMenuItem.enabled = true;
-        showInstalledMapsMenuItem.enabled = true;
-        startTileServerMenuItem.enabled = false;
-        deleteMapMenuItem.enabled = false;
+        console.log("http://127.0.0.0:3000 responded with " + err);
+        if ((err.code === 'ECONNREFUSED')&& (tilesServerHasExited)) {
+            console.log("Tileserver was stopped and connection was refused: Starting it!");
+            startLocalVectorTileServer(win);
+        } else {
+            console.log("Tileserver responded with " + err);
+            tilesServerHasExited = false;
+            stopTileServerMenuItem.enabled = true;
+            showInstalledMapsMenuItem.enabled = true;
+            startTileServerMenuItem.enabled = false;
+            deleteMapMenuItem.enabled = false;
+        }
     });
 
+    console.log("Starting graphhopper server handling");
+    var request = http.get({hostname: '127.0.0.1', port: 8989}, function (res) {
+    });
+    
     request.setTimeout( 100, function( ) {
-       console.log("Our Graphhopper routing server did not respond: Starting it!");
-       startGraphhopperServer(win);
+       if (graphhopperServerHasExited) {
+           console.log("Our Graphhopper routing server did not respond: Starting it!");
+           startGraphhopperServer(win);
+       } else
+           console.log("Graphhopper server request timeout");
     });
 
     request.on("error", function(err) {
-        console.log("http://127.0.0.0:8989 is running as it responded with " + err);
-        graphhopperServerHasExited = false;
-        stopGraphhopperServerMenuItem.enabled = true;
-        changeGraphMenuItem.enabled = false;
-        startGraphhopperServerMenuItem.enabled = false;
-        tilesServerHasExited = false;
+        if ((err.code === 'ECONNREFUSED')&&((graphhopperServerHasExited))) {
+            console.log("GraphhopperServer ECONNREFUSED: Starting it!");
+            startGraphhopperServer(win);
+        } else {
+            console.log("http://127.0.0.0:8989 responded with " + err);
+            graphhopperServerHasExited = false;
+            stopGraphhopperServerMenuItem.enabled = true;
+            changeGraphMenuItem.enabled = false;
+            startGraphhopperServerMenuItem.enabled = false;
+        }
     });
 }
 
@@ -512,28 +559,25 @@ var showNotification = function (icon, title, body) {
 
 function chooseFile(name) {
     var chooser = $(name);
+    chooser.attr('nwworkingdir',path.normalize('graphhopper/osmfiles/'));
     chooser.unbind('change');
     chooser.change(function(evt) {
-      if (name === '#osmFileDialog')
-      { activeOsmfile = $(this).val().split(/(\\|\/)/g).pop();
+      if (name === '#osmFileDialog') { 
+        activeOsmfile = $(this).val().split(/(\\|\/)/g).pop();
         console.log('Selected OSM file:' + activeOsmfile);
         localStorage['activeOsmfile'] = activeOsmfile;
-        deletegraph('graphhopper/graph');
+        deletegraph(path.normalize('graphhopper/graph'));
         startGraphhopperServer(win);
-      }
-      else
-      {
+      } else {
          if(name === '#mbtilesFileDialog')
          {
            var deletedFile = $(this).val();
            fileName = deletedFile.split(/(\\|\/)/g).pop();
            console.log('fileName:' + fileName);
-           if ( fileName.indexOf('bicycle') === -1)
-           {
+           if ( fileName.indexOf('bicycle') === -1) {
              console.log('Delete map file:' + deletedFile);
              fs.unlinkSync(deletedFile);
-           }
-           else
+           } else
              showHtmlNotification("./img/warning.png", "Avoid deletion of protected file!", fileName);
          }
       }

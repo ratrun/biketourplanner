@@ -293,7 +293,7 @@ GHRequest.prototype.doRequest = function (url, callback) {
 
 GHRequest.prototype.getInfo = function () {
     var url = this.host + "/info?type=" + this.dataType + "&key=" + this.key;
-    //console.log("GHRequest.prototype.getInfo url=" + url);
+    console.log("GHRequest.prototype.getInfo url=" + url);
     var res = $.ajax({
         url: url,
         timeout: 3000,
@@ -314,14 +314,13 @@ GHRequest.prototype.fetchTranslationMap = function (urlLocaleParam) {
     if (!urlLocaleParam)
         // let servlet figure out the locale from the Accept-Language header
         urlLocaleParam = "";
-    console.log("GHRequest.prototype.fetchTranslationMap host="+this.host);
     if (this.host === undefined)
         this.host = "http://localhost:8989";
     var keyparam = "";
     if (this.key !== undefined)
         var keyparam = "&key=" + this.key;
     var url = this.host + "/i18n/" + urlLocaleParam + "?type=" + this.dataType + keyparam;
-    //console.log("GHRequest.prototype.fetchTranslationMap url=" + url);
+    console.log("GHRequest.prototype.fetchTranslationMap url=" + url);
     var res = $.ajax({
         url: url,
         timeout: 3000,
