@@ -175,36 +175,35 @@ function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selec
 
     $('#layerfeatures').hide();
     $("#layerfeatures").css("visibility","hidden");
-/*
+
     map.on('mousemove', function (e) {
        var maplayer = tileLayers.activeLayer;
-       if ((maplayer._glMap !== null) && (maplayer._glMap !== undefined))
-       {
-           //var pointarr = [e.containerPoint.x, e.containerPoint.y];
+       if ((maplayer._glMap !== null) && (maplayer._glMap !== undefined)) {
+           var pointarr = [e.containerPoint.x, e.containerPoint.y];
            // see https://www.mapbox.com/mapbox-gl-js/example/queryrenderedfeatures/
-           var features = maplayer._glMap.queryRenderedFeatures(e.point, {layers: ['poi_lodging', 'poi_lodging_label', 'poi_campsites', 'poi_campsites_label', 'poi_bicycle_shops', 'poi_label_bicycle_shops', 'poi_alpine_hut', 'poi_label_alpine_hut', 'poi_hospital', 'poi_label_hospital' ]});
-           //var features = {length:0};
-
-           if ( features.length !==0 )
-           {
+           var features = maplayer._glMap.queryRenderedFeatures(pointarr, {layers: ['poi_lodging', 'poi_lodging_label', 'poi_campsites', 'poi_campsites_label', 'poi_bicycle_shops', 'poi_label_bicycle_shops', 'poi_alpine_hut', 'poi_label_alpine_hut', 'poi_hospital', 'poi_label_hospital' ]});
+           // Change the cursor style as a UI indicator.
+           maplayer._glMap.getCanvas().style.cursor = features.length ? 'pointer' : '';
+           if (features.length) {
              $('#layerfeatures').show();
              $('#layerfeatures').css("visibility","visible");
-             var properties = features[0].properties;
+             var feature= features[0];
+             var properties = feature.properties;
              delete properties.id;
              var displaytext=JSON.stringify(properties, null, 1).replace(/{/g,'').replace(/}/g,'');
+             console.log("displaytext=" + displaytext);
              document.getElementById('layerfeatures').innerHTML = displaytext.replace(/\",/g,'').replace(/\"/g,'');
              $('#layerfeatures').css('top', $('#layer_menu').position().top + $('#layer_menu').height() + 'px');
              var len = 0.5 + 1.5 * displaytext.split('\": \"').length;
              $('#layerfeatures').css('height', len  + 'em');
-           }
-           else
-           {
+           } else {
               $('#layerfeatures').hide();
               $("#layerfeatures").css("visibility","hidden");
+              return;
            }
        }
     });
-*/
+
 /*
 if (0 ===1)
 {
