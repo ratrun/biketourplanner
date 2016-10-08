@@ -153,6 +153,11 @@ public class Path {
         edgeIds.reverse();
     }
 
+    public Path setDistance(double distance) {
+        this.distance = distance;
+        return this;
+    }
+
     /**
      * @return distance in meter
      */

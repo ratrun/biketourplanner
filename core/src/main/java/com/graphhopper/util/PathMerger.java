@@ -19,8 +19,10 @@ package com.graphhopper.util;
 
 import com.graphhopper.PathWrapper;
 import com.graphhopper.routing.Path;
+import com.graphhopper.util.exceptions.ConnectionNotFoundException;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -144,7 +146,7 @@ public class PathMerger {
         }
 
         if (!allFound)
-            altRsp.addError(new RuntimeException("Connection between locations not found"));
+            altRsp.addError(new ConnectionNotFoundException("Connection between locations not found", Collections.<String, Object>emptyMap()));
 
         altRsp.setDescription(description).
                 setPoints(fullPoints).

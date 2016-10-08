@@ -10,6 +10,9 @@ var menuEnd;
 var elevationControl = null;
 var initialActionsDone = false;
 
+// Items added in every contextmenu.
+var defaultContextmenuItems;
+
 // called if window changes or before map is created
 function adjustMapSize() {
     var mapDiv = $("#map");
@@ -42,8 +45,8 @@ function adjustMapSize() {
     // $("#info").css("height", height - $("#input_header").height() - 100);
 }
 
-function createBounds(bounds) {
-        map.fitBounds(new L.LatLngBounds(new L.LatLng(bounds.minLat, bounds.minLon),
+function createBounds(bounds, useMiles) {
+    map.fitBounds(new L.LatLngBounds(new L.LatLng(bounds.minLat, bounds.minLon),
             new L.LatLng(bounds.maxLat, bounds.maxLon)));
 
     //if (isProduction())
@@ -75,37 +78,38 @@ function createBounds(bounds) {
         }).addTo(map);
 
     routingLayer = L.geoJson().addTo(map);
+
 }
 
-function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selectLayer) {
+function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selectLayer, useMiles) {
     // default
     var defaultLayer = tileLayers.selectLayer(selectLayer);
+
+defaultContextmenuItems = [{
+        separator: true,
+        index: 10
+    }, {
+        text: translate.tr('show_coords'),
+        callback: function (e) {
+            alert(e.latlng.lat + "," + e.latlng.lng);
+        },
+        index: 11
+    }, {
+        text: translate.tr('center_map'),
+        callback: function (e) {
+            map.panTo(e.latlng);
+        },
+        index: 12
+    }];
+
     map = L.map('map', {
         layers: [defaultLayer],
         minZoom: 2,
+        // zoomSnap: 0,  // allow fractional zoom levels
         contextmenu: true,
         contextmenuWidth: 150,
-        contextmenuItems: [{
-                separator: true,
-                index: 3,
-                state: ['set_default']
-            }, {
-                text: translate.tr('show_coords'),
-                callback: function (e) {
-                    alert(e.latlng.lat + "," + e.latlng.lng);
-                },
-                index: 4,
-                state: [1, 2, 3]
-            }, {
-                text: translate.tr('center_map'),
-                callback: function (e) {
-                    map.panTo(e.latlng);
-                },
-                index: 5,
-                state: [1, 2, 3]
-            }],
-        zoomControl: false,
-        loadingControl: false
+        contextmenuItems: defaultContextmenuItems,
+        zoomControl: false
     });
 
     addOverlayLayer('Lodging', ['poi_lodging', 'poi_lodging_label'], 8);
@@ -147,16 +151,6 @@ function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selec
         zoomOutTitle: translate.tr('zoom_out')
     }).addTo(map);
 
-    map.contextmenu.addSet({
-        name: 'markers',
-        state: 2
-    });
-
-    map.contextmenu.addSet({
-        name: 'path',
-        state: 3
-    });
-
     L.control.layers(tileLayers.getAvailableTileLayers()/*, overlays*/).addTo(map);
 
     map.on('baselayerchange', function (a) {
@@ -168,10 +162,6 @@ function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selec
             });
         }
     });
-
-    scaleControl = L.control.scale({
-        imperial: false
-    }).addTo(map);
 
     $('#layerfeatures').hide();
     $("#layerfeatures").css("visibility","hidden");
@@ -267,9 +257,13 @@ if (0 ===1)
         }
     });
 
-    L.control.scale().addTo(map);
+    scaleControl = L.control.scale(useMiles ? {
+        metric: false
+    } : {
+        imperial: false
+    }).addTo(map);
 
-    createBounds(bounds);
+    createBounds(bounds, useMiles);
 
     routingLayer.options = {
         // use style provided by the 'properties' entry of the geojson added by addDataToRoutingLayer
@@ -277,33 +271,27 @@ if (0 ===1)
             return feature.properties && feature.properties.style;
         },
         contextmenu: true,
-        contextmenuItems: [{
-                text: translate.tr('route') + ' ',
+        contextmenuItems: defaultContextmenuItems.concat([{
+                text: translate.tr('route'),
                 disabled: true,
-                index: 0,
-                state: 3
+                index: 0
             }, {
                 text: translate.tr('set_intermediate'),
                 callback: setIntermediateCoord,
-                index: 1,
-                state: 3
-            }, {
-                separator: true,
-                index: 2,
-                state: 3
-            }],
-        contextmenuAtiveState: 3
+                index: 1
+            }]),
+        contextmenuInheritItems: false
     };
     initialActionsDone = true;
 }
 
-function multipleCallableInitMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selectLayer) {
+function multipleCallableInitMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selectLayer, useMiles) {
     adjustMapSize();
     console.log("init map at " + JSON.stringify(bounds));
     if (initialActionsDone) {
         createBounds(bounds);
     } else {
-        initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selectLayer);
+        initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selectLayer, useMiles);
     }
 }
 
@@ -350,7 +338,9 @@ module.exports.setDisabledForMapsContextMenu = function (entry, value) {
 };
 
 module.exports.fitMapToBounds = function (bounds) {
-    map.fitBounds(bounds);
+    map.fitBounds(bounds, {
+        padding: [42, 42]
+    });
 };
 
 module.exports.removeLayerFromMap = function (layer) {
@@ -404,7 +394,7 @@ module.exports.updateScale = function (useMiles) {
     if (scaleControl === null) {
         return;
     }
-    scaleControl.removeFrom(map);
+    scaleControl.remove();
     var options = useMiles ? {metric: false} : {imperial: false};
     scaleControl = L.control.scale(options).addTo(map);
 };
@@ -438,30 +428,23 @@ module.exports.createMarker = function (index, coord, setToEnd, setToStart, dele
         icon: ((toFrom === FROM) ? iconFrom : ((toFrom === TO) ? iconTo : new L.NumberedDivIcon({number: index}))),
         draggable: true,
         contextmenu: true,
-        contextmenuItems: [{
+        contextmenuItems: defaultContextmenuItems.concat([{
                 text: translate.tr("marker") + ' ' + ((toFrom === FROM) ?
                         translate.tr("start_label") : ((toFrom === TO) ?
                         translate.tr("end_label") : translate.tr("intermediate_label") + ' ' + index)),
                 disabled: true,
-                index: 0,
-                state: 2
+                index: 0
             }, {
                 text: translate.tr((toFrom !== TO) ? "set_end" : "set_start"),
                 callback: (toFrom !== TO) ? setToEnd : setToStart,
-                index: 2,
-                state: 2
+                index: 2
             }, {
                 text: translate.tr("delete_from_route"),
                 callback: deleteCoord,
-                index: 3,
-                state: 2,
-                disabled: (toFrom !== -1 && ghRequest.route.size() === 2) ? true : false // prevent to and from
-            }, {
-                separator: true,
-                index: 4,
-                state: 2
-            }],
-        contextmenuAtiveState: 2
+                disabled: (toFrom !== -1 && ghRequest.route.size() === 2) ? true : false, // prevent to and from
+                index: 3
+            }]),
+        contextmenuInheritItems: false
     }).addTo(routingLayer).bindPopup(((toFrom === FROM) ?
             translate.tr("start_label") : ((toFrom === TO) ?
             translate.tr("end_label") : translate.tr("intermediate_label") + ' ' + index)));

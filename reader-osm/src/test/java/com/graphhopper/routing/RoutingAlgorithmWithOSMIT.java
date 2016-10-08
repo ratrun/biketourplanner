@@ -159,7 +159,7 @@ public class RoutingAlgorithmWithOSMIT {
         Weighting weighting = hopper.createWeighting(new HintsMap("shortest"), encoder);
 
         List<AlgoHelperEntry> prepares = RoutingAlgorithmIT.createAlgos(hopper.getGraphHopperStorage(), hopper.getLocationIndex(),
-                encoder, true, TraversalMode.NODE_BASED, weighting, hopper.getEncodingManager());
+                true, TraversalMode.NODE_BASED, weighting, hopper.getEncodingManager());
         AlgoHelperEntry chPrepare = prepares.get(prepares.size() - 1);
         if (!(chPrepare.getQueryGraph() instanceof CHGraph))
             throw new IllegalStateException("Last prepared QueryGraph has to be a CHGraph");
@@ -547,7 +547,7 @@ public class RoutingAlgorithmWithOSMIT {
             Weighting weighting = hopper.createWeighting(new HintsMap(weightStr), encoder);
 
             Collection<AlgoHelperEntry> prepares = RoutingAlgorithmIT.createAlgos(hopper.getGraphHopperStorage(),
-                    hopper.getLocationIndex(), encoder, testAlsoCH, tMode, weighting, hopper.getEncodingManager());
+                    hopper.getLocationIndex(), testAlsoCH, tMode, weighting, hopper.getEncodingManager());
             EdgeFilter edgeFilter = new DefaultEdgeFilter(encoder);
             for (AlgoHelperEntry entry : prepares) {
                 algoEntry = entry;
@@ -609,7 +609,7 @@ public class RoutingAlgorithmWithOSMIT {
                         @Override
                         public void run() {
                             OneRun oneRun = instances.get(instanceIndex);
-                            AlgorithmOptions opts = AlgorithmOptions.start().flagEncoder(carEncoder).weighting(weighting).algorithm(algoStr).build();
+                            AlgorithmOptions opts = AlgorithmOptions.start().weighting(weighting).algorithm(algoStr).build();
                             testCollector.assertDistance(new AlgoHelperEntry(g, g, opts, idx),
                                     oneRun.getList(idx, filter), oneRun);
                             integ.addAndGet(1);

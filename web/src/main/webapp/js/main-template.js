@@ -9,7 +9,6 @@ require('./lib/leaflet_numbered_markers.js');
 global.jQuery = require('jquery');
 global.$ = global.jQuery;
 require('./lib/jquery-ui-custom-1.12.0.min.js');
-require('./lib/jquery.history.js');
 require('./lib/jquery.autocomplete.js');
 var mathTools = require('./tools/math.js');
 
@@ -251,7 +250,8 @@ function mainInit() {
                     }
                 }
                 metaVersionInfo = messages.extractMetaVersionInfo(json);
-                mapLayer.multipleCallableInitMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, urlParams.layer);
+                mapLayer.multipleCallableInitMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, urlParams.layer, urlParams.use_miles);
+                // execute query
                 initFromParams(urlParams, true);
 
                 checkInput();
@@ -268,7 +268,8 @@ function mainInit() {
                     "maxLat": 90
                 };
                 nominatim.setBounds(bounds);
-                mapLayer.multipleCallableInitMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord);
+
+                mapLayer.multipleCallableInitMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, urlParams.use_miles);
             });
 
     $(window).resize(function () {
@@ -435,14 +436,14 @@ function checkInput() {
 }
 
 function setToStart(e) {
-    var latlng = e.target.getLatLng(),
+    var latlng = e.relatedTarget.getLatLng(),
             index = ghRequest.route.getIndexByCoord(latlng);
     ghRequest.route.move(index, 0);
     routeIfAllResolved();
 }
 
 function setToEnd(e) {
-    var latlng = e.target.getLatLng(),
+    var latlng = e.relatedTarget.getLatLng(),
             index = ghRequest.route.getIndexByCoord(latlng);
     ghRequest.route.move(index, -1);
     routeIfAllResolved();
@@ -471,7 +472,7 @@ function setIntermediateCoord(e) {
 }
 
 function deleteCoord(e) {
-    var latlng = e.target.getLatLng();
+    var latlng = e.relatedTarget.getLatLng();
     ghRequest.route.removeSingle(latlng);
     mapLayer.clearLayers();
     routeLatLng(ghRequest, false);
@@ -513,11 +514,10 @@ function setFlag(coord, index) {
         var _tempItem = {
             text: translate.tr('set_start'),
             callback: setToStart,
-            index: 1,
-            state: 2
+            index: 1
         };
         if (toFrom === -1)
-            marker.options.contextmenuItems.push(_tempItem);// because the Mixin.ContextMenu isn't initialized
+            marker.options.contextmenuItems.push(_tempItem); // because the Mixin.ContextMenu isn't initialized
         marker.on('dragend', function (e) {
             mapLayer.clearLayers();
             // inconsistent leaflet API: event.target.getLatLng vs. mouseEvent.latlng?
@@ -676,6 +676,16 @@ function routeLatLng(request, doQuery) {
         var geoJsons = [];
         var firstHeader;
 
+        // Create buttons to toggle between SI and imperial units.
+        var createUnitsChooserButtonClickHandler = function (useMiles) {
+            return function () {
+                mapLayer.updateScale(useMiles);
+                ghRequest.useMiles = useMiles;
+                resolveAll();
+                routeLatLng(ghRequest);
+            };
+        };
+
         for (var pathIndex = 0; pathIndex < json.paths.length; pathIndex++) {
             var tabHeader = $("<li>").append((pathIndex + 1) + "<img class='alt_route_img' src='./img/alt_route.png'/>");
             if (pathIndex === 0)
@@ -726,15 +736,6 @@ function routeLatLng(request, doQuery) {
             }
             routeInfo.append(translate.tr("route_info", [tmpDist, tmpTime]));
 
-            //create buttons to toggle between si and imperial units
-            var createUnitsChooserButtonClickHandler = function (useMiles) {
-                return function () {
-                    mapLayer.updateScale(useMiles);
-                    ghRequest.useMiles = useMiles;
-                    resolveAll();
-                    routeLatLng(ghRequest);
-                };
-            };
             var kmButton = $("<button class='plain_text_button " + (request.useMiles ? "gray" : "") + "'>");
             kmButton.text(translate.tr2("km_abbr"));
             kmButton.click(createUnitsChooserButtonClickHandler(false));
