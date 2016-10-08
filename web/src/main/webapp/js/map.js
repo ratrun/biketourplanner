@@ -394,7 +394,7 @@ module.exports.updateScale = function (useMiles) {
     if (scaleControl === null) {
         return;
     }
-    scaleControl.remove();
+    map.removeControl(scaleControl);
     var options = useMiles ? {metric: false} : {imperial: false};
     scaleControl = L.control.scale(options).addTo(map);
 };
