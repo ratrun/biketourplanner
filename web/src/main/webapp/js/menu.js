@@ -399,14 +399,14 @@ function webkitapp(win)
     var graphhopperSubMenu = new gui.Menu()
     var win = gui.Window.get();
 
-    stopGraphhopperServerMenuItem = new gui.MenuItem({ label: 'Stop Graphhopper server', enabled : !graphhopperServerHasExited,
+    stopGraphhopperServerMenuItem = new gui.MenuItem({ label: 'Stop routing server', enabled : !graphhopperServerHasExited,
         click: function() { 
-                             console.log('Stop Graphhopper server clicked');
+                             console.log('Stop routing server clicked');
                              stopGraphhopperServer();
                            }
     });
-    startGraphhopperServerMenuItem = new gui.MenuItem({ label: 'Start Graphhopper server', enabled : graphhopperServerHasExited,
-        click: function() {  console.log('Start Graphhopper server clicked');
+    startGraphhopperServerMenuItem = new gui.MenuItem({ label: 'Start routing server', enabled : graphhopperServerHasExited,
+        click: function() {  console.log('Start routing server clicked');
                              startGraphhopperServer(win);
                              this.enabled = false;
                           }
