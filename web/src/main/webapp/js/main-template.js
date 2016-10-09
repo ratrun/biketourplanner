@@ -109,7 +109,6 @@ function mainInit() {
     $( "#saveTripButton" ).click(function(e) {
         e.preventDefault();
         $("#tripDiv").show();
-        $("#changeTripButton").show();
         $(".route_result_tab").hide();
         $("#routingSettings").hide();
         
@@ -860,9 +859,11 @@ function tripSubmit() {
         var historyURL = $('#tripTree').jstree(true).get_node(CurrentNode).data.historyURL;
         if (historyURL) {
            $("#tripDiv").hide();
-           $("#changeTripButton").hide();
            $("#routingSettings").show();
-           window.location.href = historyURL;
+           $( "#tabs" ).tabs({ active: 0 });
+           var urlParams = urlTools.parseUrl(historyURL)
+           initFromParams(urlParams, true);
+           graphHopperSubmit();
         }
     }
 }
