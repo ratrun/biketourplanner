@@ -173,6 +173,7 @@ function mainInit() {
     $("#roundtripheading").knob({
         'release' : function (v) { 
             $("#useHeading").prop("checked",true);
+            ghRequest.api_params.round_trip.distance = 1000 * $("#roundtripdistance").spinner('value');
             ghRequest.api_params.heading = v;
             seed = 0;
             graphHopperSubmit();
@@ -805,19 +806,22 @@ function graphHopperSubmit() {
                 allStr.push(fromStr);
             else
                 inputOk = false;
-        } else if (index === (len - 1)) {
-            toStr = $(this).val();
-            if (toStr !== translate.tr("to_hint") && toStr !== "")
-                allStr.push(toStr);
-            else
-                inputOk = false;
-        } else {
-            viaStr = $(this).val();
-            if (viaStr !== translate.tr("via_hint") && viaStr !== "")
-                allStr.push(viaStr);
-            else
-                inputOk = false;
-        }
+        } else { 
+        if(!$("#roundTourButton").prop("disabled")) {
+                if (index === (len - 1)) {
+                toStr = $(this).val();
+                if (toStr !== translate.tr("to_hint") && toStr !== "")
+                    allStr.push(toStr);
+                else
+                    inputOk = false;
+            } else {
+                viaStr = $(this).val();
+                if (viaStr !== translate.tr("via_hint") && viaStr !== "")
+                    allStr.push(viaStr);
+                else
+                    inputOk = false;
+            }
+        }}
     });
     if (!inputOk) {
         // TODO print warning
@@ -835,8 +839,7 @@ function graphHopperSubmit() {
         });
         return;
     }
-    if($("#roundTourButton").prop("disabled"))
-    {
+    if($("#roundTourButton").prop("disabled")) {
         ghRequest.api_params.round_trip.seed = seed;
         seed ++;
         if (seed==3)
@@ -874,7 +877,7 @@ $(function() {
         $( "#ascendAvoidance" ).val( ui.value );
         ghRequest.api_params.ascendAvoidance = ui.value;
         ghRequest.api_params.weighting = "elevation";
-        routeLatLng(ghRequest, false);
+        graphHopperSubmit();
       }
     });
     $( "#ascendAvoidance" ).val( $( "#slider-range-ascend" ).slider( "value" ) );
@@ -891,7 +894,7 @@ $(function() {
       slide: function( event, ui ) {
         $( "#niceLevel" ).val( ui.value );
         ghRequest.api_params.niceLevel = boostValues[ui.value];
-        routeLatLng(ghRequest, false);
+        graphHopperSubmit();
       }
     });
     $( "#niceLevel" ).val( $( "#slider-range-niceLevel" ).slider( "value" ) );
@@ -901,12 +904,12 @@ $(function() {
     $( "#roundtripdistance" ).spinner({
       min: 0,
       step: 10.0,
-      change: function( event, ui ) {
+      spin: function( event, ui ) {
         seed = 0;
         if ($(this).spinner('value') > 0)
         {
            ghRequest.api_params.round_trip.distance = 1000 * $(this).spinner('value');
-           //routeLatLng(ghRequest, false);
+           graphHopperSubmit();
         }
       }
     });
