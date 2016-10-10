@@ -148,6 +148,7 @@ function mainInit() {
           ghRequest.route.removeSingle(i);
       }
       mapLayer.clearLayers();
+      mapLayer.adjustMapSize();
       mapLayer.setDisabledForMapsContextMenu('start', false);
       mapLayer.setDisabledForMapsContextMenu('intermediate', true);
       mapLayer.setDisabledForMapsContextMenu('end', true);
@@ -162,6 +163,7 @@ function mainInit() {
       $("#alternativeRoutecontrol").show();
       $("#alternativeRoutecontrol").css("visibility","visible");
       mapLayer.clearLayers();
+      mapLayer.adjustMapSize();
       $("#1_Div").show();
       ghRequest.api_params.algorithm = "";
       mapLayer.setDisabledForMapsContextMenu('start', false);
@@ -964,7 +966,7 @@ $(function() {
        }});
     $("#tripTree").on("select_node.jstree",
         function(evt, data){
-            $( "#changeTripButton" ).prop( "disabled", (data.node.data.historyURL === undefined) );
+            $( "#modifyTripButton" ).prop( "disabled", (data.node.data.historyURL === undefined) );
     });   
 });
 

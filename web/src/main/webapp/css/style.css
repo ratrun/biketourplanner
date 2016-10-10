@@ -214,7 +214,7 @@ body {
 #saveTripButton:hover {
     cursor: pointer;
 }
-#changeTripButton {
+#modifyTripButton {
     float: left;
     margin-bottom: 5px;
     margin-left: 5px;
@@ -499,7 +499,8 @@ td img.pic {
 }
 
 #headingknob{
-    padding-left: 70px;
+    padding-left: 60px;
+    padding-right: 60px;
 }
 
 .gray {
@@ -541,4 +542,3 @@ td img.pic {
   float: right;
   visibility: hidden;
 }
-

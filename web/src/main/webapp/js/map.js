@@ -16,7 +16,9 @@ var defaultContextmenuItems;
 // called if window changes or before map is created
 function adjustMapSize() {
     var mapDiv = $("#map");
-    var width = $(window).width() - 275;
+
+    // See http://stackoverflow.com/questions/986937/how-can-i-get-the-browsers-scrollbar-sizes
+    var width = window.innerWidth - 275;
     if (width < 400) {
         width = 400;
         mapDiv.attr("style", "position: relative; float: right;");
@@ -26,13 +28,12 @@ function adjustMapSize() {
     var height = $(window).height();
     if (height < 500)
         height = 500;
-
     mapDiv.width(width).height(height);
     $("#input").height(height);
-    $("#tabs").height(height - 20 - $("#input_header").height() - $("#footer").height());
+    $("#tabs").height(height - 17 - $("#input_header").height() - $("#footer").height());
 
     // reduce info size depending on how height the input_header is and reserve space for footer //34: height of tab  80: ???
-    var tmp = 34 + $("#routingSettings").height() + 80;
+    var tmp = 34 + $("#routingSettings").height() + 90;
     var instructionInfoMaxHeight = height - tmp
             - $("#input_header").height() - $("#footer").height() - $(".route_description").height();
     var tabHeight = $("#route_result_tabs li").height()
@@ -40,9 +41,6 @@ function adjustMapSize() {
     if (!isNaN(tabHeight))
         instructionInfoMaxHeight -= tabHeight;
     $(".instructions_info").css("max-height", instructionInfoMaxHeight);
-
-    // reduce info size depending on how high the input_header is and reserve space for footer
-    // $("#info").css("height", height - $("#input_header").height() - 100);
 }
 
 function createBounds(bounds, useMiles) {
@@ -482,4 +480,3 @@ function addOverlayLayer(name, id, minzoom) {
     var layers_menu = document.getElementById('layer_menu');
     layers_menu.appendChild(link);
 }
-

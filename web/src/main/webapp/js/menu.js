@@ -467,7 +467,7 @@ function webkitapp(win)
                           }
     }));
     
-        menu.append(
+    menu.append(
         new gui.MenuItem({
             label: 'Help',
             submenu: helpSubMenu

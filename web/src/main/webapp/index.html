@@ -18,7 +18,8 @@
         <link rel="stylesheet" href="css/leaflet.loading.css" />
         <link rel="stylesheet" href="css/ui-lightness/jquery-ui.min.css" />
         <script src='js/mapbox-gl-supported.js'></script>
-        <script type="text/javascript" src="js/main.js?v=0.8.0"></script>        <link rel="stylesheet" href="css/mapbox-gl.css?v=0.25.1" />
+        <script type="text/javascript" src="js/main.js?v=0.8.0"></script>
+        <link rel="stylesheet" href="css/mapbox-gl.css?v=0.25.1" />
         <script src="js/mapbox-gl.js?v=0.25.1"></script>
         <script type="text/javascript" src="js/lib/jstree.min.js"></script>
         <script type="text/javascript" src="js/lib/jquery.knob.min.js"></script>
@@ -36,7 +37,7 @@
           </div>
         <div id="tabs">
           <ul>
-            <li><a href="#routingOptions">New route</a></li>
+            <li><a href="#routingOptions">Route</a></li>
             <li><a href="#tripDiv">Library</a></li>
           </ul>
 
@@ -44,7 +45,7 @@
                 <div id="tripDiv" class="tabcontent">
                     <div id="tripTree"></div>
                     <div id="divtripTreeButtons">
-                        <input id="changeTripButton" type="submit" value="Change trip">
+                        <input id="modifyTripButton" type="submit" value="Modify">
                     </div>
                 </div>
             </form>
@@ -52,7 +53,7 @@
             <div id="routingOptions" class="tabcontent">
                 <form id="locationform">
                  <div id="tourTypeSelection" style="clear:both;">
-                   <input id="ABTourButton" type="submit" value="Route">
+                   <input id="ABTourButton" type="submit" value="A-B tour">
                    <input id="roundTourButton" type="submit" value="Roundtour">
                  </div>
                  <div id="routingSettings" style="clear:both;">
@@ -90,7 +91,7 @@
                       <div id="headingknob">
                       <input id="roundtripheading" class="dial" data-thickness="1" data-width="100" data-height="100" data-min="0" data-max="360" value="0" data-displayInput=false data-cursor=true data-fgColor="#47d147" data-bgColor="#f6f6f6"><br>
                       </div>
-                       <span class="left"></span> <br><br>
+                       <span class="left"></span> <br>
                     </div>
 
                     <div id="alternativeRoutecontrol" style="clear:both;">
