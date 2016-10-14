@@ -444,7 +444,29 @@ function webkitapp(win)
     // Create the help sub-menu
     var helpSubMenu = new gui.Menu();
     //helpSubMenu.append(new gui.MenuItem({ label: 'Help: Fixme' ,  enabled : false}));
-    helpSubMenu.append(separator);
+    helpSubMenu.append(new gui.MenuItem({ label: 'Vector tile map keys' ,
+        click: function() {
+                            var opt = {resizable: false, show: true, height: 382, width: 630};
+                            if (aboutWindow == null)
+                            {
+                                aboutWindow = gui.Window.open("mapkeys.html", opt);
+                                    aboutWindow.on('document-end', function() {
+                                      aboutWindow.focus();
+                                      // open link in default browser
+                                      $(aboutWindow.window.document).find('a').bind('click', function (e) {
+                                        e.preventDefault();
+                                        gui.Shell.openExternal(this.href);
+                                      });
+                                    });
+                            }
+                            aboutWindow.on('close', function() {
+                                   aboutWindow.close(true);
+                                   aboutWindow = null;
+                                });
+                          }
+    }));
+
+
     helpSubMenu.append(new gui.MenuItem({ label: 'About' ,
         click: function() {
                             var opt = {resizable: false, show: true, height: 270, width: 450};
@@ -466,7 +488,7 @@ function webkitapp(win)
                                 });    
                           }
     }));
-    
+
     menu.append(
         new gui.MenuItem({
             label: 'Help',
