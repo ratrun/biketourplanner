@@ -6,7 +6,7 @@
   "license": "Apache-2.0",
   "main": "index.html",
   "window": {
-    "icon": "img/icon.png",
+    "icon": "img/webappicon.png",
     "show": true,
     "position": "center",
     "width": 1500,

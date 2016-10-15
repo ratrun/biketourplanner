@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.2" width="6mm" height="6mm" viewBox="0 0 600 600" preserveAspectRatio="xMidYMid" fill-rule="evenodd" stroke-width="28.222" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" xmlns:ooo="http://xml.openoffice.org/svg/export" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:presentation="http://sun.com/xmlns/staroffice/presentation" xmlns:smil="http://www.w3.org/2001/SMIL20/" xmlns:anim="urn:oasis:names:tc:opendocument:xmlns:animation:1.0" xml:space="preserve">
+ <defs class="ClipPathGroup">
+  <clipPath id="presentation_clip_path" clipPathUnits="userSpaceOnUse">
+   <rect x="0" y="0" width="600" height="600"/>
+  </clipPath>
+ </defs>
+ <defs class="TextShapeIndex">
+  <g ooo:slide="id1" ooo:id-list="id3 id4 id5"/>
+ </defs>
+ <defs class="EmbeddedBulletChars">
+  <g id="bullet-char-template(57356)" transform="scale(0.00048828125,-0.00048828125)">
+   <path d="M 580,1141 L 1163,571 580,0 -4,571 580,1141 Z"/>
+  </g>
+  <g id="bullet-char-template(57354)" transform="scale(0.00048828125,-0.00048828125)">
+   <path d="M 8,1128 L 1137,1128 1137,0 8,0 8,1128 Z"/>
+  </g>
+  <g id="bullet-char-template(10146)" transform="scale(0.00048828125,-0.00048828125)">
+   <path d="M 174,0 L 602,739 174,1481 1456,739 174,0 Z M 1358,739 L 309,1346 659,739 1358,739 Z"/>
+  </g>
+  <g id="bullet-char-template(10132)" transform="scale(0.00048828125,-0.00048828125)">
+   <path d="M 2015,739 L 1276,0 717,0 1260,543 174,543 174,936 1260,936 717,1481 1274,1481 2015,739 Z"/>
+  </g>
+  <g id="bullet-char-template(10007)" transform="scale(0.00048828125,-0.00048828125)">
+   <path d="M 0,-2 C -7,14 -16,27 -25,37 L 356,567 C 262,823 215,952 215,954 215,979 228,992 255,992 264,992 276,990 289,987 310,991 331,999 354,1012 L 381,999 492,748 772,1049 836,1024 860,1049 C 881,1039 901,1025 922,1006 886,937 835,863 770,784 769,783 710,716 594,584 L 774,223 C 774,196 753,168 711,139 L 727,119 C 717,90 699,76 672,76 641,76 570,178 457,381 L 164,-76 C 142,-110 111,-127 72,-127 30,-127 9,-110 8,-76 1,-67 -2,-52 -2,-32 -2,-23 -1,-13 0,-2 Z"/>
+  </g>
+  <g id="bullet-char-template(10004)" transform="scale(0.00048828125,-0.00048828125)">
+   <path d="M 285,-33 C 182,-33 111,30 74,156 52,228 41,333 41,471 41,549 55,616 82,672 116,743 169,778 240,778 293,778 328,747 346,684 L 369,508 C 377,444 397,411 428,410 L 1163,1116 C 1174,1127 1196,1133 1229,1133 1271,1133 1292,1118 1292,1087 L 1292,965 C 1292,929 1282,901 1262,881 L 442,47 C 390,-6 338,-33 285,-33 Z"/>
+  </g>
+  <g id="bullet-char-template(9679)" transform="scale(0.00048828125,-0.00048828125)">
+   <path d="M 813,0 C 632,0 489,54 383,161 276,268 223,411 223,592 223,773 276,916 383,1023 489,1130 632,1184 813,1184 992,1184 1136,1130 1245,1023 1353,916 1407,772 1407,592 1407,412 1353,268 1245,161 1136,54 992,0 813,0 Z"/>
+  </g>
+  <g id="bullet-char-template(8226)" transform="scale(0.00048828125,-0.00048828125)">
+   <path d="M 346,457 C 273,457 209,483 155,535 101,586 74,649 74,723 74,796 101,859 155,911 209,963 273,989 346,989 419,989 480,963 531,910 582,859 608,796 608,723 608,648 583,586 532,535 482,483 420,457 346,457 Z"/>
+  </g>
+  <g id="bullet-char-template(8211)" transform="scale(0.00048828125,-0.00048828125)">
+   <path d="M -4,459 L 1135,459 1135,606 -4,606 -4,459 Z"/>
+  </g>
+ </defs>
+ <defs class="TextEmbeddedBitmaps"/>
+ <g>
+  <g id="id2" class="Master_Slide">
+   <g id="bg-id2" class="Background"/>
+   <g id="bo-id2" class="BackgroundObjects"/>
+  </g>
+ </g>
+ <g class="SlideGroup">
+  <g>
+   <g id="id1" class="Slide" clip-path="url(#presentation_clip_path)">
+    <g class="Page">
+     <g class="com.sun.star.drawing.CustomShape">
+      <g id="id3">
+       <rect class="BoundingBox" stroke="none" fill="none" x="-1" y="-1" width="603" height="603"/>
+       <path fill="rgb(0,204,51)" stroke="none" d="M 300,600 L 0,600 0,0 600,0 600,600 300,600 Z"/>
+       <path fill="none" stroke="rgb(0,204,51)" d="M 300,600 L 0,600 0,0 600,0 600,600 300,600 Z"/>
+      </g>
+     </g>
+     <g class="com.sun.star.drawing.ClosedBezierShape">
+      <g id="id4">
+       <rect class="BoundingBox" stroke="none" fill="none" x="-1" y="35" width="603" height="497"/>
+       <path fill="rgb(255,255,255)" fill-opacity="0.298" stroke="rgb(255,255,255)" stroke-opacity="0.298" d="M 388,71 C 369,71 353,87 353,106 353,126 369,142 388,142 408,142 424,126 424,106 424,87 408,71 388,71 Z M 323,142 C 318,142 314,143 311,147 L 217,235 C 209,242 210,255 219,262 L 282,310 282,407 C 282,431 318,431 318,407 L 318,301 C 318,295 315,290 311,287 L 284,266 348,205 374,241 C 378,245 383,248 388,248 L 441,248 C 465,248 465,212 441,212 L 397,212 371,177 350,149 C 346,144 341,142 336,142 L 323,142 Z M 141,283 C 82,283 35,331 35,389 35,448 82,495 141,495 200,495 247,448 247,389 247,331 200,283 141,283 Z M 459,283 C 401,283 353,331 353,389 353,448 401,495 459,495 518,495 565,448 565,389 565,331 518,283 459,283 Z M 141,319 C 180,319 212,350 212,389 212,428 180,460 141,460 102,460 70,428 70,389 70,350 102,319 141,319 Z M 459,319 C 498,319 530,350 530,389 530,428 498,460 459,460 420,460 388,428 388,389 388,350 420,319 459,319 Z"/>
+       <defs>
+        <mask id="mask1">
+         <g>
+          <defs>
+           <linearGradient id="gradient1" x1="389" y1="36" x2="389" y2="178" gradientUnits="userSpaceOnUse">
+            <stop offset="0.5" style="stop-color:rgb(179,179,179)"/>
+            <stop offset="0.5" style="stop-color:rgb(179,179,179)"/>
+            <stop offset="1" style="stop-color:rgb(179,179,179)"/>
+            <stop offset="1" style="stop-color:rgb(179,179,179)"/>
+           </linearGradient>
+          </defs>
+          <path style="fill:url(#gradient1)" d="M 318,36 L 460,36 460,178 318,178 318,36 Z"/>
+         </g>
+        </mask>
+       </defs>
+       <g style="mask:url(#mask1)">
+        <path fill="none" stroke="rgb(255,255,255)" stroke-width="71" stroke-linejoin="round" d="M 388,71 C 369,71 353,87 353,106 353,126 369,142 388,142 408,142 424,126 424,106 424,87 408,71 388,71 Z"/>
+       </g>
+       <defs>
+        <mask id="mask2">
+         <g>
+          <defs>
+           <linearGradient id="gradient2" x1="335" y1="107" x2="335" y2="461" gradientUnits="userSpaceOnUse">
+            <stop offset="0.5" style="stop-color:rgb(179,179,179)"/>
+            <stop offset="0.5" style="stop-color:rgb(179,179,179)"/>
+            <stop offset="1" style="stop-color:rgb(179,179,179)"/>
+            <stop offset="1" style="stop-color:rgb(179,179,179)"/>
+           </linearGradient>
+          </defs>
+          <path style="fill:url(#gradient2)" d="M 176,107 L 495,107 495,461 176,461 176,107 Z"/>
+         </g>
+        </mask>
+       </defs>
+       <g style="mask:url(#mask2)">
+        <path fill="none" stroke="rgb(255,255,255)" stroke-width="71" stroke-linejoin="round" d="M 323,142 C 318,142 314,143 311,147 L 217,235 C 209,242 210,255 219,262 L 282,310 282,407 C 282,431 318,431 318,407 L 318,301 C 318,295 315,290 311,287 L 284,266 348,205 374,241 C 378,245 383,248 388,248 L 441,248 C 465,248 465,212 441,212 L 397,212 371,177 350,149 C 346,144 341,142 336,142 L 323,142 Z"/>
+       </g>
+       <defs>
+        <mask id="mask3">
+         <g>
+          <defs>
+           <linearGradient id="gradient3" x1="141" y1="248" x2="141" y2="531" gradientUnits="userSpaceOnUse">
+            <stop offset="0.5" style="stop-color:rgb(179,179,179)"/>
+            <stop offset="0.5" style="stop-color:rgb(179,179,179)"/>
+            <stop offset="1" style="stop-color:rgb(179,179,179)"/>
+            <stop offset="1" style="stop-color:rgb(179,179,179)"/>
+           </linearGradient>
+          </defs>
+          <path style="fill:url(#gradient3)" d="M -1,248 L 283,248 283,531 -1,531 -1,248 Z"/>
+         </g>
+        </mask>
+       </defs>
+       <g style="mask:url(#mask3)">
+        <path fill="none" stroke="rgb(255,255,255)" stroke-width="71" stroke-linejoin="round" d="M 141,283 C 82,283 35,331 35,389 35,448 82,495 141,495 200,495 247,448 247,389 247,331 200,283 141,283 Z"/>
+       </g>
+       <defs>
+        <mask id="mask4">
+         <g>
+          <defs>
+           <linearGradient id="gradient4" x1="459" y1="248" x2="459" y2="531" gradientUnits="userSpaceOnUse">
+            <stop offset="0.5" style="stop-color:rgb(179,179,179)"/>
+            <stop offset="0.5" style="stop-color:rgb(179,179,179)"/>
+            <stop offset="1" style="stop-color:rgb(179,179,179)"/>
+            <stop offset="1" style="stop-color:rgb(179,179,179)"/>
+           </linearGradient>
+          </defs>
+          <path style="fill:url(#gradient4)" d="M 318,248 L 601,248 601,531 318,531 318,248 Z"/>
+         </g>
+        </mask>
+       </defs>
+       <g style="mask:url(#mask4)">
+        <path fill="none" stroke="rgb(255,255,255)" stroke-width="71" stroke-linejoin="round" d="M 459,283 C 401,283 353,331 353,389 353,448 401,495 459,495 518,495 565,448 565,389 565,331 518,283 459,283 Z"/>
+       </g>
+       <defs>
+        <mask id="mask5">
+         <g>
+          <defs>
+           <linearGradient id="gradient5" x1="141" y1="283" x2="141" y2="495" gradientUnits="userSpaceOnUse">
+            <stop offset="0.5" style="stop-color:rgb(179,179,179)"/>
+            <stop offset="0.5" style="stop-color:rgb(179,179,179)"/>
+            <stop offset="1" style="stop-color:rgb(179,179,179)"/>
+            <stop offset="1" style="stop-color:rgb(179,179,179)"/>
+           </linearGradient>
+          </defs>
+          <path style="fill:url(#gradient5)" d="M 35,283 L 248,283 248,495 35,495 35,283 Z"/>
+         </g>
+        </mask>
+       </defs>
+       <g style="mask:url(#mask5)">
+        <path fill="none" stroke="rgb(255,255,255)" stroke-width="71" stroke-linejoin="round" d="M 141,319 C 180,319 212,350 212,389 212,428 180,460 141,460 102,460 70,428 70,389 70,350 102,319 141,319 Z"/>
+       </g>
+       <defs>
+        <mask id="mask6">
+         <g>
+          <defs>
+           <linearGradient id="gradient6" x1="459" y1="283" x2="459" y2="495" gradientUnits="userSpaceOnUse">
+            <stop offset="0.5" style="stop-color:rgb(179,179,179)"/>
+            <stop offset="0.5" style="stop-color:rgb(179,179,179)"/>
+            <stop offset="1" style="stop-color:rgb(179,179,179)"/>
+            <stop offset="1" style="stop-color:rgb(179,179,179)"/>
+           </linearGradient>
+          </defs>
+          <path style="fill:url(#gradient6)" d="M 353,283 L 566,283 566,495 353,495 353,283 Z"/>
+         </g>
+        </mask>
+       </defs>
+       <g style="mask:url(#mask6)">
+        <path fill="none" stroke="rgb(255,255,255)" stroke-width="71" stroke-linejoin="round" d="M 459,319 C 498,319 530,350 530,389 530,428 498,460 459,460 420,460 388,428 388,389 388,350 420,319 459,319 Z"/>
+       </g>
+      </g>
+     </g>
+     <g class="com.sun.star.drawing.ClosedBezierShape">
+      <g id="id5">
+       <rect class="BoundingBox" stroke="none" fill="none" x="35" y="71" width="531" height="425"/>
+       <path fill="rgb(102,102,102)" stroke="none" d="M 388,71 C 369,71 353,87 353,106 353,126 369,142 388,142 408,142 424,126 424,106 424,87 408,71 388,71 Z M 323,142 C 318,142 314,143 311,147 L 217,235 C 209,242 210,255 219,262 L 282,310 282,407 C 282,431 318,431 318,407 L 318,301 C 318,295 315,290 311,287 L 284,266 348,205 374,241 C 378,245 383,248 388,248 L 441,248 C 465,248 465,212 441,212 L 397,212 371,177 350,149 C 346,144 341,142 336,142 L 323,142 Z M 141,283 C 82,283 35,331 35,389 35,448 82,495 141,495 200,495 247,448 247,389 247,331 200,283 141,283 Z M 459,283 C 401,283 353,331 353,389 353,448 401,495 459,495 518,495 565,448 565,389 565,331 518,283 459,283 Z M 141,319 C 180,319 212,350 212,389 212,428 180,460 141,460 102,460 70,428 70,389 70,350 102,319 141,319 Z M 459,319 C 498,319 530,350 530,389 530,428 498,460 459,460 420,460 388,428 388,389 388,350 420,319 459,319 Z"/>
+      </g>
+     </g>
+    </g>
+   </g>
+  </g>
+ </g>
+</svg>
