@@ -9,7 +9,6 @@ var showInstalledMapsMenuItem;
 var changeGraphMenuItem;
 var deleteMapMenuItem;
 
-var aboutWindow = null;
 var selectCountryWindow = null;
 var tilesServerHasExited = true;
 var graphhopperServerHasExited = true;
@@ -182,13 +181,11 @@ function startGraphhopperServer(win)
 
     win.on('close', function() {
         this.hide(); // Pretend to be closed already
-        shutdownapp = true;
         console.log("win.on close tilesServerHasExited=" + tilesServerHasExited + " ,graphhopperServerHasExited="+ graphhopperServerHasExited);
+        shutdownapp = true;
         if ((tilesServerHasExited) && (graphhopperServerHasExited))
         {
             console.log("close2");
-            if (aboutWindow != null)
-                aboutWindow.close(true);
             this.close(true);
         }
         else
@@ -294,6 +291,35 @@ function deletegraph(dir)
       alert("Cannot delete routing data as graphhopper server is still running!");
 };
 
+/*
+ Display a dialog. The paramaters data and dataDivDestination are optional. 
+ They specfiy text, which is to be put into a nav in the html template file.
+ */
+function showDialog( htmltemplate, height, width, data , dataNavDestination)
+{
+    var opt = {resizable: false, show: true, height: height, width: width, focus: true};
+    gui.Window.open(htmltemplate, opt, function(dialogWindow) {
+        var document = dialogWindow.window.document;
+        dialogWindow.on('document-end', function() {
+              if (data !== undefined)
+                  document.getElementById(dataNavDestination).innerHTML =  data;
+              dialogWindow.focus();
+              // open link in default browser
+              $(document).find('a').bind('click', function (e) {
+                e.preventDefault();
+                gui.Shell.openExternal(this.href);
+              });
+            });
+        dialogWindow.on('close', function() {
+               dialogWindow.close(true);
+        });
+        // Close open child dialog windows automatically with the close of main application:
+        win.on('close', function() {
+           dialogWindow.close(true);
+        });
+    });
+}
+
 // Here we define the functionality for the graphhopper webkit application
 function webkitapp(win)
 {
@@ -319,7 +345,7 @@ function webkitapp(win)
     showInstalledMapsMenuItem = new gui.MenuItem({ label: 'Show installed maps', enabled : tilesServerHasExited,
         click: function() { 
                              $.getJSON("http://127.0.0.1:3000/mbtilesareas.json", function( data ) {
-                                    alert("Installed maps: \n" + JSON.stringify(data).replace(/{\"country\"\:\"/g,'').replace(/\"}/g,'\n'));
+                                    showDialog("installedmaps.html", 170, 300, JSON.stringify(data).replace(/{\"country\"\:\"/g,'').replace(/\"}/g,'<br>').replace(/[\",\]\[]/g,''), 'maplist');
                              });
                           }
     });
@@ -446,46 +472,14 @@ function webkitapp(win)
     //helpSubMenu.append(new gui.MenuItem({ label: 'Help: Fixme' ,  enabled : false}));
     helpSubMenu.append(new gui.MenuItem({ label: 'Vector tile map keys' ,
         click: function() {
-                            var opt = {resizable: false, show: true, height: 382, width: 630};
-                            if (aboutWindow == null)
-                            {
-                                aboutWindow = gui.Window.open("mapkeys.html", opt);
-                                    aboutWindow.on('document-end', function() {
-                                      aboutWindow.focus();
-                                      // open link in default browser
-                                      $(aboutWindow.window.document).find('a').bind('click', function (e) {
-                                        e.preventDefault();
-                                        gui.Shell.openExternal(this.href);
-                                      });
-                                    });
-                            }
-                            aboutWindow.on('close', function() {
-                                   aboutWindow.close(true);
-                                   aboutWindow = null;
-                                });
+                            showDialog("mapkeys.html", 382, 630);
                           }
     }));
 
 
     helpSubMenu.append(new gui.MenuItem({ label: 'About' ,
         click: function() {
-                            var opt = {resizable: false, show: true, height: 270, width: 450};
-                            if (aboutWindow == null)
-                            {
-                                aboutWindow = gui.Window.open("about.html", opt);
-                                    aboutWindow.on('document-end', function() {
-                                      aboutWindow.focus();
-                                      // open link in default browser
-                                      $(aboutWindow.window.document).find('a').bind('click', function (e) {
-                                        e.preventDefault();
-                                        gui.Shell.openExternal(this.href);
-                                      });
-                                    });
-                            }
-                            aboutWindow.on('close', function() {
-                                   aboutWindow.close(true);
-                                   aboutWindow = null;
-                                });    
+                            showDialog("about.html", 270, 450);
                           }
     }));
 
@@ -575,6 +569,11 @@ var showNotification = function (icon, title, body) {
   notification.onshow = function () {
     writeLog("-----<br>" + title);
   };
+  
+  // Close open child dialog windows automatically with the close of main application:
+  win.on('close', function() {
+    notification.close(true);
+  });
 
   return notification;
 }
