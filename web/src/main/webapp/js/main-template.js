@@ -1,8 +1,8 @@
 var menu = require('./menu.js');
 global.d3 = require('d3');
 var L = require('leaflet');
-require('leaflet-loading');
 require('./lib/leaflet.contextmenu.js');
+require('leaflet-loading');
 require('./lib/leaflet.elevation-0.0.4.min.js');
 require('./lib/leaflet_numbered_markers.js');
 

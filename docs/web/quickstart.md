@@ -11,7 +11,7 @@ The following steps are simpler and only need the JRE, a jar file and an OSM fil
     Afterwards you can start a local vector tile server from the ../ratrun-mbtiles-server directory by running `npm install` and `npm start` there.
     When you re-load the page, you should be able to see the vector maps of your areas as top entries on the tile layer selector on the right of the map. When you choose one of these layers, you are using your local vector tile server.
 
-To see how GraphHopper is configured for production usage, see the separate site [Deploy](./../core/deploy.md).
+To see how GraphHopper is configured for production usage, see the [deployment guide](./../core/deploy.md).
 
 ## Troubleshooting
 
@@ -19,4 +19,4 @@ To see how GraphHopper is configured for production usage, see the separate site
  * Regarding step 2:
     * The folder where you execute the java command should contain the following files: berlin-latest.osm.pbf, config-example.properties and `graphhopper-web-[version].jar`
     * The first time you execute this it'll take ~30 seconds (for Berlin), further starts will only load the graph and should be nearly instantaneous. You should see log statements but no exceptions and the last entry should be something like: Started server at HTTP 8989
- * Join the [mailing list](http://graphhopper.com/#developers) and do not hesitate to ask questions!
+ * Or [contact us](../index.md#contact)
