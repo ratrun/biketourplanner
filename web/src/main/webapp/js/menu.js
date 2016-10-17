@@ -202,8 +202,7 @@ function startGraphhopperServer(win)
     });
 }
 
-function stopLocalVectorTileServer()
-{
+function stopLocalVectorTileServer() {
   console.log("stopLocalVectorTileServer mbtiles=" + mbtiles);
   var mapLayer = require('./map.js');
   mapLayer.clearLayers();
@@ -569,7 +568,7 @@ var showNotification = function (icon, title, body) {
   notification.onshow = function () {
     writeLog("-----<br>" + title);
   };
-  
+
   // Close open child dialog windows automatically with the close of main application:
   win.on('close', function() {
     notification.close(true);
