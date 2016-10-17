@@ -448,6 +448,11 @@ module.exports.createMarker = function (index, coord, setToEnd, setToStart, dele
             translate.tr("end_label") : translate.tr("intermediate_label") + ' ' + index)));
 };
 
+module.exports.createStaticMarker = function (coord, i, amount) {
+    var icon = (i===0) ? iconFrom: (i==amount-i) ?  iconTo : new L.NumberedDivIcon({number: i});
+    return L.marker([coord.lat, coord.lng], {icon: icon}).addTo(routingLayer).bindPopup(' ' + i);
+};
+
 function addOverlayLayer(name, id, minzoom) {
     var link = document.createElement('a');
     link.href = '#';

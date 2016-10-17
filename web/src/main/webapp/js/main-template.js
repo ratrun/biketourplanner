@@ -53,6 +53,7 @@ var ghRequest = new GHRequest(host, ghenv.routing.api_key);
 var bounds = {};
 
 var metaVersionInfo;
+var lastghResponse; // Copy of the last routing result (json format)
 
 // usage: log('inside coolFunc',this,arguments);
 // http://paulirish.com/2009/log-a-lightweight-wrapper-for-consolelog/
@@ -111,18 +112,23 @@ function mainInit() {
         $("#tripDiv").show();
         $(".route_result_tab").hide();
         $("#routingSettings").hide();
+        $("#ABTourButton").hide();
+        $("#roundTourButton").hide();
         
         if (ghRequest.route.isResolved())
         {
             var $tree = $('#tripTree');
             last_id += 1;
 
-            $tree.jstree().create_node('#' ,  { "id" : last_id, "text" : "Tour " + last_id, "data" : {"historyURL": ghRequest.createHistoryURL()}}, "last", function(){
+            $tree.jstree().create_node('#' ,  { "id" : last_id, "text" : "Tour " + last_id, "data" : {"historyURL": ghRequest.createHistoryURL(), "route": ghRequest.route}}, "last", function(){
                 console.log("Trip added for ghRequest URL=" + ghRequest.createHistoryURL());
             });
 
             localStorage['tripData'] = JSON.stringify($tree.jstree(true).get_json('#', { 'flat': true }));
             localStorage['last_id'] = last_id;
+            saveghResponses(lastghResponse, last_id, function () {
+                 console.log('lastghResponse saved');
+            });
            
             return;
         }
@@ -615,6 +621,12 @@ function routeLatLng(request, doQuery) {
     var urlForAPI = request.createURL();
     routeResultsDiv.html('<img src="img/indicator.gif"/> Search Route ...');
     request.doRequest(urlForAPI, function (json) {
+        lastghResponse = $.extend({}, json); // Copy, see http://api.jquery.com/jQuery.extend/
+        handleGhResponse(json, routeResultsDiv, doZoom, request, urlForHistory);
+    });
+}
+
+function handleGhResponse(json, routeResultsDiv, doZoom, request, urlForHistory) {
         routeResultsDiv.html("");
         $("#saveTripButton").prop('disabled', false);
         if (json.message) {
@@ -782,7 +794,6 @@ function routeLatLng(request, doQuery) {
         $('.defaulting').each(function (index, element) {
             $(element).css("color", "black");
         });
-    });
 }
 
 /**
@@ -800,6 +811,7 @@ function graphHopperSubmit() {
             inputOk = true;
     var location_points = $("#locationpoints > div.pointDiv > input.pointInput");
     var len = location_points.size;
+    $( "#tabs" ).tabs({ active: 0 });
     $.each(location_points, function (index) {
         if (index === 0) {
             fromStr = $(this).val();
@@ -967,9 +979,79 @@ $(function() {
     $("#tripTree").on("select_node.jstree",
         function(evt, data){
             $( "#modifyTripButton" ).prop( "disabled", (data.node.data.historyURL === undefined) );
+            handleTrip(data);
     });   
 });
 
 $( function() {
-   $( "#tabs" ).tabs({ active: 0 });
+   $( "#tabs" ).tabs({ active: 0, activate: function(event, ui) {
+     // Handle switching between the tabs
+     var id = ui.newPanel.attr('id');
+     mapLayer.clearElevation();
+     mapLayer.clearLayers();
+     mapLayer.setDisabledForMapsContextMenu('start', id==="tripDiv");
+     mapLayer.setDisabledForMapsContextMenu('intermediate', true);
+     mapLayer.setDisabledForMapsContextMenu('end', id==="tripDiv");
+   }});
 });
+
+function saveghResponses (response, id, callback) {
+    if (nw !== undefined) {
+        // c:\Users\User\AppData\Local\BikeTourPlaner\User Data\Default\graphhopperResponses\
+        //  on Linux it is here: /home/username/.config/YourAppName/graphhopperResponses.
+        var path = require('path');
+        var fs = global.require('fs');
+        var filePath = path.join(nw.App.dataPath,'graphhopperResponses');
+        fs.mkdir(filePath);
+        var absolutFileName = path.join(nw.App.dataPath, path.normalize('graphhopperResponses/' + 'gh' + id + '.json'));
+        fs.writeFile(absolutFileName, JSON.stringify(response), function (err) {
+            if (err) {
+                console.info("There was an error attempting to save graphhopperResponse.");
+                console.warn(err.message);
+                return;
+            } else if (callback) {
+                callback();
+            }
+        });
+    }
+}
+
+function handleTrip(data) {
+    if (nw !== undefined) {
+        var id = data.node.id;
+        var path = require('path');
+        var fs = global.require('fs');
+        var filePath = path.join(nw.App.dataPath,'graphhopperResponses');
+        var absolutFileName = path.join(nw.App.dataPath, path.normalize('graphhopperResponses/' + 'gh' + id + '.json'));
+        fs.readFile(absolutFileName, (err, fdata) => {
+             if (err) throw err;
+
+             var json = JSON.parse(fdata);
+             var routeResultsDiv = $("<div class='route_results'/>");
+             var infoDiv = $("#info");
+             infoDiv.append(routeResultsDiv);
+
+             mapLayer.clearElevation();
+             mapLayer.clearLayers();
+             mapLayer.setDisabledForMapsContextMenu('start', true);
+             mapLayer.setDisabledForMapsContextMenu('intermediate', true);
+             mapLayer.setDisabledForMapsContextMenu('end', true);
+             
+             if (data.node.data.route !==undefined) {
+                 for (i=0;i<data.node.data.route.length;i++) {
+                     mapLayer.createStaticMarker(data.node.data.route[i], i, data.node.data.route.length);
+                 }
+             }
+            var firstPath = json.paths[0];
+            if (firstPath.bbox) {
+                var minLon = firstPath.bbox[0];
+                var minLat = firstPath.bbox[1];
+                var maxLon = firstPath.bbox[2];
+                var maxLat = firstPath.bbox[3];
+                var tmpB = new L.LatLngBounds(new L.LatLng(minLat, minLon), new L.LatLng(maxLat, maxLon));
+                mapLayer.fitMapToBounds(tmpB);
+            }
+            handleGhResponse(json, routeResultsDiv, true, null, data.node.data.historyURL);
+        });
+    }
+}
