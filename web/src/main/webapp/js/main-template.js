@@ -1021,27 +1021,26 @@ function handleTrip(data) {
         var id = data.node.id;
         var path = require('path');
         var fs = global.require('fs');
-        var filePath = path.join(nw.App.dataPath,'graphhopperResponses');
         var absolutFileName = path.join(nw.App.dataPath, path.normalize('graphhopperResponses/' + 'gh' + id + '.json'));
         fs.readFile(absolutFileName, (err, fdata) => {
-             if (err) throw err;
+            if (err) throw err;
 
-             var json = JSON.parse(fdata);
-             var routeResultsDiv = $("<div class='route_results'/>");
-             var infoDiv = $("#info");
-             infoDiv.append(routeResultsDiv);
+            var json = JSON.parse(fdata);
+            var routeResultsDiv = $("<div class='route_results'/>");
+            var infoDiv = $("#info");
+            infoDiv.append(routeResultsDiv);
 
-             mapLayer.clearElevation();
-             mapLayer.clearLayers();
-             mapLayer.setDisabledForMapsContextMenu('start', true);
-             mapLayer.setDisabledForMapsContextMenu('intermediate', true);
-             mapLayer.setDisabledForMapsContextMenu('end', true);
+            mapLayer.clearElevation();
+            mapLayer.clearLayers();
+            mapLayer.setDisabledForMapsContextMenu('start', true);
+            mapLayer.setDisabledForMapsContextMenu('intermediate', true);
+            mapLayer.setDisabledForMapsContextMenu('end', true);
              
-             if (data.node.data.route !==undefined) {
-                 for (i=0;i<data.node.data.route.length;i++) {
-                     mapLayer.createStaticMarker(data.node.data.route[i], i, data.node.data.route.length);
-                 }
-             }
+            if (data.node.data.route !==undefined) {
+                for (i=0;i<data.node.data.route.length;i++) {
+                    mapLayer.createStaticMarker(data.node.data.route[i], i, data.node.data.route.length);
+                }
+            }
             var firstPath = json.paths[0];
             if (firstPath.bbox) {
                 var minLon = firstPath.bbox[0];
