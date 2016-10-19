@@ -1050,7 +1050,7 @@ function handleTrip(data) {
                 var tmpB = new L.LatLngBounds(new L.LatLng(minLat, minLon), new L.LatLng(maxLat, maxLon));
                 mapLayer.fitMapToBounds(tmpB);
             }
-            handleGhResponse(json, routeResultsDiv, true, null, data.node.data.historyURL);
+            handleGhResponse(json, routeResultsDiv, true, ghRequest, data.node.data.historyURL);
         });
     }
 }
