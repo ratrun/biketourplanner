@@ -613,7 +613,6 @@ function routeLatLng(request, doQuery) {
 
     if (!$("#roundTourButton").prop("disabled")) {
         mapLayer.setDisabledForMapsContextMenu('intermediate', false);
-        mapLayer.setDisabledForMapsContextMenu('end', true);
     }
 
     $("#vehicles button").removeClass("selectvehicle");
