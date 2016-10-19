@@ -1041,15 +1041,6 @@ function handleTrip(data) {
                     mapLayer.createStaticMarker(data.node.data.route[i], i, data.node.data.route.length);
                 }
             }
-            var firstPath = json.paths[0];
-            if (firstPath.bbox) {
-                var minLon = firstPath.bbox[0];
-                var minLat = firstPath.bbox[1];
-                var maxLon = firstPath.bbox[2];
-                var maxLat = firstPath.bbox[3];
-                var tmpB = new L.LatLngBounds(new L.LatLng(minLat, minLon), new L.LatLng(maxLat, maxLon));
-                mapLayer.fitMapToBounds(tmpB);
-            }
             handleGhResponse(json, routeResultsDiv, true, ghRequest, data.node.data.historyURL);
         });
     }
