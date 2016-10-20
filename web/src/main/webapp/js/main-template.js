@@ -284,12 +284,12 @@ function mainInit() {
     $(window).resize(function () {
         mapLayer.adjustMapSize();
     });
-
-    $(window).on('beforeunload', function(){
-        // Save eventually altered trip data
-        localStorage['tripData'] = JSON.stringify($('#tripTree').jstree(true).get_json('#', { 'flat': true }));
-        //return 'Are you sure you want to leave?';
-    });
+    if (nw !== undefined) {
+        nw.Window.get().on('close', function(){
+            // Save eventually altered trip data
+            localStorage['tripData'] = JSON.stringify($('#tripTree').jstree(true).get_json('#', { 'flat': true }));
+        });
+    }
 
     $("#locationpoints").sortable({
         items: ".pointDiv",
@@ -969,6 +969,11 @@ if (tripData === null)
     localStorage['tripData'] = JSON.stringify(tripData);
 }
 
+function getGhResponseFilePath(id) {
+    var path = require('path');
+    return path.join(nw.App.dataPath, path.normalize('graphhopperResponses/' + 'gh' + id + '.json'));
+}
+
 $(function() {
     $('#tripTree').jstree({
        "plugins" : [ "themes", "contextmenu", "dnd", "state", "types" ],
@@ -977,10 +982,20 @@ $(function() {
        'data' : tripData,
        }});
     $("#tripTree").on("select_node.jstree",
-        function(evt, data){
+        function(evt, data) {
             $( "#modifyTripButton" ).prop( "disabled", (data.node.data.historyURL === undefined) );
             handleTrip(data);
-    });   
+    });
+    $("#tripTree").on("delete_node.jstree", function(evt, data) {
+            var filePath = getGhResponseFilePath(data.node.id);
+            var fs = global.require('fs');
+            fs.unlink(filePath, function (err) {
+                if (err) {
+                    console.log("Error attempting to delete " + filePath);
+                    return;
+                }
+            });
+    });
 });
 
 $( function() {
@@ -1003,11 +1018,9 @@ function saveghResponses (response, id, callback) {
         var fs = global.require('fs');
         var filePath = path.join(nw.App.dataPath,'graphhopperResponses');
         fs.mkdir(filePath);
-        var absolutFileName = path.join(nw.App.dataPath, path.normalize('graphhopperResponses/' + 'gh' + id + '.json'));
-        fs.writeFile(absolutFileName, JSON.stringify(response), function (err) {
+        fs.writeFile(getGhResponseFilePath(id), JSON.stringify(response), function (err) {
             if (err) {
-                console.info("There was an error attempting to save graphhopperResponse.");
-                console.warn(err.message);
+                console.log("Error attempting to save graphhopperResponse to " + filePath);
                 return;
             } else if (callback) {
                 callback();
@@ -1018,10 +1031,8 @@ function saveghResponses (response, id, callback) {
 
 function handleTrip(data) {
     if (nw !== undefined) {
-        var id = data.node.id;
-        var path = require('path');
+        var absolutFileName = getGhResponseFilePath(data.node.id);
         var fs = global.require('fs');
-        var absolutFileName = path.join(nw.App.dataPath, path.normalize('graphhopperResponses/' + 'gh' + id + '.json'));
         fs.readFile(absolutFileName, (err, fdata) => {
             if (err) throw err;
 
