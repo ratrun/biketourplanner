@@ -13,6 +13,13 @@
     "height": 900,
     "toolbar": true
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ratrun/graphhopper.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ratrun/graphhopper/issues"
+  },  
   "dependencies": {
     "d3": "^3.5.9",
     "jquery": "^2.1.4",

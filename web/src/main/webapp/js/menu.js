@@ -1,3 +1,13 @@
+/*  Copyright (C) 2015  ratrun@gmx.at
+    The JavaScript code in this page is free software: you can
+    redistribute it and/or modify it under the terms of the GNU
+    General Public License (GNU GPL) as published by the Free Software
+    Foundation, either version 3 of the License, or (at your option)
+    any later version.  The code is distributed WITHOUT ANY WARRANTY;
+    without even the implied warranty of MERCHANTABILITY or FITNESS
+    FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+*/
+
 var mbtiles;
 var graphhopper;
 
@@ -9,7 +19,6 @@ var showInstalledMapsMenuItem;
 var changeGraphMenuItem;
 var deleteMapMenuItem;
 
-var selectCountryWindow = null;
 var tilesServerHasExited = true;
 var graphhopperServerHasExited = true;
 var shutdownapp = false;
@@ -24,9 +33,7 @@ var osplatform;
 if (activeOsmfile === undefined)
     activeOsmfile = 'liechtenstein-latest.osm.pbf';
 
-function startLocalVectorTileServer(win)
-{
-    // On Windows only ???
+function startLocalVectorTileServer(win) {
     var exec = global.require('child_process').spawn;
     var exename = "../node.exe";
     if (osplatform === "linux")
@@ -93,8 +100,7 @@ function startLocalVectorTileServer(win)
 
 var graphopperServerStartedOnce = false;
 
-function startGraphhopperServer(win)
-{
+function startGraphhopperServer(win) {
     var os = global.require('os');
     console.log('Starting graphhopper');
     var initialpercent = 40; // Intitial percentage of heap space of total available RAM to reserve for graphhopper
@@ -226,8 +232,7 @@ function stopLocalVectorTileServer() {
   }
 }
 
-function stopGraphhopperServer()
-{
+function stopGraphhopperServer() {
   console.log("stopGraphhopperServer graphhopper=" + graphhopper);
   var mapLayer = require('./map.js');
   mapLayer.clearLayers();
@@ -275,8 +280,7 @@ var download = function(url, dest, cb) {
 };
 
 // Deletes the graph data file from the provided directory.
-function deletegraph(dir)
-{
+function deletegraph(dir) {
   if (graphhopperServerHasExited)
   { console.log('Deleting graph in ' + dir);
     fs.unlinkSync(dir + '/edges');
@@ -294,8 +298,7 @@ function deletegraph(dir)
  Display a dialog. The paramaters data and dataDivDestination are optional. 
  They specfiy text, which is to be put into a nav in the html template file.
  */
-function showDialog( htmltemplate, height, width, data , dataNavDestination)
-{
+function showDialog( htmltemplate, height, width, data , dataNavDestination) {
     var opt = {resizable: false, show: true, height: height, width: width, focus: true};
     gui.Window.open(htmltemplate, opt, function(dialogWindow) {
         var document = dialogWindow.window.document;
@@ -321,8 +324,7 @@ function showDialog( htmltemplate, height, width, data , dataNavDestination)
 }
 
 // Here we define the functionality for the graphhopper webkit application
-function webkitapp(win)
-{
+function webkitapp(win) {
     gui.App.clearCache();
     runningUnderNW = true;
     var os = global.require('os');
@@ -547,14 +549,12 @@ function webkitapp(win)
     });
 }
 
-var showHtmlNotification = function (icon, title, body, callback, timeout) 
-{
+var showHtmlNotification = function (icon, title, body, callback, timeout) {
     var notif = showNotification(icon, title, body);
     setTimeout(function () {
       notif.close();
     }, timeout);
 };
-
 
 var writeLog = function (msg) {
   var logElement = $("#output");
@@ -619,4 +619,3 @@ catch (err)
 }
 
 module.exports.runningUnderNW = runningUnderNW;
-
