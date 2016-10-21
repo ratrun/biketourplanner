@@ -303,14 +303,15 @@ function showDialog( htmltemplate, height, width, data , dataNavDestination)
               if (data !== undefined)
                   document.getElementById(dataNavDestination).innerHTML =  data;
               dialogWindow.focus();
-              // open link in default browser
+              // open contained links in a second big window
               $(document).find('a').bind('click', function (e) {
-                e.preventDefault();
-                gui.Shell.openExternal(this.href);
+                  var linkopt = {resizable: false, show: true, height: win.height-100, width: 1000, focus: true};
+                  e.preventDefault();
+                  gui.Window.open(this.href, linkopt);
               });
             });
         dialogWindow.on('close', function() {
-               dialogWindow.close(true);
+           dialogWindow.close(true);
         });
         // Close open child dialog windows automatically with the close of main application:
         win.on('close', function() {
@@ -478,7 +479,7 @@ function webkitapp(win)
 
     helpSubMenu.append(new gui.MenuItem({ label: 'About' ,
         click: function() {
-                            showDialog("about.html", 270, 450);
+                            showDialog("about.html", 300, 450);
                           }
     }));
 
