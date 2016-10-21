@@ -283,7 +283,7 @@ function mainInit() {
     $(window).resize(function () {
         mapLayer.adjustMapSize();
     });
-    if (nw !== undefined) {
+    if (menu.runningUnderNW) {
         nw.Window.get().on('close', function(){
             // Save eventually altered trip data
             localStorage['tripData'] = JSON.stringify($('#tripTree').jstree(true).get_json('#', { 'flat': true }));
@@ -1009,7 +1009,7 @@ $( function() {
 });
 
 function saveghResponses (response, id, callback) {
-    if (nw !== undefined) {
+    if (menu.runningUnderNW) {
         // c:\Users\User\AppData\Local\BikeTourPlaner\User Data\Default\graphhopperResponses\
         //  on Linux it is here: /home/username/.config/YourAppName/graphhopperResponses.
         var path = require('path');
@@ -1028,7 +1028,7 @@ function saveghResponses (response, id, callback) {
 }
 
 function handleTrip(data) {
-    if (nw !== undefined) {
+    if (menu.runningUnderNW) {
         var absolutFileName = getGhResponseFilePath(data.node.id);
         var fs = global.require('fs');
         fs.readFile(absolutFileName, (err, fdata) => {
