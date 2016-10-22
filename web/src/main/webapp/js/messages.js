@@ -39,4 +39,4 @@ module.exports.getSignName = function (sign) {
         throw "did not find sign " + sign;
 };
 
-module.exports.browserTitle = "Biketourplaner";
+module.exports.browserTitle = "Biketourplanner";

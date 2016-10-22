@@ -138,12 +138,16 @@ function startGraphhopperServer(win) {
 
     graphhopper.stdout.on('data', function (data) {
         console.log('graphhopper stdout: ' + data);
+        var creatingnotification;
         if (data.toString('utf-8').indexOf('start creating graph from') !==-1 )
-             showHtmlNotification("./img/mtb.png", "Creating routing data", 'Going to take a while. You may press F12 and watch the console logs for details', 15000);
+             creatingnotification = showHtmlNotification("./img/mtb.png", "Creating routing data", 'Going to take a while depending on the size. You may press F12 and watch the console logs for details', 45000);
         if (data.toString('utf-8').indexOf('Started server at HTTP :8989') !==-1 )
         {
              console.log("Routing server is ready!");
-             showHtmlNotification("./img/mtb.png", "Routing server", 'is ready...');
+             // close the otherwise long active notification for graph creation
+             if (creatingnotification)
+                 creatingnotification.close(true);
+             showHtmlNotification("./img/mtb.png", "Routing server", 'is ready...', 5000);
              main.resetServerRespondedOk();
              main.mainInit();
              if (graphopperServerStartedOnce) {
@@ -378,6 +382,7 @@ function webkitapp(win) {
                                             function(result) {
                                                showHtmlNotification("./img/mtb.png", 'Download result:', result, 6000);
                                                startLocalVectorTileServer(win);
+                                               alert("Restart the application such that the new map becomes selectable!");
                                             });
                                             $(this).dialog("close");
                                         },
@@ -580,18 +585,18 @@ var showNotification = function (icon, title, body) {
 
 function chooseFile(name) {
     var chooser = $(name);
-    chooser.attr('nwworkingdir',path.normalize('graphhopper/osmfiles/'));
     chooser.unbind('change');
     chooser.change(function(evt) {
-      if (name === '#osmFileDialog') { 
+      if (name === '#osmFileDialog') {
+        chooser.attr('nwworkingdir',path.normalize('graphhopper/osmfiles/'));
         activeOsmfile = $(this).val().split(/(\\|\/)/g).pop();
         console.log('Selected OSM file:' + activeOsmfile);
         localStorage['activeOsmfile'] = activeOsmfile;
         deletegraph(path.normalize('graphhopper/graph'));
         startGraphhopperServer(win);
       } else {
-         if(name === '#mbtilesFileDialog')
-         {
+         if(name === '#mbtilesFileDialog') {
+           chooser.attr('nwworkingdir',path.normalize('graphhopper/ratrun-mbtiles-server/'));
            var deletedFile = $(this).val();
            fileName = deletedFile.split(/(\\|\/)/g).pop();
            console.log('fileName:' + fileName);

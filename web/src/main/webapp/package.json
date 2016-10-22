@@ -1,5 +1,5 @@
 {
-  "name": "BikeTourPlaner",
+  "name": "BikeTourPlanner",
   "version": "0.1.0",
   "author": "ratrun",
   "description": "A program for offline planning of bicycle tours",
@@ -15,10 +15,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ratrun/graphhopper.git"
+    "url": "git+https://github.com/ratrun/biketourplanner.git"
   },
   "bugs": {
-    "url": "https://github.com/ratrun/graphhopper/issues"
+    "url": "https://github.com/ratrun/biketourplanner/issues"
   },  
   "dependencies": {
     "d3": "^3.5.9",

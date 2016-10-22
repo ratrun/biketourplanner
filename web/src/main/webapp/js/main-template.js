@@ -1010,7 +1010,7 @@ $( function() {
 
 function saveghResponses (response, id, callback) {
     if (menu.runningUnderNW) {
-        // c:\Users\User\AppData\Local\BikeTourPlaner\User Data\Default\graphhopperResponses\
+        // c:\Users\User\AppData\Local\BikeTourPlanner\User Data\Default\graphhopperResponses\
         //  on Linux it is here: /home/username/.config/YourAppName/graphhopperResponses.
         var path = require('path');
         var fs = global.require('fs');
