@@ -188,6 +188,8 @@ function mainInit() {
     });
 
     var urlParams = urlTools.parseUrlWithHisto();
+    // Fixme: delete the following line, which enforces English GUI
+    urlParams.locale = 'en';
     ghRequest = new GHRequest(host, ghenv.routing.api_key);
     $.when(ghRequest.fetchTranslationMap(urlParams.locale), ghRequest.getInfo())
             .then(function (arg1, arg2) {

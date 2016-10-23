@@ -167,7 +167,8 @@ module.exports.init = function (translations) {
     // 2. can be overwritten by url parameter
     defaultTranslationMap = translations["default"];
     enTranslationMap = translations.en;
-    if (!defaultTranslationMap)
+    // FIXME Allow other languages instead of English only the following line must get enabled.
+    //if (!defaultTranslationMap)
         defaultTranslationMap = enTranslationMap;
 
     i18nIsInitialized = true;

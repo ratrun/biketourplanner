@@ -1,5 +1,5 @@
 /*  Copyright (C) 2015  ratrun@gmx.at
-    The JavaScript code in this page is free software: you can
+    This JavaScript code is free software: you can
     redistribute it and/or modify it under the terms of the GNU
     General Public License (GNU GPL) as published by the Free Software
     Foundation, either version 3 of the License, or (at your option)
@@ -486,7 +486,7 @@ function webkitapp(win) {
 
     helpSubMenu.append(new gui.MenuItem({ label: 'About' ,
         click: function() {
-                            showDialog("about.html", 300, 450);
+                            showDialog("about.html", 310, 450);
                           }
     }));
 
@@ -596,7 +596,7 @@ function chooseFile(name) {
         startGraphhopperServer(win);
       } else {
          if(name === '#mbtilesFileDialog') {
-           chooser.attr('nwworkingdir',path.normalize('graphhopper/ratrun-mbtiles-server/'));
+           chooser.attr('nwworkingdir',path.normalize('ratrun-mbtiles-server/'));
            var deletedFile = $(this).val();
            fileName = deletedFile.split(/(\\|\/)/g).pop();
            console.log('fileName:' + fileName);
