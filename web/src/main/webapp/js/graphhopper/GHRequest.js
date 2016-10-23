@@ -143,8 +143,8 @@ GHRequest.prototype.initVehicle = function (vehicle) {
         $("#ABTourButton").show();
         $("#ABTourButton").css("visibility","visible");
         $("#ABTourButton").prop( "disabled", true );
-        $("#roundTourButton").show();
-        $("#roundTourButton").css("visibility","visible");
+        $("#roundTripButton").show();
+        $("#roundTripButton").css("visibility","visible");
     } else
         this.api_params.CHEnabled = true;
 

@@ -36,20 +36,19 @@ The reason is that the data comes from two separated sources.
 ## Routing features
 * Routing profiles are switchable between bicycle types commuting, mountainbike and racebike
 * OSM file download from [GeoFabric](http://download.geofabrik.de) can be started from the menu
-* Switching between regions automatically deletes the previously routing data and calculates it anew after the selection of the new OSM extract.
+* Switching between regions automatically deletes the previous routing data and calculates it anew after the selection of the new OSM extract
 * Calculation of routing data from *.pbf or *.osm OSM files. The duration for the calculation depends on the size of the OSM file. Please note that calculation of the routing data is time consuming. 
 * The region size which can be handled mainly depends on the RAM. 8 GB RAM are currently sufficient to cover the whole DACH area (Germany, Switzerland, Austria). For a German Bundesland 4 GB RAM should be sufficient.
-* Automatic download of elevation data during route data calculation. This data is cached locally. This process requires Internet connectivity in case that the cache does not contain the region. This data might become pretty big.
+* Automatic download of elevation data during route data calculation. This data is cached locally. This process requires internet connectivity in case that the cache does not contain the region. This data might become pretty big.
 * Route from A to B with optional stopover points
-* Roundtours from a starting point with a targeted distance and optional heading
+* Round-trips from a starting point with a targeted distance and optional heading
 * Display of the distance spent on way classifications
 * Display of guessed ascend. Please note that the calculated value might be quite inaccurate!
 * Tuning between fast or nice routes
-* Routing takes elevation data into account. Tuning between steep or flat routes is possible for all the bicycle types.
+* Routing takes elevation data into account. Tuning between steep or flat routes is possible for all the bicycle types
 * Alternative routes calculation
 * GPX export
 * Storing of tours and modification of stored tours
-* Display of smoothed elevation profile
 
 
 ## Bugs

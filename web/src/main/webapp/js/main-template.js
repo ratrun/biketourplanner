@@ -113,7 +113,7 @@ function mainInit() {
         $(".route_result_tab").hide();
         $("#routingSettings").hide();
         $("#ABTourButton").hide();
-        $("#roundTourButton").hide();
+        $("#roundTripButton").hide();
         
         if (ghRequest.route.isResolved())
         {
@@ -138,8 +138,8 @@ function mainInit() {
         }
     });
 
-    $( "#roundTourButton" ).click(function(e) {
-      $("#roundTourButton").prop("disabled", true);
+    $( "#roundTripButton" ).click(function(e) {
+      $("#roundTripButton").prop("disabled", true);
       $("#ABTourButton").prop("disabled", false);
       $("#roundtripcontrol").show();
       $("#roundtripcontrol").css("visibility","visible");
@@ -162,7 +162,7 @@ function mainInit() {
     });
 
     $( "#ABTourButton" ).click(function(e) {
-      $("#roundTourButton").prop("disabled", false);
+      $("#roundTripButton").prop("disabled", false);
       $("#ABTourButton").prop("disabled", true);
       $("#roundtripcontrol").hide();
       $("#roundtripdistance").hide();
@@ -496,7 +496,7 @@ function setEndCoord(e) {
 }
 
 function routeIfAllResolved(doQuery) {
-    if ((ghRequest.route.isResolved()) || (($("#roundTourButton").prop("disabled")))) {
+    if ((ghRequest.route.isResolved()) || (($("#roundTripButton").prop("disabled")))) {
         routeLatLng(ghRequest, doQuery);
         return true;
     }
@@ -552,7 +552,7 @@ function resolveTo() {
 
 function resolveIndex(index) {
     setFlag(ghRequest.route.getIndex(index), index);
-    if (!$("#roundTourButton").prop("disabled")) {
+    if (!$("#roundTripButton").prop("disabled")) {
         if (index === 0) {
             if (!ghRequest.to.isResolved())
                 mapLayer.setDisabledForMapsContextMenu('start', true);
@@ -611,7 +611,7 @@ function routeLatLng(request, doQuery) {
     mapLayer.clearLayers();
     flagAll();
 
-    if (!$("#roundTourButton").prop("disabled")) {
+    if (!$("#roundTripButton").prop("disabled")) {
         mapLayer.setDisabledForMapsContextMenu('intermediate', false);
     }
 
@@ -633,7 +633,7 @@ function handleGhResponse(json, routeResultsDiv, doZoom, request, urlForHistory)
             $("#saveTripButton").prop('disabled', true);
             var tmpErrors = json.message;
             console.log(tmpErrors);
-            var roundtripActive = !$("#roundTourButton").prop("disabled");
+            var roundtripActive = !$("#roundTripButton").prop("disabled");
             mapLayer.setDisabledForMapsContextMenu('start', false);
             mapLayer.setDisabledForMapsContextMenu('intermediate', roundtripActive);
             mapLayer.setDisabledForMapsContextMenu('end', roundtripActive);
@@ -820,7 +820,7 @@ function graphHopperSubmit() {
             else
                 inputOk = false;
         } else { 
-        if(!$("#roundTourButton").prop("disabled")) {
+        if(!$("#roundTripButton").prop("disabled")) {
                 if (index === (len - 1)) {
                 toStr = $(this).val();
                 if (toStr !== translate.tr("to_hint") && toStr !== "")
@@ -852,7 +852,7 @@ function graphHopperSubmit() {
         });
         return;
     }
-    if($("#roundTourButton").prop("disabled")) {
+    if($("#roundTripButton").prop("disabled")) {
         ghRequest.api_params.round_trip.seed = seed;
         seed ++;
         if (seed==3)
