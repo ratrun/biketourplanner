@@ -1,17 +1,20 @@
 # BikeTourPlanner
 
-BikeTourPlanner is an open source desktop application for offline planning of bicycle tours based on the [GraphHopper](https://github.com/graphhopper/graphhopper) routing engine. It allows the user to generate the routing data from [OpenStreetMap](http://www.openstreetmap.org/about) (OSM) data.
+BikeTourPlanner is an open source [nw](http://docs.nwjs.io/en/latest/) desktop application for offline planning of bicycle tours based on the [GraphHopper](https://github.com/graphhopper/graphhopper) routing engine. 
+It allows the user to generate the routing data from [OpenStreetMap](http://www.openstreetmap.org/about) (OSM) data.
 The offline maps are provided by [OSM2VectorTiles](http://osm2vectortiles.org/about) and displayed using [Leaflet](https://github.com/mapbox/mapbox-gl-js) and [mapbox-gl-js](https://github.com/mapbox/mapbox-gl-js). 
 BikeTourPlanner comes with an integrated local vector tile map server which uses [nodejs](https://nodejs.org/en/). 
 BikeTourPlanner requires an installed Java 8 runtime.
-BikeTourPlanner is a [nw](http://docs.nwjs.io/en/latest/) application. 
 The currently supported platforms are Linux and Microsoft Windows.
 
 The look and feel is similar to [GraphHopper Maps](https://graphhopper.com/maps) as most parts are identical. Here is a screen-shot of the main window:
 
 ![BikeTourPlanner](biketourplanner/doc/BikeTourPlanner_001.png)
 
-BikeTourPlanner comes with the map and OSM data of Liechtenstein. The map features and the routing features are completely separated. This means changing a region requires the user to switch the map in one step and in a second switch to also switch the covered routing area. The reason is that the data comes from two separated sources.
+BikeTourPlanner comes with the map and OSM data of Liechtenstein. 
+The map features and the routing features are completely separated. 
+This means changing a region requires the user to switch the map in one step and in a second step to seperatly switch the covered routing area. 
+The reason is that the data comes from two separated sources.
 
 ## Map features
 * Integrated download possibility for the installation of OSM2VectorTiles map extracts. 
@@ -51,3 +54,6 @@ BikeTourPlanner comes with the map and OSM data of Liechtenstein. The map featur
 
 ## Bugs
 Please report bugs on [https://github.com/ratrun/biketourplanner](https://github.com/ratrun/biketourplanner/issues)
+
+## Developer information
+Todo
