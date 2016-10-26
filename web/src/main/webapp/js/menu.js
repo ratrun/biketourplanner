@@ -7,7 +7,6 @@
     without even the implied warranty of MERCHANTABILITY or FITNESS
     FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
 */
-
 var mbtiles;
 var graphhopper;
 
@@ -15,6 +14,7 @@ var stopTileServerMenuItem;
 var startTileServerMenuItem;
 var stopGraphhopperServerMenuItem;
 var startGraphhopperServerMenuItem;
+var deleteGraphMenuItem;
 var showInstalledMapsMenuItem;
 var changeGraphMenuItem;
 var deleteMapMenuItem;
@@ -27,7 +27,7 @@ var activeOsmfile = localStorage.activeOsmfile;
 var gui;
 var main = require('./main-template.js');
 var runningUnderNW = false;
-var path = require('path');
+
 var osplatform;
 
 if (activeOsmfile === undefined)
@@ -44,13 +44,13 @@ function startLocalVectorTileServer(win) {
        detached: false
     });
     tilesServerHasExited = false;
-    console.log(exename + " started.");
+    console.log("Starting " + exename);
 
     stopTileServerMenuItem.enabled = true;
     showInstalledMapsMenuItem.enabled = true;
     startTileServerMenuItem.enabled = false;
     deleteMapMenuItem.enabled = false;
-    showHtmlNotification("./img/mtb.png", 'Tile server started !' , '', 1000);
+    showHtmlNotification("./img/mtb.png", 'Starting tile server!' , '', 1000);
 
     console.log('mbtiles started: ' + mbtiles);
 
@@ -102,7 +102,8 @@ var graphopperServerStartedOnce = false;
 
 function startGraphhopperServer(win) {
     var os = global.require('os');
-    console.log('Starting graphhopper');
+    var osmfilename = '../data/osmfiles/' + activeOsmfile;
+    console.log('Starting graphhopper with osmfilename=' + osmfilename);
     var initialpercent = 40; // Intitial percentage of heap space of total available RAM to reserve for graphhopper
     var maxpercent = 80; // Max percentage of total available RAM to reserve as max heap space for graphhopper
     var initialreserved = Math.trunc((os.totalmem() * (initialpercent/100))/(1024*1000));
@@ -120,8 +121,8 @@ function startGraphhopperServer(win) {
                        'jetty.resourcebase=../', 
                        'jetty.port=8989', 
                        'config=config.properties', 
-                       'datareader.file=osmfiles/' + activeOsmfile, 
-                       'graph.location=graph'], {
+                       'datareader.file=' + osmfilename, 
+                       'graph.location=../data/graphs/' + activeOsmfile], {
        cwd: 'graphhopper',
        detached: false
     });
@@ -285,14 +286,15 @@ var download = function(url, dest, cb) {
 
 // Deletes the graph data file from the provided directory.
 function deletegraph(dir) {
-  if (graphhopperServerHasExited)
-  { console.log('Deleting graph in ' + dir);
+  if (dir !== path.normalize('data/graphs/liechtenstein-latest.osm.pbf')) { 
+    console.log('Deleting graph ' + dir);
     fs.unlinkSync(dir + '/edges');
     fs.unlinkSync(dir + '/geometry');
     fs.unlinkSync(dir + '/location_index');
     fs.unlinkSync(dir + '/names');
     fs.unlinkSync(dir + '/properties');
     fs.unlinkSync(dir + '/nodes');
+    fs.rmdirSync(dir);
   }
   else
       alert("Cannot delete routing data as graphhopper server is still running!");
@@ -336,7 +338,7 @@ function webkitapp(win) {
     console.log("System:" + osplatform + " nwjs version:" + gui.process.versions['node-webkit']);
     var menu = new gui.Menu({type: "menubar"});
     fs = global.require('fs');
-    var activeOSMfilePath = path.normalize('graphhopper/osmfiles/' + activeOsmfile);
+    var activeOSMfilePath = path.normalize('data/osmfiles/' + activeOsmfile);
     console.log("Checking "+ activeOSMfilePath);
     if (!fs.existsSync(activeOSMfilePath)) 
     {
@@ -347,7 +349,6 @@ function webkitapp(win) {
     // Create a sub-menu
     var mapSubMenu = new gui.Menu();
     var separator = new gui.MenuItem({ type: 'separator' , enabled : false });
-    // FIXME or delete: alert does not work in case the list gets long, we need a special dialog. But this seems too expensive
     showInstalledMapsMenuItem = new gui.MenuItem({ label: 'Show installed maps', enabled : tilesServerHasExited,
         click: function() { 
                              $.getJSON("http://127.0.0.1:3000/mbtilesareas.json", function( data ) {
@@ -444,19 +445,15 @@ function webkitapp(win) {
                              this.enabled = false;
                           }
     });
-    //graphhopperSubMenu.append(new gui.MenuItem({ label: 'Change active graph: Fixme' ,  enabled : false} ));
-    //graphhopperSubMenu.append(separator);
-    //graphhopperSubMenu.append(new gui.MenuItem({ label: 'Change graph settings', enabled : false })); // ?? Needed ??
     graphhopperSubMenu.append(new gui.MenuItem({ label: 'Download OSM file',
 
         click: function() {
-            var r = window.confirm("Confirm to open a window for downloading of an OSM pbf file.\nPlease store the file to the " + gui.process.cwd() + path.normalize('graphhopper/osmfiles/') + "folder.");
+            var r = window.confirm("Confirm to open a window for downloading of an OSM pbf file.\nPlease store the file to the " + path.join(gui.process.cwd(), 'data/osmfiles') + "folder.");
             if (r)
                 myWindow = gui.Window.open("http://download.geofabrik.de", {  position: 'center',  width: 1200,  height: 850 });
         }
     }));
-
-    changeGraphMenuItem = new gui.MenuItem({ label: 'Select routing region', enabled : !graphhopperServerHasExited,
+    changeGraphMenuItem = new gui.MenuItem({ label: 'Change area', enabled : !graphhopperServerHasExited,
         click: function() {
                              chooseFile('#osmFileDialog');
                           }
@@ -466,6 +463,12 @@ function webkitapp(win) {
     graphhopperSubMenu.append(separator);
     graphhopperSubMenu.append(stopGraphhopperServerMenuItem);
     graphhopperSubMenu.append(startGraphhopperServerMenuItem);
+    deleteGraphMenuItem = new gui.MenuItem({ label: 'Delete routing data', enabled : tilesServerHasExited,
+        click: function() {
+            chooseFile('#deleteGraphDialog');
+        }
+    });
+    graphhopperSubMenu.append(deleteGraphMenuItem);
 
     menu.append(
         new gui.MenuItem({
@@ -585,18 +588,20 @@ var showNotification = function (icon, title, body) {
 
 function chooseFile(name) {
     var chooser = $(name);
+    if (name === '#deleteGraphDialog') {
+        graphpath = path.resolve('data/graphs/liechtenstein-latest.osm.pbf');
+        alert("chooseFile graphpath = " + graphpath);
+        chooser.attr('nwworkingdir',graphpath);
+    }
     chooser.unbind('change');
     chooser.change(function(evt) {
       if (name === '#osmFileDialog') {
-        chooser.attr('nwworkingdir',path.normalize('graphhopper/osmfiles/'));
         activeOsmfile = $(this).val().split(/(\\|\/)/g).pop();
         console.log('Selected OSM file:' + activeOsmfile);
         localStorage['activeOsmfile'] = activeOsmfile;
-        deletegraph(path.normalize('graphhopper/graph'));
         startGraphhopperServer(win);
       } else {
          if(name === '#mbtilesFileDialog') {
-           chooser.attr('nwworkingdir',path.normalize('ratrun-mbtiles-server/'));
            var deletedFile = $(this).val();
            fileName = deletedFile.split(/(\\|\/)/g).pop();
            console.log('fileName:' + fileName);
@@ -605,8 +610,12 @@ function chooseFile(name) {
              fs.unlinkSync(deletedFile);
            } else
              showHtmlNotification("./img/warning.png", "Avoid deletion of protected file!", fileName);
-         }
-      }
+         } else {
+             if (name === '#deleteGraphDialog') {
+                 deletegraph($(this).val());
+             }
+           }
+      } 
     });
     chooser.trigger('click');
 }
@@ -615,6 +624,7 @@ function chooseFile(name) {
 try {
   gui = nw;
   var win = gui.Window.get();
+  path = global.require('path');
   //win.showDevTools();
   webkitapp(win);
 }

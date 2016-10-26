@@ -970,7 +970,7 @@ if (tripData === null)
 }
 
 function getGhResponseFilePath(id) {
-    var path = require('path');
+    var path = global.require('path');
     return path.join(nw.App.dataPath, path.normalize('graphhopperResponses/' + 'gh' + id + '.json'));
 }
 
@@ -1014,7 +1014,7 @@ function saveghResponses (response, id, callback) {
     if (menu.runningUnderNW) {
         // c:\Users\User\AppData\Local\BikeTourPlanner\User Data\Default\graphhopperResponses\
         //  on Linux it is here: /home/username/.config/YourAppName/graphhopperResponses.
-        var path = require('path');
+        var path = global.require('path');
         var fs = global.require('fs');
         var filePath = path.join(nw.App.dataPath,'graphhopperResponses');
         fs.mkdir(filePath);
