@@ -151,9 +151,25 @@
         <div id="map">
             <nav id="layer_menu"></nav>
         </div>
+        <div id="dialogGraphSelect" class="hidden" title="Select routing data">
+        <p><span style="float:left; margin:12px 12px 20px 0;"></span>
+            <div id="graphTree"></div>
+        </p>
+        </div>
+        <div id="dialogDownLoadOSM" class="hidden" title="Instructions for the download of OSM files">
+            <p><span style="float:left; margin:12px 12px 20px 0;"></span> 
+                You now get directed to the best place for downloading of OSM extracts, which is <a href="http://www.geofabrik.de">Geofabrik</a> <br>
+                <div id="OSMDownLoadText"></div> <br>
+                After the download has finished, the new file should show up in the <em>Calculate new routing graph</em> submenue from the <em>Routing</em> menu.
+            </p>
+        </div>
+        <div id="infoDialog" class="hidden" title="Information">
+          <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>
+              <div id="infoDialogText"></div>
+          </p>
+        </div>
         <pre id='layerfeatures'></pre>
         <input style="display:none;" id="osmFileDialog" type="file" nwworkingdir="data/osmfiles" accept=".pbf,.osm"/>
         <input style="display:none;" id="mbtilesFileDialog" type="file" nwworkingdir="data/mbtiles" accept=".mbtiles"/>
-        <input style="display:none;" id="deleteGraphDialog" type="file" nwdirectory nwworkingdir="data/graphs">
     </body>
 </html>

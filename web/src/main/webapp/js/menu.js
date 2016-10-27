@@ -132,6 +132,7 @@ function startGraphhopperServer(win) {
     stopGraphhopperServerMenuItem.enabled = true;
     changeGraphMenuItem.enabled = false;
     startGraphhopperServerMenuItem.enabled = false;
+    calculateGraphMenuItem.enabled = false;
 
     graphhopper.on('error', function (err) {
       console.log('graphhopper error' + err);
@@ -180,6 +181,7 @@ function startGraphhopperServer(win) {
           stopGraphhopperServerMenuItem.enabled = false;
           changeGraphMenuItem.enabled = true;
           startGraphhopperServerMenuItem.enabled = true;
+          calculateGraphMenuItem.enabled = true;
         }
     });
 
@@ -227,7 +229,7 @@ function stopLocalVectorTileServer() {
    }
    else { // Call special shutdown URL
       $.getJSON("http://127.0.0.1:3000/4cede326-7166-4cbd-994f-699c6dc271e9", function( data ) {
-                             console.log("Tile server stop response was" + data);
+            console.log("Tile server stop response was" + data);
       });
       stopTileServerMenuItem.enabled = false;
       showInstalledMapsMenuItem.enabled = false;
@@ -243,8 +245,8 @@ function stopGraphhopperServer() {
   mapLayer.clearLayers();
   if (!graphhopperServerHasExited) {   // Inform the graphhopper server to close
       if (graphhopper !==undefined) {
-          var res = graphhopper.kill('SIGTERM');
-          console.log("graphhopper kill SIGTERM returned:" + res);
+        var res = graphhopper.kill('SIGTERM');
+        console.log("graphhopper kill SIGTERM returned:" + res);
       }
   }
 }
@@ -300,6 +302,12 @@ function deletegraph(dir) {
       alert("Cannot delete routing data as graphhopper server is still running!");
 };
 
+// Changes the active routing graph to the graph located in the subdirectory under osm/graphs/relativeFolder
+function changeActiveRoutingGraph(relativeFolder){
+    activeOsmfile = relativeFolder;
+    startGraphhopperServer(win);
+}
+
 /*
  Display a dialog. The paramaters data and dataDivDestination are optional. 
  They specfiy text, which is to be put into a nav in the html template file.
@@ -326,6 +334,87 @@ function showDialog( htmltemplate, height, width, data , dataNavDestination) {
         win.on('close', function() {
            dialogWindow.close(true);
         });
+    });
+}
+
+// Dialog for the selection of an routing graph subdirectory
+// Parameters: 
+//   buttonText (string): Specifies the text for the OK button
+//   absolutepath (booloean): Specifies if the callback folder parameter expects an absolute or a relative path
+//   calbback: The callback function to be executed when the user presses OK.
+function graphFolderSelectionDialogWithCallback(buttonText, absolutpath, callback) {
+    var $tree = $('#graphTree');
+    $tree.jstree().destroy();
+    $(function() {
+        $tree.jstree({
+           "plugins" : [ "themes", "contextmenu", "dnd", "state", "types" ],
+           'core' : {
+              "check_callback" : true
+           }});
+        $tree.on("select_node.jstree",
+            function(evt, data) {
+                console.log("graphTree data=" + data);
+        });
+    });
+    var graphDir = path.join(gui.process.cwd(), 'data/graphs');
+    fs.readdir(graphDir, function (err, files) {
+      if (err) throw err;
+      id = 1;
+      var root= {"id" : id, "text" : "data/graphs", 'type': 'folder'};
+      $tree.jstree().create_node("#" ,  root, "last");
+      id++;
+      files.forEach(function(value){
+          var abspath = path.join(graphDir, value);
+          if (fs.statSync(abspath).isDirectory()) {
+              $tree.jstree().create_node(root ,  {"id" : id, "text" : value, 'type': 'folder'}, "last");
+              console.log("graph " + abspath + " has id=" + id);
+              id++;
+          }
+      });
+      if (id>2) {
+          $tree.jstree("open_all");
+          $( "#dialogGraphSelect" ).dialog({
+              resizable: false,
+              height: "auto",
+              width: 400,
+              modal: true,
+              buttons: {
+                "Ok": function() {
+                    var currentNode = $tree.jstree("get_selected");
+                    var path;
+                    if (absolutpath)
+                      path = path.join(graphDir, $tree.jstree(true).get_node(currentNode).text);
+                    else
+                      path = $tree.jstree(true).get_node(currentNode).text;
+                    callback(path);
+                  $( this ).dialog( "close" );
+                },
+                Cancel: function() {
+                  $( this ).dialog( "close" );
+                }
+              }
+            });
+            // Give an ID attribute to the 'Ok' Button.
+            $('.ui-dialog-buttonpane button:contains(Ok)').attr("id", "dialog-confirm_ok-button");
+            // Change text of 'Ok' button to buttonText.
+            $('#dialog-confirm_ok-button').html(buttonText);
+            } else {
+                $( function() {
+                    var text= $("#infoDialogText");
+                    text.html("No graph folder found!");
+                    $( "#infoDialog" ).dialog({
+                      resizable: false,
+                      height: "auto",
+                      width: 400,
+                      modal: true,
+                      buttons: {
+                        Cancel: function() {
+                          $( this ).dialog( "close" );
+                        }
+                      }
+                    });
+                });
+            }
     });
 }
 
@@ -446,26 +535,46 @@ function webkitapp(win) {
                           }
     });
     graphhopperSubMenu.append(new gui.MenuItem({ label: 'Download OSM file',
-
         click: function() {
-            var r = window.confirm("Confirm to open a window for downloading of an OSM pbf file.\nPlease store the file to the " + path.join(gui.process.cwd(), 'data/osmfiles') + "folder.");
-            if (r)
-                myWindow = gui.Window.open("http://download.geofabrik.de", {  position: 'center',  width: 1200,  height: 850 });
+                var text = $("#OSMDownLoadText");
+                text.html("Please manually download the extract to your " + path.join(gui.process.cwd(), 'data/osmfiles') + "folder!");
+
+                $("#dialogDownLoadOSM" ).dialog({
+                  resizable: false,
+                  height: "auto",
+                  width: win.width-200,
+                  modal: true,
+                  buttons: {
+                    "Start download": function() {
+                      myWindow = gui.Window.open("http://download.geofabrik.de", {  position: 'center',  width: 1200,  height: 850 });
+                      $( this ).dialog( "close" );
+                    },
+                    Cancel: function() {
+                      $( this ).dialog( "close" );
+                    }
+                  }
+                });
         }
     }));
-    changeGraphMenuItem = new gui.MenuItem({ label: 'Change area', enabled : !graphhopperServerHasExited,
+    changeGraphMenuItem = new gui.MenuItem({ label: 'Change routing graph', enabled : !graphhopperServerHasExited,
+        click: function() {
+                             graphFolderSelectionDialogWithCallback("Change routing graph", false, changeActiveRoutingGraph);
+                          }
+    });
+    graphhopperSubMenu.append(changeGraphMenuItem);
+    calculateGraphMenuItem = new gui.MenuItem({ label: 'Calculate new routing graph', enabled : !graphhopperServerHasExited,
         click: function() {
                              chooseFile('#osmFileDialog');
                           }
     });
-    graphhopperSubMenu.append(changeGraphMenuItem);
+    graphhopperSubMenu.append(calculateGraphMenuItem);
 
     graphhopperSubMenu.append(separator);
     graphhopperSubMenu.append(stopGraphhopperServerMenuItem);
     graphhopperSubMenu.append(startGraphhopperServerMenuItem);
     deleteGraphMenuItem = new gui.MenuItem({ label: 'Delete routing data', enabled : tilesServerHasExited,
         click: function() {
-            chooseFile('#deleteGraphDialog');
+                graphFolderSelectionDialogWithCallback("Delete routing data", true, deletegraph);
         }
     });
     graphhopperSubMenu.append(deleteGraphMenuItem);
@@ -553,6 +662,7 @@ function webkitapp(win) {
             stopGraphhopperServerMenuItem.enabled = true;
             changeGraphMenuItem.enabled = false;
             startGraphhopperServerMenuItem.enabled = false;
+            calculateGraphMenuItem.enabled = false;
         }
     });
 }
@@ -588,11 +698,6 @@ var showNotification = function (icon, title, body) {
 
 function chooseFile(name) {
     var chooser = $(name);
-    if (name === '#deleteGraphDialog') {
-        graphpath = path.resolve('data/graphs/liechtenstein-latest.osm.pbf');
-        alert("chooseFile graphpath = " + graphpath);
-        chooser.attr('nwworkingdir',graphpath);
-    }
     chooser.unbind('change');
     chooser.change(function(evt) {
       if (name === '#osmFileDialog') {
@@ -610,11 +715,7 @@ function chooseFile(name) {
              fs.unlinkSync(deletedFile);
            } else
              showHtmlNotification("./img/warning.png", "Avoid deletion of protected file!", fileName);
-         } else {
-             if (name === '#deleteGraphDialog') {
-                 deletegraph($(this).val());
-             }
-           }
+         }
       } 
     });
     chooser.trigger('click');

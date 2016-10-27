@@ -120,9 +120,7 @@ function mainInit() {
             var $tree = $('#tripTree');
             last_id += 1;
 
-            $tree.jstree().create_node('#' ,  { "id" : last_id, "text" : "Tour " + last_id, "data" : {"historyURL": ghRequest.createHistoryURL(), "route": ghRequest.route}}, "last", function(){
-                console.log("Trip added for ghRequest URL=" + ghRequest.createHistoryURL());
-            });
+            $tree.jstree().create_node("#" ,  { "id" : last_id, "text" : "Tour " + last_id, "data" : {"historyURL": ghRequest.createHistoryURL(), "route": ghRequest.route}}, "last");
 
             localStorage['tripData'] = JSON.stringify($tree.jstree(true).get_json('#', { 'flat': true }));
             localStorage['last_id'] = last_id;
@@ -868,9 +866,9 @@ function graphHopperSubmit() {
 }
 
 function tripSubmit() {
-    var CurrentNode = $("#tripTree").jstree("get_selected");
-    if ($('#tripTree').jstree(true).get_node(CurrentNode).data) {
-        var historyURL = $('#tripTree').jstree(true).get_node(CurrentNode).data.historyURL;
+    var currentNode = $("#tripTree").jstree("get_selected");
+    if ($('#tripTree').jstree(true).get_node(currentNode).data) {
+        var historyURL = $('#tripTree').jstree(true).get_node(currentNode).data.historyURL;
         if (historyURL) {
            $("#tripDiv").hide();
            $("#routingSettings").show();
