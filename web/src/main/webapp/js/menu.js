@@ -44,7 +44,6 @@ function startLocalVectorTileServer(win) {
        detached: false
     });
     tilesServerHasExited = false;
-    console.log("Starting " + exename);
 
     stopTileServerMenuItem.enabled = true;
     showInstalledMapsMenuItem.enabled = true;
