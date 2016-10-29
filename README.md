@@ -77,7 +77,7 @@ Report bugs on [https://github.com/ratrun/biketourplanner](https://github.com/ra
 The BikeTourPlanner [nw](http://docs.nwjs.io/en/latest/) application root is located under [web\src\main\webapp\package.json](web\src\main\webapp\package.json).
 The GraphHopper graphhopper-web-x.y-SNAPSHOT-with-dep.jar file checked in under [web\src\main\webapp\graphhopper](web\src\main\webapp\graphhopper) is the result of the Graphhopper Web NetBeans project. This file may be built built from the contained modified GraphHopper source file and checked in to git under web\src\main\webapp\graphhopper (web\src\main\webapp\graphhopper\graphhopper-web-x.y-SNAPSHOT-with-dep.jar). The documentation for the graphopper build process is located under [docs\core\quickstart-from-source.md](docs\core\quickstart-from-source.md).
 The vector tile server is located at [web\src\main\webapp\ratrun-mbtiles-server](web\src\main\webapp\ratrun-mbtiles-server) is a git submodul.
-Development requires installed [nodejs](https://nodejs.org/en/).
+Development requires installed [nodejs](https://nodejs.org/en/). Installation is performed with `npm install -g nw --nwjs_build_type=sdk`
 
 After git clone, the command `npm install` needs to be executed in the following folders:
 
