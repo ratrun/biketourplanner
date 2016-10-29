@@ -1005,6 +1005,19 @@ $( function() {
      mapLayer.setDisabledForMapsContextMenu('start', id==="tripDiv");
      mapLayer.setDisabledForMapsContextMenu('intermediate', true);
      mapLayer.setDisabledForMapsContextMenu('end', id==="tripDiv");
+     if (id==="tripDiv") {
+        $("#tripDiv").show();
+        $(".route_result_tab").hide();
+        $("#routingSettings").hide();
+        $("#ABTourButton").hide();
+        $("#roundTripButton").hide();
+     } else {
+           $("#tripDiv").hide();
+           $(".route_result_tab").show();
+           $("#routingSettings").show();
+           $("#ABTourButton").show();
+           $("#roundTripButton").show();
+     }
    }});
 });
 
