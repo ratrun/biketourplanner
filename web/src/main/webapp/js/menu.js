@@ -14,6 +14,7 @@ var stopTileServerMenuItem;
 var startTileServerMenuItem;
 var stopGraphhopperServerMenuItem;
 var startGraphhopperServerMenuItem;
+var calculateGraphMenuItem;
 var deleteGraphMenuItem;
 var showInstalledMapsMenuItem;
 var changeGraphMenuItem;
@@ -101,14 +102,23 @@ var graphopperServerStartedOnce = false;
 
 function startGraphhopperServer(win) {
     var os = global.require('os');
-    var osmfilename = '../data/osmfiles/' + activeOsmfile;
-    console.log('Starting graphhopper with osmfilename=' + osmfilename);
+    var graphpath = path.join('data/graphs',  activeOsmfile);
+    console.log("Checking for " + graphpath);
+    if (!fs.existsSync(graphpath)) { // We don not have a pre-calculated graph
+       var osmfilepath = path.join('data/osmfiles', activeOsmfile);
+       if (!fs.existsSync(osmfilepath)) {
+         activeOsmfile = 'liechtenstein-latest.osm.pbf';
+         osmfilepath = path.join('data/osmfiles', activeOsmfile);
+         infoDialog( activeOsmfile + " not found and no graph available. <br> Now switching to " + activeOsmfile + "!");
+         localStorage['activeOsmfile'] = activeOsmfile;
+       }
+    }
+    console.log('Starting graphhopper with graph path=' + graphpath + ' and osmfilepath=' + osmfilepath);
     var initialpercent = 40; // Intitial percentage of heap space of total available RAM to reserve for graphhopper
     var maxpercent = 80; // Max percentage of total available RAM to reserve as max heap space for graphhopper
     var initialreserved = Math.trunc((os.totalmem() * (initialpercent/100))/(1024*1000));
     var maxreserved = Math.trunc((os.totalmem() * (maxpercent/100))/(1024*1000));
     console.log('Installed RAM:' + os.totalmem() + ' Bytes. Initial heap ' + initialpercent + '%=' + initialreserved + 'MB, max heap ' + maxpercent + '%=' +  maxreserved +'MB');
-    // On Windows only ???
     var exec = global.require('child_process').spawn;
     var exename = "java.exe";
     if (osplatform === "linux")
@@ -120,8 +130,8 @@ function startGraphhopperServer(win) {
                        'jetty.resourcebase=../', 
                        'jetty.port=8989', 
                        'config=config.properties', 
-                       'datareader.file=' + osmfilename, 
-                       'graph.location=../data/graphs/' + activeOsmfile], {
+                       'datareader.file=' + '../' + osmfilepath, 
+                       'graph.location=../' + graphpath], {
        cwd: 'graphhopper',
        detached: false
     });
@@ -141,18 +151,22 @@ function startGraphhopperServer(win) {
         console.log('graphhopper stdout: ' + data);
         var creatingnotification;
         if (data.toString('utf-8').indexOf('start creating graph from') !==-1 )
-             creatingnotification = showHtmlNotification("./img/mtb.png", "Creating routing data", 'Going to take a while depending on the size. You may press F12 and watch the console logs for details', 45000);
+             creatingnotification = showHtmlNotification("./img/mtb.png", 
+                                                         "Creating routing data", 
+                                                         "Going to take a while depending on the area size. Press F12 to watch the console logs for details", 
+                                                         45000);
         if (data.toString('utf-8').indexOf('Started server at HTTP :8989') !==-1 )
         {
              console.log("Routing server is ready!");
-             // close the otherwise long active notification for graph creation
+             // Close the otherwise long active notification for graph creation
              if (creatingnotification)
                  creatingnotification.close(true);
              showHtmlNotification("./img/mtb.png", "Routing server", 'is ready...', 5000);
              main.resetServerRespondedOk();
              main.mainInit();
              if (graphopperServerStartedOnce) {
-                 //FIXME: Windows specific workaround: understand why the "$.when(ghRequest.fetchTranslationMap(urlParams.locale), ghRequest.getInfo())" runs into a timeout after a re-start of the graphhopper server and needs some time.
+                 //FIXME: Windows specific workaround: understand why the "$.when(ghRequest.fetchTranslationMap(urlParams.locale), ghRequest.getInfo())"
+                 // runs into a timeout after a re-start of the graphhopper server and needs some time.
                  for(var i=0; i<10; i++) {
                      setTimeout(function() {
                          //FIXME: Here we simply run it once again and now $.when(ghRequest.fetchTranslationMap(urlParams.locale), ghRequest.getInfo())" works!!!, but no idea why.!
@@ -193,15 +207,12 @@ function startGraphhopperServer(win) {
 
     win.on('close', function() {
         this.hide(); // Pretend to be closed already
-        console.log("win.on close tilesServerHasExited=" + tilesServerHasExited + " ,graphhopperServerHasExited="+ graphhopperServerHasExited);
+        console.log("win.on close tilesServerHasExited=" + tilesServerHasExited + " ,graphhopperServerHasExited=" + graphhopperServerHasExited);
         shutdownapp = true;
-        if ((tilesServerHasExited) && (graphhopperServerHasExited))
-        {
+        if ((tilesServerHasExited) && (graphhopperServerHasExited)) {
             console.log("close2");
             this.close(true);
-        }
-        else
-        {
+        } else {
            if (!tilesServerHasExited)
               stopLocalVectorTileServer();
            if (!graphhopperServerHasExited)
@@ -225,8 +236,7 @@ function stopLocalVectorTileServer() {
           var res = mbtiles.kill('SIGTERM');
           console.log("mbtiles kill SIGTERM returned:" + res);
       }
-   }
-   else { // Call special shutdown URL
+   } else { // Call special shutdown URL
       $.getJSON("http://127.0.0.1:3000/4cede326-7166-4cbd-994f-699c6dc271e9", function( data ) {
             console.log("Tile server stop response was" + data);
       });
@@ -285,9 +295,8 @@ var download = function(url, dest, cb) {
     });
 };
 
-// Deletes the graph data file from the provided directory.
+// Deletes the graphhopper graph data located in the provided directory.
 function deletegraph(dir) {
-  if (dir !== path.normalize('data/graphs/liechtenstein-latest.osm.pbf')) { 
     console.log('Deleting graph ' + dir);
     fs.unlinkSync(dir + '/edges');
     fs.unlinkSync(dir + '/geometry');
@@ -296,9 +305,6 @@ function deletegraph(dir) {
     fs.unlinkSync(dir + '/properties');
     fs.unlinkSync(dir + '/nodes');
     fs.rmdirSync(dir);
-  }
-  else
-      alert("Cannot delete routing data as graphhopper server is still running!");
 };
 
 // Changes the active routing graph to the graph located in the subdirectory under osm/graphs/relativeFolder
@@ -333,6 +339,22 @@ function showDialog( htmltemplate, height, width, data , dataNavDestination) {
         win.on('close', function() {
            dialogWindow.close(true);
         });
+    });
+}
+
+function infoDialog(message) {
+    var text= $("#infoDialogText");
+    text.html(message);
+    $("#infoDialog").dialog({
+      resizable: false,
+      height: "auto",
+      width: 400,
+      modal: true,
+      buttons: {
+        Ok: function() {
+          $(this).dialog( "close" );
+        }
+      }
     });
 }
 
@@ -380,16 +402,16 @@ function graphFolderSelectionDialogWithCallback(buttonText, absolutpath, callbac
               buttons: {
                 "Ok": function() {
                     var currentNode = $tree.jstree("get_selected");
-                    var path;
+                    var selectedpath;
                     if (absolutpath)
-                      path = path.join(graphDir, $tree.jstree(true).get_node(currentNode).text);
+                      selectedpath = path.join(graphDir, $tree.jstree(true).get_node(currentNode).text);
                     else
-                      path = $tree.jstree(true).get_node(currentNode).text;
-                    callback(path);
-                  $( this ).dialog( "close" );
+                      selectedpath = $tree.jstree(true).get_node(currentNode).text;
+                    callback(selectedpath);
+                  $(this).dialog( "close" );
                 },
                 Cancel: function() {
-                  $( this ).dialog( "close" );
+                  $(this).dialog( "close" );
                 }
               }
             });
@@ -399,25 +421,13 @@ function graphFolderSelectionDialogWithCallback(buttonText, absolutpath, callbac
             $('#dialog-confirm_ok-button').html(buttonText);
             } else {
                 $( function() {
-                    var text= $("#infoDialogText");
-                    text.html("No graph folder found!");
-                    $( "#infoDialog" ).dialog({
-                      resizable: false,
-                      height: "auto",
-                      width: 400,
-                      modal: true,
-                      buttons: {
-                        Cancel: function() {
-                          $( this ).dialog( "close" );
-                        }
-                      }
-                    });
+                    infoDialog("No graph folder found!");
                 });
             }
     });
 }
 
-// Here we define the functionality for the graphhopper webkit application
+// Here we define the menu functionality for the BikeTourPlanner application
 function webkitapp(win) {
     gui.App.clearCache();
     runningUnderNW = true;
@@ -426,25 +436,9 @@ function webkitapp(win) {
     console.log("System:" + osplatform + " nwjs version:" + gui.process.versions['node-webkit']);
     var menu = new gui.Menu({type: "menubar"});
     fs = global.require('fs');
-    var activeOSMfilePath = path.normalize('data/osmfiles/' + activeOsmfile);
-    console.log("Checking "+ activeOSMfilePath);
-    if (!fs.existsSync(activeOSMfilePath)) 
-    {
-       alert("OSM file " + activeOSMfilePath + " not found!");
-       localStorage.removeItem('activeOsmfile');
-    }
-    console.log("OSMFile check for " + activeOSMfilePath + " passed");
     // Create a sub-menu
     var mapSubMenu = new gui.Menu();
     var separator = new gui.MenuItem({ type: 'separator' , enabled : false });
-    showInstalledMapsMenuItem = new gui.MenuItem({ label: 'Show installed maps', enabled : tilesServerHasExited,
-        click: function() { 
-                             $.getJSON("http://127.0.0.1:3000/mbtilesareas.json", function( data ) {
-                                    showDialog("installedmaps.html", 170, 300, JSON.stringify(data).replace(/{\"country\"\:\"/g,'').replace(/\"}/g,'<br>').replace(/[\",\]\[]/g,''), 'maplist');
-                             });
-                          }
-    });
-    mapSubMenu.append(showInstalledMapsMenuItem);
     var country_extracts = global.require('./ratrun-mbtiles-server/country_extracts.json');
 
     mapSubMenu.append(new gui.MenuItem({ label: 'Download map',
@@ -471,7 +465,7 @@ function webkitapp(win) {
                                             function(result) {
                                                showHtmlNotification("./img/mtb.png", 'Download result:', result, 6000);
                                                startLocalVectorTileServer(win);
-                                               alert("Restart the application such that the new map becomes selectable!");
+                                               infoDialog("Restart the application such that the new map becomes selectable!");
                                             });
                                             $(this).dialog("close");
                                         },
@@ -491,13 +485,15 @@ function webkitapp(win) {
                             $("#map_selection_dialog").dialog('open');
                           }
     }));
-
-    deleteMapMenuItem = new gui.MenuItem({ label: 'Delete map', enabled : !tilesServerHasExited,
-        click: function() { stopLocalVectorTileServer();
-                            chooseFile('#mbtilesFileDialog');
-        }
+    showInstalledMapsMenuItem = new gui.MenuItem({ label: 'Show installed maps', enabled : tilesServerHasExited,
+        click: function() { 
+                             $.getJSON("http://127.0.0.1:3000/mbtilesareas.json", function( data ) {
+                                    showDialog("installedmaps.html", 170, 300, JSON.stringify(data).replace(/{\"country\"\:\"/g,'').replace(/\"}/g,'<br>').replace(/[\",\]\[]/g,''), 'maplist');
+                             });
+                          }
     });
-    mapSubMenu.append(deleteMapMenuItem);
+    mapSubMenu.append(showInstalledMapsMenuItem);
+
     stopTileServerMenuItem = new gui.MenuItem({ label: 'Stop tile server', enabled : tilesServerHasExited,
         click: function() { stopLocalVectorTileServer(); }
     });
@@ -510,6 +506,12 @@ function webkitapp(win) {
     mapSubMenu.append(separator);
     mapSubMenu.append(stopTileServerMenuItem);
     mapSubMenu.append(startTileServerMenuItem);
+    deleteMapMenuItem = new gui.MenuItem({ label: 'Delete map', enabled : !tilesServerHasExited,
+        click: function() { stopLocalVectorTileServer();
+                            chooseFile('#mbtilesFileDialog');
+        }
+    });
+    mapSubMenu.append(deleteMapMenuItem);
     
     menu.append(
         new gui.MenuItem({
@@ -639,13 +641,13 @@ function webkitapp(win) {
         }
     });
 
-    console.log("Starting graphhopper server handling");
+    console.log("Start graphhopper server handling");
     var request = http.get({hostname: '127.0.0.1', port: 8989}, function (res) {
     });
     
     request.setTimeout( 100, function( ) {
        if (graphhopperServerHasExited) {
-           console.log("Our Graphhopper routing server did not respond: Starting it!");
+           console.log("Our graphhopper routing server did not respond: Starting it!");
            startGraphhopperServer(win);
        } else
            console.log("Graphhopper server request timeout");

@@ -981,7 +981,7 @@ $(function() {
        }});
     $("#tripTree").on("select_node.jstree",
         function(evt, data) {
-            $( "#modifyTripButton" ).prop( "disabled", (data.node.data.historyURL === undefined) );
+            $( "#cloneChangeTripButton" ).prop( "disabled", (data.node.data.historyURL === undefined) );
             handleTrip(data);
     });
     $("#tripTree").on("delete_node.jstree", function(evt, data) {

@@ -214,7 +214,7 @@ body {
 #saveTripButton:hover {
     cursor: pointer;
 }
-#modifyTripButton {
+#cloneChangeTripButton {
     float: left;
     margin-bottom: 5px;
     margin-left: 5px;
