@@ -104,7 +104,7 @@ function startGraphhopperServer(win) {
     var os = global.require('os');
     var graphpath = path.join('data/graphs',  activeOsmfile);
     console.log("Checking for " + graphpath);
-    if (!fs.existsSync(graphpath)) { // We don not have a pre-calculated graph
+    if (!fs.existsSync(graphpath)) { // We do not have a pre-calculated graph
        var osmfilepath = path.join('data/osmfiles', activeOsmfile);
        if (!fs.existsSync(osmfilepath)) {
          activeOsmfile = 'liechtenstein-latest.osm.pbf';
@@ -310,6 +310,7 @@ function deletegraph(dir) {
 // Changes the active routing graph to the graph located in the subdirectory under osm/graphs/relativeFolder
 function changeActiveRoutingGraph(relativeFolder){
     activeOsmfile = relativeFolder;
+    localStorage['activeOsmfile'] = activeOsmfile;
     startGraphhopperServer(win);
 }
 
@@ -722,6 +723,14 @@ function chooseFile(name) {
     chooser.trigger('click');
 }
 
+function switchGraph(newActiveOsmfile) {
+   console.log('SwitchGraph triggering stop of routing server');
+   stopGraphhopperServer();
+   activeOsmfile = newActiveOsmfile;
+   localStorage['activeOsmfile'] = activeOsmfile;
+   startGraphhopperServer(win);
+}
+
 // Test if we are running under nwjs
 try {
   gui = nw;
@@ -736,3 +745,6 @@ catch (err)
 }
 
 module.exports.runningUnderNW = runningUnderNW;
+module.exports.activeOsmfile = activeOsmfile;
+module.exports.infoDialog = infoDialog; 
+module.exports.switchGraph = switchGraph;

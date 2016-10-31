@@ -192,63 +192,16 @@ defaultContextmenuItems = [{
        }
     });
 
-/*
-if (0 ===1)
-{
-    var geojsonMarkerOptions = {
-        radius: 8,
-        fillColor: "#ff7800",
-        color: "#000",
-        weight: 1,
-        opacity: 1,
-        fillOpacity: 0.8
-    };
-
-    var meta1nJson = require('../geojson/austria.json');
-    
-    var markerlayershow = false;
-    var tempMarker;
-    
-    map.on('zoomend', function() {
-         var currentZoom = map.getZoom();
-         if ((currentZoom >= 14) && (markerlayershow === false))
-         {
-             tempMarker =
-             L.geoJson(meta1nJson, {
-               pointToLayer: function (feature, latlng) {
-               return L.circleMarker(latlng, geojsonMarkerOptions);
-              }
-             });
-             tempMarker.addTo(map);
-             markerlayershow = true;
-         }
-         else
-         {
-             if ((markerlayershow) && (currentZoom < 14))
-             {
-                 map.removeLayer(tempMarker);
-                 markerlayershow = false;
-             }
-         }
-    });
-}
-*/
-
     map.on('zoomend', function() {
         var currentZoom = map.getZoom();
         var layers_menu = document.getElementById('layer_menu');
-        for (var i=0; i<layers_menu.childNodes.length; i++)
-        {
-            if (currentZoom < layers_menu.childNodes[i].minzoom)
-            {
-                if (layers_menu.childNodes[i].className !== 'disabled')
-                {
+        for (var i=0; i<layers_menu.childNodes.length; i++) {
+            if (currentZoom < layers_menu.childNodes[i].minzoom) {
+                if (layers_menu.childNodes[i].className !== 'disabled') {
                     layers_menu.childNodes[i].activeClassName = layers_menu.childNodes[i].className; // Save the current state 
                     layers_menu.childNodes[i].className = 'disabled';
                 }
-            }
-            else
-            {
+            } else {
                 layers_menu.childNodes[i].className = layers_menu.childNodes[i].activeClassName;
                 layers_menu.childNodes[i].activeClassName = layers_menu.childNodes[i].className;
             }

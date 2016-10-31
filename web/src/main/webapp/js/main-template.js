@@ -30,6 +30,8 @@ if (!host) {
     }
 }
 var seed = 0;
+var switchingGraphsActive = false;
+var switchingUrlParams;
 
 var AutoComplete = require('./autocomplete.js');
 if (ghenv.environment === 'development')
@@ -68,6 +70,45 @@ if (global.window) {
     };
 }
 
+function enableRoundTripButton(newseed, headingEnabled) {
+  $("#roundTripButton").prop("disabled", true);
+  $("#ABTourButton").prop("disabled", false);
+  $("#roundtripcontrol").show();
+  $("#roundtripcontrol").css("visibility","visible");
+  $("#roundtripdistance").show();
+  $("#roundtripdistance").css("visibility","visible");
+  $("#roundtripdistance").spinner( "value", 40 );
+  ghRequest.api_params.round_trip.distance = 1000 * $("#roundtripdistance").spinner('value');
+  $("#alternativeRoutecontrol").hide();
+  $("#useHeading").prop("checked",headingEnabled);
+  $("#1_Div").hide();
+  ghRequest.api_params.algorithm = "roundTrip";
+  for (i=1;i<=ghRequest.route.size();i++) {
+      ghRequest.route.removeSingle(i);
+  }
+  mapLayer.clearLayers();
+  mapLayer.adjustMapSize();
+  mapLayer.setDisabledForMapsContextMenu('start', false);
+  mapLayer.setDisabledForMapsContextMenu('intermediate', true);
+  mapLayer.setDisabledForMapsContextMenu('end', true);
+  seed = newseed;
+}
+
+function enableABButton() {
+  $("#roundTripButton").prop("disabled", false);
+  $("#ABTourButton").prop("disabled", true);
+  $("#roundtripcontrol").hide();
+  $("#roundtripdistance").hide();
+  $("#alternativeRoutecontrol").show();
+  $("#alternativeRoutecontrol").css("visibility","visible");
+  mapLayer.clearLayers();
+  mapLayer.adjustMapSize();
+  $("#1_Div").show();
+  ghRequest.api_params.algorithm = "";
+  mapLayer.setDisabledForMapsContextMenu('start', false);
+  mapLayer.setDisabledForMapsContextMenu('intermediate', false);
+  mapLayer.setDisabledForMapsContextMenu('end', false);    
+}
 function mainInit() {
     tileLayers.setHost("localhost");
     console.log("mainInit() called");
@@ -107,72 +148,43 @@ function mainInit() {
     if (isNaN(last_id))
         last_id = 1; // Start with 1
     
-    $( "#saveTripButton" ).click(function(e) {
+    $('#saveTripButton').click(function(e) {
         e.preventDefault();
-        $("#tripDiv").show();
-        $(".route_result_tab").hide();
-        $("#routingSettings").hide();
-        $("#ABTourButton").hide();
-        $("#roundTripButton").hide();
-        
-        if (ghRequest.route.isResolved())
-        {
+        var roundtripActive = $("#roundTripButton").prop("disabled");
+        if ( (!roundtripActive) && (ghRequest.route.isResolved()) ||
+             (roundtripActive) && (ghRequest.from.isResolved()) ) {
+            $("#tripDiv").show();
+            $(".route_result_tab").hide();
+            $("#routingSettings").hide();
+            $("#ABTourButton").hide();
+            $("#roundTripButton").hide();
             var $tree = $('#tripTree');
             last_id += 1;
 
-            $tree.jstree().create_node("#" ,  { "id" : last_id, "text" : "Tour " + last_id, "data" : {"historyURL": ghRequest.createHistoryURL(), "route": ghRequest.route}}, "last");
+            $tree.jstree().create_node("#" ,  { 
+                                       "id" : last_id, 
+                                       "text" : "Tour " + last_id, 
+                                       "data" : {"historyURL": ghRequest.createHistoryURL(),
+                                                 "route": ghRequest.route, 
+                                                 "activeOsmfile": menu.activeOsmfile
+                                                }}, 
+                                       "last");
 
             localStorage['tripData'] = JSON.stringify($tree.jstree(true).get_json('#', { 'flat': true }));
             localStorage['last_id'] = last_id;
             saveghResponses(lastghResponse, last_id, function () {
                  console.log('lastghResponse saved');
             });
-           
-            return;
         }
-        else
-        {
-            return;
-        }
+        return;
     });
 
-    $( "#roundTripButton" ).click(function(e) {
-      $("#roundTripButton").prop("disabled", true);
-      $("#ABTourButton").prop("disabled", false);
-      $("#roundtripcontrol").show();
-      $("#roundtripcontrol").css("visibility","visible");
-      $("#roundtripdistance").show();
-      $("#roundtripdistance").css("visibility","visible");
-      $("#roundtripdistance").spinner( "value", 40 );
-      ghRequest.api_params.round_trip.distance = 1000 * $("#roundtripdistance").spinner('value');
-      $("#alternativeRoutecontrol").hide();
-      $("#1_Div").hide();
-      ghRequest.api_params.algorithm = "roundTrip";
-      for (i=1;i<=ghRequest.route.size();i++){
-          ghRequest.route.removeSingle(i);
-      }
-      mapLayer.clearLayers();
-      mapLayer.adjustMapSize();
-      mapLayer.setDisabledForMapsContextMenu('start', false);
-      mapLayer.setDisabledForMapsContextMenu('intermediate', true);
-      mapLayer.setDisabledForMapsContextMenu('end', true);
-      seed = 0;
+    $("#roundTripButton").click(function(e) {
+        enableRoundTripButton(0, false);
     });
 
-    $( "#ABTourButton" ).click(function(e) {
-      $("#roundTripButton").prop("disabled", false);
-      $("#ABTourButton").prop("disabled", true);
-      $("#roundtripcontrol").hide();
-      $("#roundtripdistance").hide();
-      $("#alternativeRoutecontrol").show();
-      $("#alternativeRoutecontrol").css("visibility","visible");
-      mapLayer.clearLayers();
-      mapLayer.adjustMapSize();
-      $("#1_Div").show();
-      ghRequest.api_params.algorithm = "";
-      mapLayer.setDisabledForMapsContextMenu('start', false);
-      mapLayer.setDisabledForMapsContextMenu('intermediate', false);
-      mapLayer.setDisabledForMapsContextMenu('end', false);
+    $("#ABTourButton").click(function(e) {
+      enableABButton();
     });
 
     $("#roundtripheading").knob({
@@ -258,10 +270,15 @@ function mainInit() {
                     }
                 }
                 metaVersionInfo = messages.extractMetaVersionInfo(json);
-                mapLayer.multipleCallableInitMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, urlParams.layer, urlParams.use_miles);
-                // execute query
-                initFromParams(urlParams, true);
-
+                if (!switchingGraphsActive) {
+                    mapLayer.multipleCallableInitMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, urlParams.layer, urlParams.use_miles);
+                    // execute query
+                    initFromParams(urlParams, true);
+                } else {
+                    switchingGraphsActive = false;
+                    mapLayer.multipleCallableInitMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, switchingUrlParams.layer, switchingUrlParams.use_miles);
+                    initFromParams(switchingUrlParams, true);
+                }
                 checkInput();
             }, function (err) {
                 ghServerRespondedOk = false;
@@ -869,13 +886,25 @@ function tripSubmit() {
     var currentNode = $("#tripTree").jstree("get_selected");
     if ($('#tripTree').jstree(true).get_node(currentNode).data) {
         var historyURL = $('#tripTree').jstree(true).get_node(currentNode).data.historyURL;
+        var selectedActiveOsmfile = $('#tripTree').jstree(true).get_node(currentNode).data.activeOsmfile;
+        var urlParams = urlTools.parseUrl(historyURL);
+        console.log("urlParams=" + urlParams);
+        // Activate buttons based on urlParams.algorithm
+        (urlParams.algorithm === "roundTrip") ? enableRoundTripButton(urlParams["round_trip.seed"], true) : enableABButton();
+        if ( (historyURL) && (selectedActiveOsmfile !== undefined) && (selectedActiveOsmfile !== menu.activeOsmfile)) {
+            menu.switchGraph(selectedActiveOsmfile); // This triggers a call of mainInit when the new graph is loaded.
+            menu.infoDialog("Be patient!<br> Switching to graph " + selectedActiveOsmfile + " will take a while!");
+            switchingUrlParams = urlParams;
+            switchingGraphsActive = true;
+        }
         if (historyURL) {
            $("#tripDiv").hide();
            $("#routingSettings").show();
            $( "#tabs" ).tabs({ active: 0 });
-           var urlParams = urlTools.parseUrl(historyURL)
-           initFromParams(urlParams, true);
-           graphHopperSubmit();
+           if (!switchingGraphsActive) {
+               initFromParams(urlParams, true);
+               graphHopperSubmit();
+           }
         }
     }
 }
@@ -919,8 +948,7 @@ $(function() {
       step: 10.0,
       spin: function( event, ui ) {
         seed = 0;
-        if ($(this).spinner('value') > 0)
-        {
+        if ($(this).spinner('value') > 0) {
            ghRequest.api_params.round_trip.distance = 1000 * $(this).spinner('value');
            graphHopperSubmit();
         }
@@ -937,13 +965,10 @@ $(function() {
       step: 1.0,
       slide: function( event, ui ) {
         $( "#alternativeRoutesMaxPaths" ).val( ui.value );
-        if (ui.value > 1)
-        {
+        if (ui.value > 1) {
             ghRequest.api_params.algorithm = "alternativeRoute";
             ghRequest.api_params.alternative_route.max_paths = ui.value;
-        }
-        else
-        {
+        } else {
             ghRequest.api_params.algorithm = "";
         }
         routeLatLng(ghRequest, false);
@@ -960,8 +985,7 @@ module.exports.setFlag = setFlag;
 
 // Retrieve tour data from localStorage
 var tripData = JSON.parse(localStorage.getItem("tripData"));
-if (tripData === null)
-{
+if (tripData === null) {
     tripData = [];
     // Initialize tourData in localStorage
     localStorage['tripData'] = JSON.stringify(tripData);
@@ -1057,10 +1081,12 @@ function handleTrip(data) {
             mapLayer.setDisabledForMapsContextMenu('start', true);
             mapLayer.setDisabledForMapsContextMenu('intermediate', true);
             mapLayer.setDisabledForMapsContextMenu('end', true);
-             
-            if (data.node.data.route !==undefined) {
+
+            if (data.node.data.route !== undefined) {
                 for (i=0;i<data.node.data.route.length;i++) {
-                    mapLayer.createStaticMarker(data.node.data.route[i], i, data.node.data.route.length);
+                    var coord = data.node.data.route[i];
+                    if ((coord.lat!==undefined) && (coord.lng!==undefined))
+                        mapLayer.createStaticMarker(coord, i, data.node.data.route.length);
                 }
             }
             handleGhResponse(json, routeResultsDiv, true, ghRequest, data.node.data.historyURL);
