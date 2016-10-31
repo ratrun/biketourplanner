@@ -366,7 +366,8 @@ function infoDialog(message) {
 //   calbback: The callback function to be executed when the user presses OK.
 function graphFolderSelectionDialogWithCallback(buttonText, absolutpath, callback) {
     var $tree = $('#graphTree');
-    $tree.jstree().destroy();
+    if ($tree.jstree() !== undefined)
+       $tree.jstree().destroy();
     $(function() {
         $tree.jstree({
            "plugins" : [ "themes", "contextmenu", "dnd", "state", "types" ],
