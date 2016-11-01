@@ -890,6 +890,7 @@ function graphHopperSubmit() {
 function tripSubmit() {
     var currentNode = $("#tripTree").jstree("get_selected");
     if ($('#tripTree').jstree(true).get_node(currentNode).data) {
+        switchingUrlParams = undefined;
         var historyURL = $('#tripTree').jstree(true).get_node(currentNode).data.historyURL;
         var selectedActiveOsmfile = $('#tripTree').jstree(true).get_node(currentNode).data.activeOsmfile;
         var urlParams = urlTools.parseUrl(historyURL);

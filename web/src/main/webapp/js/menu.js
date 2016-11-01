@@ -488,7 +488,7 @@ function webkitapp(win) {
                           }
     }));
     showInstalledMapsMenuItem = new gui.MenuItem({ label: 'Show installed maps', enabled : tilesServerHasExited,
-        click: function() { 
+        click: function() {  console.log("showInstalledMaps requesting maps");
                              $.getJSON("http://127.0.0.1:3000/mbtilesareas.json", function( data ) {
                                     showDialog("installedmaps.html", 170, 300, JSON.stringify(data).replace(/{\"country\"\:\"/g,'').replace(/\"}/g,'<br>').replace(/[\",\]\[]/g,''), 'maplist');
                              });

@@ -83,7 +83,7 @@ function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selec
     // default
     var defaultLayer = tileLayers.selectLayer(selectLayer);
 
-defaultContextmenuItems = [{
+    defaultContextmenuItems = [{
         separator: true,
         index: 10
     }, {
