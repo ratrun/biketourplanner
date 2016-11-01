@@ -70,6 +70,8 @@ if (global.window) {
 }
 
 function enableRoundTripButton(newseed, headingEnabled) {
+  $("#roundTripButton").show();
+  $("#ABTourButton").show();
   $("#roundTripButton").prop("disabled", true);
   $("#ABTourButton").prop("disabled", false);
   $("#roundtripcontrol").show();
@@ -97,6 +99,8 @@ function enableRoundTripButton(newseed, headingEnabled) {
 }
 
 function enableABButton() {
+  $("#roundTripButton").show();
+  $("#ABTourButton").show();
   $("#roundTripButton").prop("disabled", false);
   $("#ABTourButton").prop("disabled", true);
   $("#roundtripcontrol").hide();
@@ -112,11 +116,12 @@ function enableABButton() {
   ghRequest.api_params.algorithm = "";
   mapLayer.setDisabledForMapsContextMenu('start', false);
   mapLayer.setDisabledForMapsContextMenu('intermediate', false);
-  mapLayer.setDisabledForMapsContextMenu('end', false);    
+  mapLayer.setDisabledForMapsContextMenu('end', false);
 }
-function mainInit() {
+function mainInit(graphopperServerStartedOnce) {
+  if (!graphopperServerStartedOnce) {
     tileLayers.setHost("localhost");
-    console.log("mainInit() called");
+    console.log("mainInit() called graphopperServerStartedOnce=" + graphopperServerStartedOnce);
     // fixing cross domain support e.g in Opera
     jQuery.support.cors = true;
 
@@ -171,7 +176,7 @@ function mainInit() {
                                        "text" : "Tour " + last_id, 
                                        "data" : {"historyURL": ghRequest.createHistoryURL(),
                                                  "route": ghRequest.route, 
-                                                 "activeOsmfile": menu.activeOsmfile
+                                                 "activeOsmfile": menu.getActiveOSMfile()
                                                 }}, 
                                        "last");
 
@@ -189,7 +194,7 @@ function mainInit() {
     });
 
     $("#ABTourButton").click(function(e) {
-      enableABButton();
+        enableABButton();
     });
 
     $("#roundtripheading").knob({
@@ -201,6 +206,7 @@ function mainInit() {
             graphHopperSubmit();
         }
     });
+  }
 
     var urlParams = urlTools.parseUrlWithHisto();
     // Fixme: delete the following line, which enforces English GUI
@@ -894,12 +900,12 @@ function tripSubmit() {
         var historyURL = $('#tripTree').jstree(true).get_node(currentNode).data.historyURL;
         var selectedActiveOsmfile = $('#tripTree').jstree(true).get_node(currentNode).data.activeOsmfile;
         var urlParams = urlTools.parseUrl(historyURL);
-        console.log("historyURL=" + historyURL);
+        console.log("tripSubmit: historyURL=" + historyURL + " selectedActiveOsmfile=" + selectedActiveOsmfile + " menu.getActiveOSMfile()=" + menu.getActiveOSMfile());
         if (historyURL) {
             $("#tripDiv").hide();
             // Activate buttons based on urlParams.algorithm
             (urlParams.algorithm === "roundTrip") ? enableRoundTripButton(urlParams["round_trip.seed"], false) : enableABButton();
-            if ((selectedActiveOsmfile !== undefined) && (selectedActiveOsmfile !== menu.activeOsmfile)) {
+            if ((selectedActiveOsmfile !== undefined) && (selectedActiveOsmfile !== menu.getActiveOSMfile())) {
                 menu.switchGraph(selectedActiveOsmfile); // This triggers a call of mainInit when the new graph is loaded.
                 menu.infoDialog("Be patient!<br> Switching to graph " + selectedActiveOsmfile + " will take a while!");
                 switchingUrlParams = urlParams;
@@ -1039,13 +1045,7 @@ $( function() {
         $("#ABTourButton").hide();
         $("#roundTripButton").hide();
      } else {
-           $("#tripDiv").hide();
-           $(".route_result_tab").show();
-           $("#routingSettings").show();
-           $("#ABTourButton").show();
-           $("#ABTourButton").prop("disabled", false);
-           $("#roundTripButton").show();
-           $("#roundTripButton").prop("disabled", true);
+        enableABButton();
      }
    }});
 });
@@ -1057,14 +1057,19 @@ function saveghResponses (response, id, callback) {
         var path = global.require('path');
         var fs = global.require('fs');
         var filePath = path.join(nw.App.dataPath,'graphhopperResponses');
-        fs.mkdir(filePath);
-        fs.writeFile(getGhResponseFilePath(id), JSON.stringify(response), function (err) {
+        fs.mkdir(filePath,function(err){
             if (err) {
-                console.log("Error attempting to save graphhopperResponse to " + filePath);
-                return;
-            } else if (callback) {
-                callback();
+               console.log(err);
             }
+            fs.writeFile(getGhResponseFilePath(id), JSON.stringify(response), function (err) {
+                if (err) {
+                    console.log("Error attempting to save graphhopperResponse to " + filePath);
+                    return;
+                } else if (callback) {
+                    callback();
+                    return;
+                }
+            });
         });
     }
 }

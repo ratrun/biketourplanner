@@ -161,21 +161,9 @@ function startGraphhopperServer(win) {
              // Close the otherwise long active notification for graph creation
              if (creatingnotification)
                  creatingnotification.close(true);
-             showHtmlNotification("./img/mtb.png", "Routing server", 'is ready...', 5000);
+             showHtmlNotification("./img/mtb.png", "Routing server", 'is ready!', 5000);
              main.resetServerRespondedOk();
-             main.mainInit();
-             if (graphopperServerStartedOnce) {
-                 //FIXME: Windows specific workaround: understand why the "$.when(ghRequest.fetchTranslationMap(urlParams.locale), ghRequest.getInfo())"
-                 // runs into a timeout after a re-start of the graphhopper server and needs some time.
-                 for(var i=0; i<10; i++) {
-                     setTimeout(function() {
-                         //FIXME: Here we simply run it once again and now $.when(ghRequest.fetchTranslationMap(urlParams.locale), ghRequest.getInfo())" works!!!, but no idea why.!
-                         console.log("Check main.ghServerRespondedOk=" + main.getghServerRespondedOk());
-                         if (!main.getghServerRespondedOk())
-                            main.mainInit();
-                     },1000 + i*1000);
-                 }
-             }
+             main.mainInit(graphopperServerStartedOnce);
              graphopperServerStartedOnce = true;
         }
     });
@@ -306,13 +294,6 @@ function deletegraph(dir) {
     fs.unlinkSync(dir + '/nodes');
     fs.rmdirSync(dir);
 };
-
-// Changes the active routing graph to the graph located in the subdirectory under osm/graphs/relativeFolder
-function changeActiveRoutingGraph(relativeFolder){
-    activeOsmfile = relativeFolder;
-    localStorage['activeOsmfile'] = activeOsmfile;
-    startGraphhopperServer(win);
-}
 
 /*
  Display a dialog. The paramaters data and dataDivDestination are optional. 
@@ -724,12 +705,19 @@ function chooseFile(name) {
     chooser.trigger('click');
 }
 
-function switchGraph(newActiveOsmfile) {
-   console.log('SwitchGraph triggering stop of routing server');
-   stopGraphhopperServer();
-   activeOsmfile = newActiveOsmfile;
-   localStorage['activeOsmfile'] = activeOsmfile;
-   startGraphhopperServer(win);
+// Change the active routing graph to the graph located in the subdirectory under osm/graphs/relativeFolder
+function changeActiveRoutingGraph(relativeFolder){
+    if (!graphhopperServerHasExited)
+       stopGraphhopperServer();
+   
+    setTimeout(function() {
+        console.log("Polling for graphhopperServerHasExited to become true, is:" + graphhopperServerHasExited);
+         if (graphhopperServerHasExited) {
+            activeOsmfile = relativeFolder;
+            localStorage['activeOsmfile'] = activeOsmfile;
+            startGraphhopperServer(win);
+         }
+    },1000);
 }
 
 // Test if we are running under nwjs
@@ -745,7 +733,11 @@ catch (err)
   console.log("We are not running under nw" + err);
 }
 
+function getActiveOSMfile() {
+    return activeOsmfile;
+}
+
 module.exports.runningUnderNW = runningUnderNW;
-module.exports.activeOsmfile = activeOsmfile;
+module.exports.getActiveOSMfile = getActiveOSMfile;
 module.exports.infoDialog = infoDialog; 
-module.exports.switchGraph = switchGraph;
+module.exports.switchGraph = changeActiveRoutingGraph;

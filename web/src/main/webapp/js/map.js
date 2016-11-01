@@ -76,7 +76,6 @@ function createBounds(bounds, useMiles) {
         }).addTo(map);
 
     routingLayer = L.geoJson().addTo(map);
-
 }
 
 function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selectLayer, useMiles) {
