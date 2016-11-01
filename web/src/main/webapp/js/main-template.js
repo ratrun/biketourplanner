@@ -30,7 +30,6 @@ if (!host) {
     }
 }
 var seed = 0;
-var switchingGraphsActive = false;
 var switchingUrlParams;
 
 var AutoComplete = require('./autocomplete.js');
@@ -82,6 +81,9 @@ function enableRoundTripButton(newseed, headingEnabled) {
   $("#alternativeRoutecontrol").hide();
   $("#useHeading").prop("checked",headingEnabled);
   $("#1_Div").hide();
+  $("#routingSettings").show();
+  $( "#tabs" ).tabs({ active: 0 });
+
   ghRequest.api_params.algorithm = "roundTrip";
   for (i=1;i<=ghRequest.route.size();i++) {
       ghRequest.route.removeSingle(i);
@@ -101,6 +103,9 @@ function enableABButton() {
   $("#roundtripdistance").hide();
   $("#alternativeRoutecontrol").show();
   $("#alternativeRoutecontrol").css("visibility","visible");
+  $("#routingSettings").hide();
+  $( "#tabs" ).tabs({ active: 0 });
+  
   mapLayer.clearLayers();
   mapLayer.adjustMapSize();
   $("#1_Div").show();
@@ -270,14 +275,14 @@ function mainInit() {
                     }
                 }
                 metaVersionInfo = messages.extractMetaVersionInfo(json);
-                if (!switchingGraphsActive) {
+                if (switchingUrlParams === undefined) {
                     mapLayer.multipleCallableInitMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, urlParams.layer, urlParams.use_miles);
                     // execute query
                     initFromParams(urlParams, true);
                 } else {
-                    switchingGraphsActive = false;
                     mapLayer.multipleCallableInitMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, switchingUrlParams.layer, switchingUrlParams.use_miles);
                     initFromParams(switchingUrlParams, true);
+                    switchingUrlParams = undefined;
                 }
                 checkInput();
             }, function (err) {
@@ -888,23 +893,20 @@ function tripSubmit() {
         var historyURL = $('#tripTree').jstree(true).get_node(currentNode).data.historyURL;
         var selectedActiveOsmfile = $('#tripTree').jstree(true).get_node(currentNode).data.activeOsmfile;
         var urlParams = urlTools.parseUrl(historyURL);
-        console.log("urlParams=" + urlParams);
-        // Activate buttons based on urlParams.algorithm
-        (urlParams.algorithm === "roundTrip") ? enableRoundTripButton(urlParams["round_trip.seed"], true) : enableABButton();
-        if ( (historyURL) && (selectedActiveOsmfile !== undefined) && (selectedActiveOsmfile !== menu.activeOsmfile)) {
-            menu.switchGraph(selectedActiveOsmfile); // This triggers a call of mainInit when the new graph is loaded.
-            menu.infoDialog("Be patient!<br> Switching to graph " + selectedActiveOsmfile + " will take a while!");
-            switchingUrlParams = urlParams;
-            switchingGraphsActive = true;
-        }
+        console.log("historyURL=" + historyURL);
         if (historyURL) {
-           $("#tripDiv").hide();
-           $("#routingSettings").show();
-           $( "#tabs" ).tabs({ active: 0 });
-           if (!switchingGraphsActive) {
+            $("#tripDiv").hide();
+            // Activate buttons based on urlParams.algorithm
+            (urlParams.algorithm === "roundTrip") ? enableRoundTripButton(urlParams["round_trip.seed"], false) : enableABButton();
+            if ((selectedActiveOsmfile !== undefined) && (selectedActiveOsmfile !== menu.activeOsmfile)) {
+                menu.switchGraph(selectedActiveOsmfile); // This triggers a call of mainInit when the new graph is loaded.
+                menu.infoDialog("Be patient!<br> Switching to graph " + selectedActiveOsmfile + " will take a while!");
+                switchingUrlParams = urlParams;
+            }
+            if (switchingUrlParams === undefined) {
                initFromParams(urlParams, true);
                graphHopperSubmit();
-           }
+            }
         }
     }
 }
@@ -1040,7 +1042,9 @@ $( function() {
            $(".route_result_tab").show();
            $("#routingSettings").show();
            $("#ABTourButton").show();
+           $("#ABTourButton").prop("disabled", false);
            $("#roundTripButton").show();
+           $("#roundTripButton").prop("disabled", true);
      }
    }});
 });
