@@ -103,7 +103,7 @@ function enableABButton() {
   $("#roundtripdistance").hide();
   $("#alternativeRoutecontrol").show();
   $("#alternativeRoutecontrol").css("visibility","visible");
-  $("#routingSettings").hide();
+  $("#routingSettings").show();
   $( "#tabs" ).tabs({ active: 0 });
   
   mapLayer.clearLayers();
