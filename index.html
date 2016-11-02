@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Biketourplanner by ratrun</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Biketourplanner</h1>
+      <h2 class="project-tagline">A nwjs application for offline planning of bicycle tours. BikeTourPlanner is OpenSource.</h2>
+      <a href="https://github.com/ratrun/biketourplanner" class="btn">View on GitHub</a>
+      <a href="https://github.com/ratrun/biketourplanner/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/ratrun/biketourplanner/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
+<a id="biketourplanner" class="anchor" href="#biketourplanner" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>BikeTourPlanner</h1>
+
+<p>BikeTourPlanner is an open source <a href="http://nwjs.io/">nw</a> desktop application for offline planning of bicycle tours based on the <a href="https://github.com/graphhopper/graphhopper">GraphHopper</a> routing engine. 
+It allows the user to generate the routing data from <a href="http://www.openstreetmap.org/about">OpenStreetMap</a> (OSM) data.
+It uses offline maps which are provided by <a href="http://osm2vectortiles.org/about">OSM2VectorTiles</a> and displayed using <a href="https://github.com/mapbox/mapbox-gl-js">Leaflet</a> and <a href="https://github.com/mapbox/mapbox-gl-js">mapbox-gl-js</a>. 
+BikeTourPlanner comes with an integrated local vector tile map server which uses <a href="https://nodejs.org/en/">nodejs</a>. 
+BikeTourPlanner requires an installed Java 8 runtime.</p>
+
+<p>The currently supported platforms are: </p>
+
+<ul>
+<li>Linux 64-bit </li>
+<li>Microsoft Windows 64-bit. </li>
+</ul>
+
+<p>Implementation of support for Mac OS X 64-bit should be possible with few changes.</p>
+
+<p>The look and feel is similar to <a href="https://graphhopper.com/maps">GraphHopper Maps</a> as most parts are identical. Here is a screen-shot of the main window:</p>
+
+<p><img src="biketourplanner/doc/BikeTourPlanner_001.png" alt="BikeTourPlanner"></p>
+
+<p>BikeTourPlanner comes with the map and OSM data of Liechtenstein. 
+The map features and the routing features are completely separated. 
+This means changing a region requires the user to switch the map in one step and in a second step to seperatly switch the covered routing area. 
+The reason is that the data comes from two separated sources.</p>
+
+<h2>
+<a id="map-features" class="anchor" href="#map-features" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Map features</h2>
+
+<ul>
+<li>Integrated download possibility for the installation of OSM2VectorTiles map extracts. </li>
+<li>Rendering of OSM bicycle route relations in four different colors, which are derived from the OSM <code>network</code> tag. Unpaved way segments show up as a dotted line</li>
+<li>Bicycle specific point of interests:
+
+<ul>
+<li>Logging with the possibility to show up OSM features</li>
+<li>Campsites with the possibility to show up OSM features</li>
+<li>Bicycle shops with the possibility to show up OSM features</li>
+<li>Alpine huts with the possibility to show up OSM features</li>
+<li>Hospitals with the possibility to show up OSM features</li>
+<li>Drinking water</li>
+<li>Supermarkets</li>
+<li>Restaurants</li>
+<li>Fast food</li>
+<li>Fuel</li>
+</ul>
+</li>
+<li>BikeTourPlanner comes with the bicycle specific rendering covering the Liechtenstein area to keep the package small.
+It is possible to replace the contained two files with two files hosted on ??? in order to extend the bicycle specific 
+rendering to world wide coverage. This download would be about 1.4GB</li>
+<li>Display of smoothed elevation profile</li>
+<li>The usage of a map containing the whole planet is possible. Its size currently (2016) is about 56GB. Please do not try to download the whole planet via the menu, but rather use a web browser for downloading it.</li>
+</ul>
+
+<h2>
+<a id="routing-features" class="anchor" href="#routing-features" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Routing features</h2>
+
+<ul>
+<li>Routing profiles are switchable between bicycle types commuting, mountainbike and racebike</li>
+<li>OSM file download from <a href="http://download.geofabrik.de">GeoFabric</a> can be started from the menu</li>
+<li>Routing data is locally stored. Switching between the covered routing regions is possible via the menu</li>
+<li>Calculation of routing data from *.pbf or *.osm OSM files. The duration for a calculation depends on the size of the OSM file and the covered area. Please note that calculation of the routing data is time consuming. </li>
+<li>The region size which can be handled mainly depends on the RAM. 8 GB RAM should currently (2016) be sufficient to cover the whole DACH area (Germany, Switzerland, Austria). For a German Bundesland 4 GB RAM should be sufficient.</li>
+<li>Automatic download of elevation data during route data calculation. This data is cached locally. This process requires internet connectivity in case that the cache does not contain the region. This data might become pretty big.</li>
+<li>Route from A to B with optional stopover points</li>
+<li>Round-trips from a starting point with a targeted distance and optional heading</li>
+<li>Display of the distance spent on way classifications</li>
+<li>Display of guessed ascend. Please note that the calculated value might be quite inaccurate!</li>
+<li>Tuning between fast or nice routes</li>
+<li>Routing takes elevation data into account. Tuning between steep or flat routes is possible for all the bicycle types</li>
+<li>Alternative routes calculation</li>
+<li>GPX export</li>
+<li>Storing of tours and modification of stored tours</li>
+</ul>
+
+<h2>
+<a id="other-features" class="anchor" href="#other-features" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Other features</h2>
+
+<ul>
+<li>The OSM files, the vector tiles, and calculated graph data reside under the data folder located relative to the intallation root folder.</li>
+<li>Searching OSM data by name and address via <a href="http://wiki.openstreetmap.org/wiki/Nominatim">Nominatim</a> is possible but requires internet connectivity.</li>
+<li>As the application uses a local web server, its URL located at http://localhost:8989 may be accessed via web browsers on the same machine. 
+In case that firewall rules allows it, this server can be accessed from other hosts with the network, but routing would require a manual change 
+of the <code>localhost</code> string in the file js\config\options.js into the local IP address.
+The application menu serves as management interface for the server.</li>
+</ul>
+
+<h2>
+<a id="limitations" class="anchor" href="#limitations" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Limitations</h2>
+
+<ul>
+<li>Altough localisation code would be available in those parts which are common to GraphHopper, the localiszation is hard-coded to English. This way mixing up of languages is avoided.</li>
+</ul>
+
+<h2>
+<a id="bugs" class="anchor" href="#bugs" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Bugs</h2>
+
+<p>Report bugs on <a href="https://github.com/ratrun/biketourplanner/issues">https://github.com/ratrun/biketourplanner</a></p>
+
+<h2>
+<a id="developer-information" class="anchor" href="#developer-information" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Developer information</h2>
+
+<p>The BikeTourPlanner <a href="http://docs.nwjs.io/en/latest/">nw</a> application root is located under <a href="websrcmainwebapppackage.json">web\src\main\webapp\package.json</a>.
+The GraphHopper graphhopper-web-x.y-SNAPSHOT-with-dep.jar file checked in under <a href="websrcmainwebappgraphhopper">web\src\main\webapp\graphhopper</a> is the result of the Graphhopper Web NetBeans project. This file may be built built from the contained modified GraphHopper source file and checked in to git under web\src\main\webapp\graphhopper (web\src\main\webapp\graphhopper\graphhopper-web-x.y-SNAPSHOT-with-dep.jar). The documentation for the graphopper build process is located under <a href="docscorequickstart-from-source.md">docs\core\quickstart-from-source.md</a>.
+The vector tile server is located at <a href="websrcmainwebappratrun-mbtiles-server">web\src\main\webapp\ratrun-mbtiles-server</a> is a git submodul.
+Development requires installed <a href="https://nodejs.org/en/">nodejs</a>. Installation is performed with <code>npm install -g nw --nwjs_build_type=sdk</code></p>
+
+<p>After git clone, the command <code>npm install</code> needs to be executed in the following folders:</p>
+
+<ul>
+<li><a href="web">web</a></li>
+<li><a href="websrcmainwebapp">web\src\main\webapp</a></li>
+<li><a href="websrcmainwebappratrun-mbtiles-server">web\src\main\webapp\ratrun-mbtiles-server</a></li>
+</ul>
+
+<p>The application is started by running <a href="http://nwjs.io/"><code>nw</code></a> from <a href="websrcmainwebapp">web\src\main\webapp</a></p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/ratrun/biketourplanner">Biketourplanner</a> is maintained by <a href="https://github.com/ratrun">ratrun</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
