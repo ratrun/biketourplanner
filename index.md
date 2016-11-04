@@ -1,6 +1,10 @@
+---
+layout: default
+---
+
 # BikeTourPlanner
 
-BikeTourPlanner is an open source [nw](http://nwjs.io/) desktop application for offline planning of bicycle tours based on the [GraphHopper](https://github.com/graphhopper/graphhopper) routing engine. 
+BikeTourPlanner is an open source [nwjs](http://nwjs.io/) desktop application for offline planning of bicycle tours based on the [GraphHopper](https://github.com/graphhopper/graphhopper) routing engine. 
 It allows the user to generate the routing data from [OpenStreetMap](http://www.openstreetmap.org/about) (OSM) data.
 It uses offline maps which are provided by [OSM2VectorTiles](http://osm2vectortiles.org/about) and displayed using [Leaflet](https://github.com/mapbox/mapbox-gl-js) and [mapbox-gl-js](https://github.com/mapbox/mapbox-gl-js). 
 BikeTourPlanner comes with an integrated local vector tile map server which uses [nodejs](https://nodejs.org/en/). 
