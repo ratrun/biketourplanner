@@ -1,7 +1,3 @@
----
-layout: default
----
-
 # BikeTourPlanner
 
 BikeTourPlanner is an open source [nwjs](http://nwjs.io/) desktop application for offline planning of bicycle tours based on the [GraphHopper](https://github.com/graphhopper/graphhopper) routing engine. 
