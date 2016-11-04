@@ -579,6 +579,11 @@ function webkitapp(win) {
                           }
     }));
 
+    helpSubMenu.append(new gui.MenuItem({ label: 'Online project page' ,
+        click: function() {
+                            showDialog("https://ratrun.github.io/BikeTourPlannerGHPages/", win.height-100, 800);
+                          }
+    }));
 
     helpSubMenu.append(new gui.MenuItem({ label: 'About' ,
         click: function() {
