@@ -88,6 +88,6 @@ After git clone, the command `npm install` needs to be executed in the following
 * [web/src/main/webapp](web/src/main/webapp)
 * [web/src/main/webapp/ratrun-mbtiles-server](web/src/main/webapp/ratrun-mbtiles-server)
 
-The application is started by running the command `nw .` from the directory `web/src/main\webapp`.
+The application is started by running the command `nw .` from the directory `web/src/main/webapp`.
 
 * To make js source code modifcations become active automatically, run `npm run watch` from the `web` directory and restart nw.
