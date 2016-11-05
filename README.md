@@ -74,18 +74,20 @@ The reason is that the data comes from two separated sources.
 Report bugs on [https://github.com/ratrun/biketourplanner](https://github.com/ratrun/biketourplanner/issues)
   
 ## Developer information
-The BikeTourPlanner [nw](http://docs.nwjs.io/en/latest/) application root is located under [web\src\main\webapp\package.json](web\src\main\webapp\package.json).
-The GraphHopper graphhopper-web-x.y-SNAPSHOT-with-dep.jar file checked in under [web\src\main\webapp\graphhopper](web\src\main\webapp\graphhopper) is the 
-result of the Graphhopper Web NetBeans project. This file may be built built from the contained modified GraphHopper source file and checked in to git 
+The BikeTourPlanner [nwjs](http://docs.nwjs.io/en/latest/) application root is located under in the directory `web/src/main/webapp`.
+The GraphHopper graphhopper-web-x.y-SNAPSHOT-with-dep.jar file checked in under `web/src/main/webapp/graphhopper` is the 
+result of the Graphhopper Web NetBeans project. This file may be built built from the contained modified GraphHopper source files and checked in to git 
 under web\src\main\webapp\graphhopper (web\src\main\webapp\graphhopper\graphhopper-web-x.y-SNAPSHOT-with-dep.jar). The documentation for the graphopper 
 build process is located under [docs\core\quickstart-from-source.md](docs\core\quickstart-from-source.md).
 The vector tile server located at [web\src\main\webapp\ratrun-mbtiles-server](web\src\main\webapp\ratrun-mbtiles-server) is a git submodul.
-Development requires an installed [nodejs](https://nodejs.org/en/) version 0.17.6. This installation may be performed by running `npm install -g nw@0.17.6-sdk`
+Development requires installed [nodejs](https://nodejs.org/en/) version 0.17.6. The installation may be performed by running `npm install -g nw@0.17.6-sdk`
 
 After git clone, the command `npm install` needs to be executed in the following folders:
 
 * [web](web)
-* [web\src\main\webapp](web\src\main\webapp)
-* [web\src\main\webapp\ratrun-mbtiles-server](web\src\main\webapp\ratrun-mbtiles-server)
+* [web/src/main/webapp](web/src/main/webapp)
+* [web/src/main/webapp/ratrun-mbtiles-server](web/src/main/webapp/ratrun-mbtiles-server)
 
-The application is started by running the command `nw .` from the directory [web\src\main\webapp](web\src\main\webapp)
+The application is started by running the command `nw .` from the directory `web/src/main\webapp`.
+
+* To make js source code modifcations become active automatically, run `npm run watch` from the `web` directory and restart nw.
