@@ -491,7 +491,7 @@ function webkitapp(win) {
     mapSubMenu.append(startTileServerMenuItem);
     deleteMapMenuItem = new gui.MenuItem({ label: 'Delete map', enabled : !tilesServerHasExited,
         click: function() { stopLocalVectorTileServer();
-                            chooseFile('#mbtilesFileDialog');
+                            chooseFile('#mbtilesFileDialog', path.join(gui.process.cwd(), 'data/mbtiles'));
         }
     });
     mapSubMenu.append(deleteMapMenuItem);
@@ -548,7 +548,7 @@ function webkitapp(win) {
     graphhopperSubMenu.append(changeGraphMenuItem);
     calculateGraphMenuItem = new gui.MenuItem({ label: 'Calculate new routing graph', enabled : !graphhopperServerHasExited,
         click: function() {
-                             chooseFile('#osmFileDialog');
+                             chooseFile('#osmFileDialog', path.join(gui.process.cwd(), 'data/osmfiles'));
                           }
     });
     graphhopperSubMenu.append(calculateGraphMenuItem);
@@ -685,8 +685,9 @@ var showNotification = function (icon, title, body) {
   return notification;
 }
 
-function chooseFile(name) {
+function chooseFile(name, defaultDir) {
     var chooser = $(name);
+    chooser.attr('nwworkingdir', defaultDir);
     chooser.unbind('change');
     chooser.change(function(evt) {
       if (name === '#osmFileDialog') {
