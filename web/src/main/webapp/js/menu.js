@@ -136,7 +136,7 @@ function startGraphhopperServer(win) {
        detached: false
     });
 
-    console.log('graphhopper started: ' + graphhopper);
+    console.log('graphhopper started!');
     graphhopperServerHasExited = false;
     stopGraphhopperServerMenuItem.enabled = true;
     changeGraphMenuItem.enabled = false;
