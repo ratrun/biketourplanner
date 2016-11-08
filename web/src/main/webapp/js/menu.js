@@ -111,6 +111,7 @@ function startGraphhopperServer(win) {
          osmfilepath = path.join('data/osmfiles', activeOsmfile);
          infoDialog( activeOsmfile + " not found and no graph available. <br> Now switching to " + activeOsmfile + "!");
          localStorage['activeOsmfile'] = activeOsmfile;
+         graphpath = path.join('data/graphs',  activeOsmfile);
        }
     }
     console.log('Starting graphhopper with graph path=' + graphpath + ' and osmfilepath=' + osmfilepath);
