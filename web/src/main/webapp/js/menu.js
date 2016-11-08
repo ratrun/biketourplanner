@@ -164,6 +164,19 @@ function startGraphhopperServer(win) {
              showHtmlNotification("./img/mtb.png", "Routing server", 'is ready!', 5000);
              main.resetServerRespondedOk();
              main.mainInit(graphopperServerStartedOnce);
+             if (graphopperServerStartedOnce) {
+                 //FIXME: Windows specific workaround: understand why the "$.when(ghRequest.fetchTranslationMap(urlParams.locale), ghRequest.getInfo())"
+                 // runs into a timeout after a re-start of the graphhopper server and needs some time.
+                 for(var i=0; i<10; i++) {
+                     setTimeout(function() {
+                         //FIXME: Here we simply run it once again and now $.when(ghRequest.fetchTranslationMap(urlParams.locale), ghRequest.getInfo())" works!!!, but no idea why.!
+                         console.log("Check main.ghServerRespondedOk=" + main.getghServerRespondedOk());
+                         if (!main.getghServerRespondedOk())
+                            main.mainInit(graphopperServerStartedOnce);
+                     },1000 + i*1000);
+                 }
+             }
+           
              graphopperServerStartedOnce = true;
         }
     });

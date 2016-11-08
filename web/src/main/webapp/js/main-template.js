@@ -121,7 +121,7 @@ function enableABButton() {
 function mainInit(graphopperServerStartedOnce) {
   if (!graphopperServerStartedOnce) {
     tileLayers.setHost("localhost");
-    console.log("mainInit() called graphopperServerStartedOnce=" + graphopperServerStartedOnce);
+    console.log("mainInit() called with graphopperServerStartedOnce=" + graphopperServerStartedOnce);
     // fixing cross domain support e.g in Opera
     jQuery.support.cors = true;
 
@@ -212,6 +212,8 @@ function mainInit(graphopperServerStartedOnce) {
     // Fixme: delete the following line, which enforces English GUI
     urlParams.locale = 'en';
     ghRequest = new GHRequest(host, ghenv.routing.api_key);
+    if ((!graphopperServerStartedOnce) && (switchingUrlParams === undefined))
+       ghRequest.initVehicle("bike");
     $.when(ghRequest.fetchTranslationMap(urlParams.locale), ghRequest.getInfo())
             .then(function (arg1, arg2) {
                 ghServerRespondedOk = true;
@@ -283,8 +285,8 @@ function mainInit(graphopperServerStartedOnce) {
                 metaVersionInfo = messages.extractMetaVersionInfo(json);
                 if (switchingUrlParams === undefined) {
                     mapLayer.multipleCallableInitMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, urlParams.layer, urlParams.use_miles);
-                    // execute query
-                    initFromParams(urlParams, true);
+                    if (!graphopperServerStartedOnce)
+                       initFromParams(urlParams, true);
                 } else {
                     mapLayer.multipleCallableInitMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, switchingUrlParams.layer, switchingUrlParams.use_miles);
                     initFromParams(switchingUrlParams, true);
@@ -363,7 +365,7 @@ module.exports.resetServerRespondedOk = resetServerRespondedOk;
 $(document).ready(function () {
     console.log("document ready");
     if (!menu.runningUnderNW)
-       mainInit();
+       mainInit(true);
 });
 
 function initFromParams(params, doQuery) {
@@ -900,6 +902,7 @@ function tripSubmit() {
         var historyURL = $('#tripTree').jstree(true).get_node(currentNode).data.historyURL;
         var selectedActiveOsmfile = $('#tripTree').jstree(true).get_node(currentNode).data.activeOsmfile;
         var urlParams = urlTools.parseUrl(historyURL);
+        ghRequest.initVehicle(urlParams.vehicle);
         console.log("tripSubmit: historyURL=" + historyURL + " selectedActiveOsmfile=" + selectedActiveOsmfile + " menu.getActiveOSMfile()=" + menu.getActiveOSMfile());
         if (historyURL) {
             $("#tripDiv").hide();
