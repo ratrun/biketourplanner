@@ -164,20 +164,29 @@ function startGraphhopperServer(win) {
                  creatingnotification.close(true);
              showHtmlNotification("./img/mtb.png", "Routing server", 'is ready!', 5000);
              main.resetServerRespondedOk();
-             main.mainInit(graphopperServerStartedOnce);
-             if (graphopperServerStartedOnce) {
-                 //FIXME: Windows specific workaround: understand why the "$.when(ghRequest.fetchTranslationMap(urlParams.locale), ghRequest.getInfo())"
-                 // runs into a timeout after a re-start of the graphhopper server and needs some time.
-                 for(var i=0; i<10; i++) {
-                     setTimeout(function() {
-                         //FIXME: Here we simply run it once again and now $.when(ghRequest.fetchTranslationMap(urlParams.locale), ghRequest.getInfo())" works!!!, but no idea why.!
-                         console.log("Check main.ghServerRespondedOk=" + main.getghServerRespondedOk());
-                         if (!main.getghServerRespondedOk())
-                            main.mainInit(graphopperServerStartedOnce);
-                     },1000 + i*1000);
-                 }
+             if (!graphopperServerStartedOnce) {
+                 main.mainInit(graphopperServerStartedOnce);
              }
-           
+             else { if (osplatform === "win32") {
+                        // Windows specific workaround: there seems to be some nwjs socket issue when a server gets restartet
+                        // which is what we have done here.
+                        // The following intentionally synchonous ajax request takes quite a while to succeed. No idea why. This is probalby a nwjs isssue . It does not happen on Linux
+                        //infoDialog
+                        alert("Workaround for Windows: Don't panic! Please press OK. The application will freeze, but it should become responsive afterwards");
+                        console.log("Workaround solution for Windows: starting syncronous ajax request polling graphhopper server!");
+                        // https://xhr.spec.whatwg.org
+                        var res = $.ajax({
+                                    url: "http://localhost:8989/i18n/en?type=json",
+                                    timeout: 3000,
+                                    type: "GET",
+                                    dataType: "json",
+                                    crossDomain: true,
+                                    async: false
+                        });
+                        console.log("Synchronous ajax res=" + JSON.stringify(res));
+                    }
+                    main.mainInit(graphopperServerStartedOnce);
+             }
              graphopperServerStartedOnce = true;
         }
     });
