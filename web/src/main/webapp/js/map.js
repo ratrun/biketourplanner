@@ -43,7 +43,7 @@ function adjustMapSize() {
     $(".instructions_info").css("max-height", instructionInfoMaxHeight);
 }
 
-function createBounds(bounds, useMiles) {
+function createBounds(bounds, useMiles, firstCall) {
     map.fitBounds(new L.LatLngBounds(new L.LatLng(bounds.minLat, bounds.minLon),
             new L.LatLng(bounds.maxLat, bounds.maxLon)));
 
@@ -75,6 +75,8 @@ function createBounds(bounds, useMiles) {
             "style": myStyle
         }).addTo(map);
 
+    if (!firstCall)
+        map.removeLayer(routingLayer);
     routingLayer = L.geoJson().addTo(map);
 }
 
@@ -213,7 +215,7 @@ function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selec
         imperial: false
     }).addTo(map);
 
-    createBounds(bounds, useMiles);
+    createBounds(bounds, useMiles, true);
 
     routingLayer.options = {
         // use style provided by the 'properties' entry of the geojson added by addDataToRoutingLayer
@@ -239,7 +241,7 @@ function multipleCallableInitMap(bounds, setStartCoord, setIntermediateCoord, se
     adjustMapSize();
     console.log("init map at " + JSON.stringify(bounds));
     if (initialActionsDone) {
-        createBounds(bounds);
+        createBounds(bounds, useMiles, false);
     } else {
         initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selectLayer, useMiles);
     }
