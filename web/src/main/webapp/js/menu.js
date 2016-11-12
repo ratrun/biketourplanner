@@ -171,7 +171,6 @@ function startGraphhopperServer(win) {
                         // Windows specific workaround: there seems to be some nwjs socket issue when a server gets restartet
                         // which is what we have done here.
                         // The following intentionally synchonous ajax request takes quite a while to succeed. No idea why. This is probalby a nwjs isssue . It does not happen on Linux
-                        //infoDialog
                         alert("Workaround for Windows: Don't panic! Please press OK. The application will freeze, but it should become responsive afterwards");
                         console.log("Workaround solution for Windows: starting syncronous ajax request polling graphhopper server!");
                         // https://xhr.spec.whatwg.org

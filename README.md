@@ -71,7 +71,7 @@ result of the Graphhopper Web NetBeans project. This file may be built built fro
 under web\src\main\webapp\graphhopper (web\src\main\webapp\graphhopper\graphhopper-web-x.y-SNAPSHOT-with-dep.jar). The documentation for the graphopper 
 build process is located under [docs\core\quickstart-from-source.md](docs\core\quickstart-from-source.md).
 The vector tile server located at [web\src\main\webapp\ratrun-mbtiles-server](web\src\main\webapp\ratrun-mbtiles-server) is a git submodul.
-Development requires installed [nodejs](https://nodejs.org/en/) version 0.17.6. The installation may be performed by running `npm install -g nw@0.17.6-sdk`
+Development requires installed [nodejs](https://nodejs.org/en/) version 0.18.6. The installation may be performed by running `npm install -g nw@0.18.6-sdk`
 
 After git clone, the command `npm install` needs to be executed in the following folders:
 
