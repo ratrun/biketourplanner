@@ -105,7 +105,8 @@ cd ..
 nw .
 ```
 
-You should see popup notification window about the start of the tile the server and graph creation. On Windows you will probably get notification from the firewall.
+You should see the main window and popup notification windows about the start of the tile the server and graph creation. 
+On Windows you probably will get notifications from the firewall.
 After a litte while the map of Liechtenstein should become visible.
 
 * To make that js source code modifcations become active automatically, run `npm run watch` from the `web` directory in a separate console
