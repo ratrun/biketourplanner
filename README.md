@@ -71,14 +71,41 @@ result of the Graphhopper Web NetBeans project. This file may be built built fro
 under web\src\main\webapp\graphhopper (web\src\main\webapp\graphhopper\graphhopper-web-x.y-SNAPSHOT-with-dep.jar). The documentation for the graphopper 
 build process is located under [docs\core\quickstart-from-source.md](docs\core\quickstart-from-source.md).
 The vector tile server located at [web\src\main\webapp\ratrun-mbtiles-server](web\src\main\webapp\ratrun-mbtiles-server) is a git submodul.
-Development requires installed [nodejs](https://nodejs.org/en/) version 0.18.6. The installation may be performed by running `npm install -g nw@0.18.6-sdk`
+Development requires installed [nodejs](https://nodejs.org/en/) version 0.18.6. 
 
-After git clone, the command `npm install` needs to be executed in the following folders:
+These are the installation steps for Linux: 
 
-* [web](web)
-* [web/src/main/webapp](web/src/main/webapp)
-* [web/src/main/webapp/ratrun-mbtiles-server](web/src/main/webapp/ratrun-mbtiles-server)
+```
+npm install -g nw@0.18.6-sdk 
+git clone --recursive https://github.com/ratrun/biketourplanner
+cd biketourplanner/web/src/main/webapp
+cd web
+npm install
+cd src/main/webapp
+npm install
+cd ratrun-mbtiles-server/
+npm install 
+```
 
-The application is started by running the command `nw .` from the directory `web/src/main/webapp`.
+Verify that the tile server works by starting 
+`../nodejs server.js`
+Here you should see the following output:
 
-* To make js source code modifcations become active automatically, run `npm run watch` from the `web` directory and restart nw.
+```
+Serving files from /home/wenks/biketourplanner/web/src/main/webapp/data/mbtiles
+Listening on port: 3000
+Serving following areas:
+bicyclenodes
+bicycleroutes
+liechtenstein 
+```
+Press CTRL C and start the application by 
+```
+cd ..
+nw .
+```
+
+You should see popup notification window about the start of the tile the server and graph creation. On Windows you will probably get notification from the firewall.
+After a litte while the map of Liechtenstein should become visible.
+
+* To make that js source code modifcations become active automatically, run `npm run watch` from the `web` directory in a separate console
