@@ -115,6 +115,7 @@ function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selec
     addOverlayLayer('Campsite', ['poi_campsites', 'poi_campsites_label'], 8);
     addOverlayLayer('Bicycle shop', [ 'poi_bicycle_shops', 'poi_label_bicycle_shops'], 8);
     addOverlayLayer('Alpine hut', [ 'poi_alpine_hut', 'poi_label_alpine_hut'], 8);
+    addOverlayLayer('Mountain pass', [ 'poi_mountain_pass', 'poi_label_mountain_pass'], 8);
     addOverlayLayer('Hospital', ['poi_hospital', 'poi_label_hospital' ], 8);
     addOverlayLayer('Drinking water', ['poi_drinking_water'], 11);    
     addOverlayLayer('Supermarket', ['poi_supermarket'], 11);
@@ -170,7 +171,17 @@ function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selec
        if ((maplayer._glMap !== null) && (maplayer._glMap !== undefined)) {
            var pointarr = [e.containerPoint.x, e.containerPoint.y];
            // see https://www.mapbox.com/mapbox-gl-js/example/queryrenderedfeatures/
-           var features = maplayer._glMap.queryRenderedFeatures(pointarr, {layers: ['poi_lodging', 'poi_lodging_label', 'poi_campsites', 'poi_campsites_label', 'poi_bicycle_shops', 'poi_label_bicycle_shops', 'poi_alpine_hut', 'poi_label_alpine_hut', 'poi_hospital', 'poi_label_hospital' ]});
+           var features = maplayer._glMap.queryRenderedFeatures(pointarr, {layers: ['poi_lodging',
+                                                                                    'poi_lodging_label',
+                                                                                    'poi_campsites',
+                                                                                    'poi_campsites_label',
+                                                                                    'poi_bicycle_shops',
+                                                                                    'poi_label_bicycle_shops',
+                                                                                    'poi_alpine_hut',
+                                                                                    'poi_mountain_pass',
+                                                                                    'poi_label_alpine_hut',
+                                                                                    'poi_hospital',
+                                                                                    'poi_label_hospital' ]});
            // Change the cursor style as a UI indicator.
            maplayer._glMap.getCanvas().style.cursor = features.length ? 'pointer' : '';
            if (features.length) {
