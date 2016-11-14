@@ -27,17 +27,19 @@ FILE=$2
 function printUsage {
  echo
  echo "./graphhopper.sh import|web <your-osm-file>"
- echo "./graphhopper.sh clean|build|help"
+ echo "./graphhopper.sh clean|build|buildweb|help"
  echo
  echo "  help        this message"
  echo "  import      creates the graphhopper files used for later (faster) starts"
  echo "  web         starts a local server for user access at localhost:8989 and API access at localhost:8989/route"
  echo "  build       creates the graphhopper JAR (without the web module)"
+ echo "  buildweb    creates the graphhopper JAR (with the web module)"
  echo "  clean       removes all JARs, necessary if you need to use the latest source (e.g. after switching the branch etc)"
  echo "  measurement does performance analysis of the current source version via artificial, random routes (Measurement class)"
  echo "  torture     can be used to test real world routes via feeding graphhopper logs into a graphhopper system (Torture class)"
  echo "  miniui      is a simple Java/Swing visualization application used for debugging purposes (MiniGraphUI class)"
  echo "  extract     calls the overpass API to easily grab any area as .osm file"
+ echo "  android     builds, deploys and starts the Android demo to your connected device"
 }
 
 if [ "$ACTION" = "" ]; then
@@ -126,12 +128,7 @@ function packageCoreJar {
   fi
 }
 
-function prepareEclipse {
- ensureMaven   
- packageCoreJar
- # cp core/target/graphhopper-*-android.jar android/libs/   
-}
-
+ensureMaven
 
 ## now handle actions which do not take an OSM file
 if [ "$ACTION" = "clean" ]; then
@@ -141,13 +138,19 @@ if [ "$ACTION" = "clean" ]; then
  exit
 
 elif [ "$ACTION" = "eclipse" ]; then
- prepareEclipse
+ packageCoreJar
  exit
 
 elif [ "$ACTION" = "build" ]; then
- prepareEclipse
+ packageCoreJar
  exit  
  
+elif [ "$ACTION" = "buildweb" ]; then
+ packageCoreJar
+ execMvn --projects web -am -DskipTests=true install
+ execMvn --projects web -DskipTests=true install assembly:single
+ exit
+
 elif [ "$ACTION" = "extract" ]; then
  echo use "./graphhopper.sh extract \"left,bottom,right,top\""
  URL="http://overpass-api.de/api/map?bbox=$2"
@@ -156,8 +159,8 @@ elif [ "$ACTION" = "extract" ]; then
  exit
  
 elif [ "$ACTION" = "android" ]; then
- prepareEclipse
- "$MAVEN_HOME/bin/mvn" -P include-android --projects android/app install android:deploy android:run
+ packageCoreJar
+ execMvn -P include-android --projects android/app install android:deploy android:run
  exit
 fi
 
@@ -213,9 +216,7 @@ if [ "$JAVA_OPTS" = "" ]; then
   JAVA_OPTS="-Xmx1000m -Xms1000m -server"
 fi
 
-
 ensureOsmXml
-ensureMaven
 packageCoreJar
 
 echo "## now $ACTION. JAVA_OPTS=$JAVA_OPTS"
@@ -226,7 +227,7 @@ if [ "$ACTION" = "ui" ] || [ "$ACTION" = "web" ]; then
     JETTY_PORT=8989
   fi
   WEB_JAR="$GH_HOME/web/target/graphhopper-web-$VERSION-with-dep.jar"
-  if [ ! -s "$WEB_JAR" ]; then         
+  if [ ! -s "$WEB_JAR" ]; then
     execMvn --projects web -DskipTests=true install assembly:single
   fi
 
@@ -257,7 +258,7 @@ elif [ "$ACTION" = "torture" ]; then
 
 
 elif [ "$ACTION" = "miniui" ]; then
- "$MAVEN_HOME/bin/mvn" --projects tools -DskipTests clean install assembly:single
+ execMvn --projects tools -DskipTests clean install assembly:single
  JAR=tools/target/graphhopper-tools-$VERSION-jar-with-dependencies.jar   
  "$JAVA" $JAVA_OPTS -cp "$JAR" com.graphhopper.ui.MiniGraphUI datareader.file="$OSM_FILE" config=$CONFIG \
               graph.location="$GRAPH"
@@ -286,7 +287,7 @@ elif [ "$ACTION" = "measurement" ]; then
   
  if [ "$last_commits" = "" ]; then
    # use current version
-   "$MAVEN_HOME/bin/mvn" --projects tools -DskipTests clean install assembly:single
+   execMvn --projects tools -DskipTests clean install assembly:single
    startMeasurement
    exit
  fi
@@ -299,7 +300,7 @@ elif [ "$ACTION" = "measurement" ]; then
    M_FILE_NAME="measurement$M_FILE_NAME.properties"
    echo -e "\nusing commit $commit and $M_FILE_NAME"
    
-   "$MAVEN_HOME/bin/mvn" --projects tools -DskipTests clean install assembly:single
+   execMvn --projects tools -DskipTests clean install assembly:single
    startMeasurement
    echo -e "\nmeasurement.commit=$commit\n" >> "$M_FILE_NAME"
  done
