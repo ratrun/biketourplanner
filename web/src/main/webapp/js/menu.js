@@ -115,6 +115,7 @@ function startGraphhopperServer(win) {
        }
     }
     console.log('Starting graphhopper with graph path=' + graphpath + ' and osmfilepath=' + osmfilepath);
+    showHtmlNotification("./img/mtb.png", 'Starting routing server for ' + activeOsmfile, '', 1000);
     var initialpercent = 40; // Intitial percentage of heap space of total available RAM to reserve for graphhopper
     var maxpercent = 80; // Max percentage of total available RAM to reserve as max heap space for graphhopper
     var initialreserved = Math.trunc((os.totalmem() * (initialpercent/100))/(1024*1000));
@@ -308,13 +309,13 @@ var download = function(url, dest, cb) {
 // Deletes the graphhopper graph data located in the provided directory.
 function deletegraph(dir) {
     console.log('Deleting graph ' + dir);
-    fs.unlinkSync(dir + '/edges');
-    fs.unlinkSync(dir + '/geometry');
-    fs.unlinkSync(dir + '/location_index');
-    fs.unlinkSync(dir + '/names');
-    fs.unlinkSync(dir + '/properties');
-    fs.unlinkSync(dir + '/nodes');
-    fs.rmdirSync(dir);
+    fs.unlink(dir + '/edges');
+    fs.unlink(dir + '/geometry');
+    fs.unlink(dir + '/location_index');
+    fs.unlink(dir + '/names');
+    fs.unlink(dir + '/properties');
+    fs.unlink(dir + '/nodes');
+    fs.rmdir(dir);
 };
 
 /*
@@ -710,8 +711,8 @@ var showNotification = function (icon, title, body) {
 function chooseFile(name, defaultDir) {
     var chooser = $(name);
     chooser.attr('nwworkingdir', defaultDir);
-    chooser.unbind('change');
-    chooser.change(function(evt) {
+    //http://stackoverflow.com/questions/18245783/node-webkit-saveas-file-dialog-only-triggers-for-unique-file-names
+    function fileHandler (evt) {
       if (name === '#osmFileDialog') {
         activeOsmfile = $(this).val().split(/(\\|\/)/g).pop();
         console.log('Selected OSM file:' + activeOsmfile);
@@ -728,9 +729,16 @@ function chooseFile(name, defaultDir) {
            } else
              showHtmlNotification("./img/warning.png", "Avoid deletion of protected file!", fileName);
          }
-      } 
-    });
-    chooser.trigger('click');
+      }
+      var f = new File('',''); 
+      var files = new FileList(); 
+      files.append(f); 
+      chooser.unbind('change');
+      document.getElementById(name.substring(1)).files = files; 
+      chooser.change(fileHandler);
+    }
+    chooser.change(fileHandler);
+    chooser.trigger('click'); 
 }
 
 // Change the active routing graph to the graph located in the subdirectory under osm/graphs/relativeFolder
