@@ -172,7 +172,7 @@ function startGraphhopperServer(win) {
                         // Windows specific workaround: there seems to be some nwjs socket issue when a server gets restartet
                         // which is what we have done here.
                         // The following intentionally synchonous ajax request takes quite a while to succeed. No idea why. This is probalby a nwjs isssue . It does not happen on Linux
-                        alert("Workaround for Windows: Don't panic! Please press OK. The application will freeze, but it should become responsive afterwards");
+                        alert("Workaround for Windows: Don't panic! Please press OK. The application will freeze, but it should become responsive after a while!");
                         console.log("Workaround solution for Windows: starting syncronous ajax request polling graphhopper server!");
                         // https://xhr.spec.whatwg.org
                         var res = $.ajax({
@@ -260,11 +260,11 @@ function stopLocalVectorTileServer() {
 }
 
 function stopGraphhopperServer() {
-  console.log("stopGraphhopperServer graphhopper=" + graphhopper);
+  console.log("stopGraphhopperServer called, graphhopperServerHasExited= " + graphhopperServerHasExited + " running=" + (graphhopper!==undefined) );
   var mapLayer = require('./map.js');
   mapLayer.clearLayers();
   if (!graphhopperServerHasExited) {   // Inform the graphhopper server to close
-      if (graphhopper !==undefined) {
+      if (graphhopper!==undefined) {
         var res = graphhopper.kill('SIGTERM');
         console.log("graphhopper kill SIGTERM returned:" + res);
       }
@@ -713,22 +713,25 @@ function chooseFile(name, defaultDir) {
     chooser.attr('nwworkingdir', defaultDir);
     //http://stackoverflow.com/questions/18245783/node-webkit-saveas-file-dialog-only-triggers-for-unique-file-names
     function fileHandler (evt) {
-      if (name === '#osmFileDialog') {
-        activeOsmfile = $(this).val().split(/(\\|\/)/g).pop();
-        console.log('Selected OSM file:' + activeOsmfile);
-        localStorage['activeOsmfile'] = activeOsmfile;
-        startGraphhopperServer(win);
-      } else {
-         if(name === '#mbtilesFileDialog') {
-           var deletedFile = $(this).val();
-           fileName = deletedFile.split(/(\\|\/)/g).pop();
-           console.log('fileName:' + fileName);
-           if ( fileName.indexOf('bicycle') === -1) {
-             console.log('Delete map file:' + deletedFile);
-             fs.unlinkSync(deletedFile);
-           } else
-             showHtmlNotification("./img/warning.png", "Avoid deletion of protected file!", fileName);
-         }
+      var val = $(this).val();
+      if (val !== "") {  // This event is sometimes fired twice, the second time with "" 
+          if (name === '#osmFileDialog') {
+            activeOsmfile = val.split(/(\\|\/)/g).pop();
+            console.log('Selected OSM file:' + activeOsmfile);
+            localStorage['activeOsmfile'] = activeOsmfile;
+            startGraphhopperServer(win);
+          } else {
+             if(name === '#mbtilesFileDialog') {
+               var deletedFile = $(this).val();
+               fileName = deletedFile.split(/(\\|\/)/g).pop();
+               console.log('fileName:' + fileName);
+               if ( fileName.indexOf('bicycle') === -1) {
+                 console.log('Delete map file:' + deletedFile);
+                 fs.unlinkSync(deletedFile);
+               } else
+                 showHtmlNotification("./img/warning.png", "Avoid deletion of protected file!", fileName);
+             }
+          }
       }
       var f = new File('',''); 
       var files = new FileList(); 
