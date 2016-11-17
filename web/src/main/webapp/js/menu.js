@@ -165,28 +165,7 @@ function startGraphhopperServer(win) {
                  creatingnotification.close(true);
              showHtmlNotification("./img/mtb.png", "Routing server", 'is ready!', 5000);
              main.resetServerRespondedOk();
-             if (!graphopperServerStartedOnce) {
-                 main.mainInit(graphopperServerStartedOnce);
-             }
-             else { if (osplatform === "win32") {
-                        // Windows specific workaround: there seems to be some nwjs socket issue when a server gets restartet
-                        // which is what we have done here.
-                        // The following intentionally synchonous ajax request takes quite a while to succeed. No idea why. This is probalby a nwjs isssue . It does not happen on Linux
-                        alert("Workaround for Windows: Don't panic! Please press OK. The application will freeze, but it should become responsive after a while!");
-                        console.log("Workaround solution for Windows: starting syncronous ajax request polling graphhopper server!");
-                        // https://xhr.spec.whatwg.org
-                        var res = $.ajax({
-                                    url: "http://localhost:8989/i18n/en?type=json",
-                                    timeout: 3000,
-                                    type: "GET",
-                                    dataType: "json",
-                                    crossDomain: true,
-                                    async: false
-                        });
-                        console.log("Synchronous ajax res=" + JSON.stringify(res));
-                    }
-                    main.mainInit(graphopperServerStartedOnce);
-             }
+             main.mainInit(graphopperServerStartedOnce);
              graphopperServerStartedOnce = true;
         }
     });
@@ -260,7 +239,7 @@ function stopLocalVectorTileServer() {
 }
 
 function stopGraphhopperServer() {
-  console.log("stopGraphhopperServer called, graphhopperServerHasExited= " + graphhopperServerHasExited + " running=" + (graphhopper!==undefined) );
+  console.log("stopGraphhopperServer graphhopperServerHasExited=" + graphhopperServerHasExited + " running=" + (graphhopper!==undefined));
   var mapLayer = require('./map.js');
   mapLayer.clearLayers();
   if (!graphhopperServerHasExited) {   // Inform the graphhopper server to close
@@ -727,7 +706,7 @@ function chooseFile(name, defaultDir) {
                console.log('fileName:' + fileName);
                if ( fileName.indexOf('bicycle') === -1) {
                  console.log('Delete map file:' + deletedFile);
-                 fs.unlinkSync(deletedFile);
+                 fs.unlink(deletedFile);
                } else
                  showHtmlNotification("./img/warning.png", "Avoid deletion of protected file!", fileName);
              }

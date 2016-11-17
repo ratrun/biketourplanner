@@ -106,6 +106,7 @@ public class GHServer {
         gzipHandler.setHandler(handlers);
 
         server.setHandler(gzipHandler);
+        server.setStopAtShutdown(true);
         server.start();
         logger.info("Started server at HTTP " + host + ":" + httpPort);
     }
@@ -129,6 +130,7 @@ public class GHServer {
             return;
 
         try {
+            logger.info("Stopping jetty");
             server.stop();
         } catch (Exception ex) {
             logger.error("Cannot stop jetty", ex);
