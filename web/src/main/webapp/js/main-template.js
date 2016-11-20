@@ -695,7 +695,7 @@ function handleGhResponse(json, routeResultsDiv, doZoom, request, urlForHistory)
                         var feat = geoJsons[i];
                         if (feat.properties.pathIndex === currentLayerIndex) {
                            alternativeGeoJson.geometry.coordinates = alternativeGeoJson.geometry.coordinates.concat(feat.geometry.coordinates);
-                        
+                        }
                     }
                     mapLayer.addElevation(alternativeGeoJson, useMiles);
                 }
@@ -1091,7 +1091,7 @@ function saveghResponses (response, id, callback) {
     }
 }
 
-function handleTrip(data) {
+function handleTrip(data) { 
     if (menu.runningUnderNW) {
         var absolutFileName = getGhResponseFilePath(data.node.id);
         var fs = global.require('fs');
