@@ -84,6 +84,9 @@ public class InstructionList implements Iterable<Instruction> {
                 instrJson.put("annotation_text", ia.getMessage());
                 instrJson.put("annotation_importance", ia.getImportance());
             }
+            //Include waytype information as mandatory field!
+            instrJson.put("annotation_waytype", ia.getWayType());
+            instrJson.put("annotation_pavement", ia.getPaved());
 
             instrJson.put("time", instruction.getTime());
             instrJson.put("distance", Helper.round(instruction.getDistance(), 3));

@@ -16,7 +16,20 @@ function addInstruction(mapLayer, main, instr, instrIndex, lngLat, useMiles) {
         else
             title = title + ", " + instr.annotation_text;
     }
-
+/*
+    if (instr.annotation_waytype) {
+        if (!title)
+            title = "waytype=" + instr.annotation_waytype;
+        else
+            title = title + ", waytype="  + instr.annotation_waytype;
+    }
+    if (!instr.annotation_pavement) {
+        if (!title)
+            title = " unpaved";
+        else
+            title = title + ", unpaved!";
+    }
+*/
     var pathname = window.location.pathname;
     var dirname = pathname.substring(0, pathname.lastIndexOf('/'));
 

@@ -678,24 +678,26 @@ function handleGhResponse(json, routeResultsDiv, doZoom, request, urlForHistory)
 
         function createClickHandler(geoJsons, currentLayerIndex, tabHeader, oneTab, hasElevation, useMiles) {
             return function () {
-
-                var currentGeoJson = geoJsons[currentLayerIndex];
-                mapLayer.eachLayer(function (layer) {
-                    // skip markers etc
-                    if (!layer.setStyle)
-                        return;
-
-                    var doHighlight = layer.feature === currentGeoJson;
-                    layer.setStyle(doHighlight ? highlightRouteStyle : alternativeRouteStye);
-                    if (doHighlight) {
-                        if (!L.Browser.ie && !L.Browser.opera)
-                            layer.bringToFront();
-                    }
-                });
-
+                mapLayer.setPathIndex(currentLayerIndex);
+                mapLayer.clearLayers();
+                flagAll();
+                mapLayer.addDataToRoutingLayer(geoJsons);
                 if (hasElevation) {
                     mapLayer.clearElevation();
-                    mapLayer.addElevation(currentGeoJson, useMiles);
+                    var alternativeGeoJson = { 
+                        "type" : "Feature",
+                        "geometry": {
+                            "coordinates" : [],
+                            "type": "LineString"
+                        }
+                    }
+                    for (var i=0; i<geoJsons.length;i++) {
+                        var feat = geoJsons[i];
+                        if (feat.properties.pathIndex === currentLayerIndex) {
+                           alternativeGeoJson.geometry.coordinates = alternativeGeoJson.geometry.coordinates.concat(feat.geometry.coordinates);
+                        
+                    }
+                    mapLayer.addElevation(alternativeGeoJson, useMiles);
                 }
 
                 headerTabs.find("li").removeClass("current");
@@ -712,10 +714,6 @@ function handleGhResponse(json, routeResultsDiv, doZoom, request, urlForHistory)
             routeResultsDiv.append("<div class='clear'/>");
         }
 
-        // the routing layer uses the geojson properties.style for the style, see map.js
-        var defaultRouteStyle = {color: "#00cc33", "weight": 5, "opacity": 0.6};
-        var highlightRouteStyle = {color: "#00cc33", "weight": 6, "opacity": 0.8};
-        var alternativeRouteStye = {color: "darkgray", "weight": 6, "opacity": 0.8};
         var geoJsons = [];
         var firstHeader;
 
@@ -736,20 +734,35 @@ function handleGhResponse(json, routeResultsDiv, doZoom, request, urlForHistory)
 
             headerTabs.append(tabHeader);
             var path = json.paths[pathIndex];
-            var style = (pathIndex === 0) ? defaultRouteStyle : alternativeRouteStye;
+            var style = (pathIndex === 0) ? "defaultRouteStyle" : "alternativeRouteStye";
 
-            var geojsonFeature = {
-                "type": "Feature",
-                "geometry": path.points,
-                "properties": {
-                    "style": style,
-                    name: "route",
-                    snapped_waypoints: path.snapped_waypoints
-                }
-            };
+            var len = path.instructions.length;
+            var geojsonFeature;
+            var slicestart = path.instructions[0].interval[0];
+            var lastsegmentPaved = path.instructions[0].annotation_pavement;
+            for (var m = 1; m < len; m++) {
+                var instr = path.instructions[m];
+                geojsonFeature = {
+                    "type": "Feature",
+                    "geometry": {
+                        coordinates: path.points.coordinates.slice(slicestart,instr.interval[0]+1),
+                        type: "LineString"
+                    },
+                    "properties": {
+                        // the routing layer uses the geojson properties.style for the style, see map.js
+                        "style": style,
+                        name: "route",
+                        snapped_waypoints: path.snapped_waypoints,
+                        "paved": lastsegmentPaved,
+                        "pathIndex": pathIndex
+                    }
+                };
+                geoJsons.push(geojsonFeature);
+                lastsegmentPaved = instr.annotation_pavement;
+                slicestart = instr.interval[0];
+            }
+            mapLayer.addDataToRoutingLayer(geoJsons);
 
-            geoJsons.push(geojsonFeature);
-            mapLayer.addDataToRoutingLayer(geojsonFeature);
             var oneTab = $("<div class='route_result_tab'>");
             routeResultsDiv.append(oneTab);
             tabHeader.click(createClickHandler(geoJsons, pathIndex, tabHeader, oneTab, request.hasElevation(), request.useMiles));

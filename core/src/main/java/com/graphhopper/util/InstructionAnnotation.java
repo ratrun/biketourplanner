@@ -98,6 +98,10 @@ public class InstructionAnnotation {
             return false;
         if ((this.message == null) ? (other.message != null) : !this.message.equals(other.message))
             return false;
+        if ((this.getWayType() == 0) ? (other.getWayType() != 0) : !(this.getWayType()==other.getWayType()))
+            return false;
+        if ((this.getPaved() == false) ? (other.getPaved() != false) : !(this.getPaved()==other.getPaved()))
+            return false;
         return true;
     }
 }

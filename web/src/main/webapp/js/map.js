@@ -43,6 +43,37 @@ function adjustMapSize() {
     $(".instructions_info").css("max-height", instructionInfoMaxHeight);
 }
 
+var pathIndex = 0;
+
+function setPathIndex(newIndex) {
+    pathIndex = newIndex;
+}
+module.exports.setPathIndex = setPathIndex;
+
+var highlightRouteStyle = {color: "#00cc33", "weight": 6, "opacity": 0.8};
+var highlightUnpavedRouteStyle = { weight: 5,
+                    opacity: 0.8,
+                    color: '#00cc33',
+                    dashArray: '7',
+                    fillOpacity: 0.6,
+                    fillColor: 'white'}
+var alternativeRouteStye = {color: "darkgray", "weight": 6, "opacity": 0.8};
+
+var pavedUnPavedRouteStype = function(feature) {
+            if (feature.properties) {
+            if (feature.properties.pathIndex !== pathIndex)
+                return alternativeRouteStye;
+            else {
+                if (feature.properties.paved)
+                    return highlightRouteStyle;
+                else
+                    return highlightUnpavedRouteStyle;
+                }
+            }
+}
+
+module.exports.pavedUnPavedRouteStype = pavedUnPavedRouteStype;
+
 function createBounds(bounds, useMiles, firstCall) {
     map.fitBounds(new L.LatLngBounds(new L.LatLng(bounds.minLat, bounds.minLon),
             new L.LatLng(bounds.maxLat, bounds.maxLon)));
@@ -231,10 +262,7 @@ function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selec
     createBounds(bounds, useMiles, true);
 
     routingLayer.options = {
-        // use style provided by the 'properties' entry of the geojson added by addDataToRoutingLayer
-        style: function (feature) {
-            return feature.properties && feature.properties.style;
-        },
+        style: pavedUnPavedRouteStype,
         contextmenu: true,
         contextmenuItems: defaultContextmenuItems.concat([{
                 text: translate.tr('route'),
