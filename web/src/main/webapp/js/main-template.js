@@ -175,7 +175,6 @@ function mainInit(graphopperServerStartedOnce) {
                                        "id" : last_id, 
                                        "text" : "Tour " + last_id, 
                                        "data" : {"historyURL": ghRequest.createHistoryURL(),
-                                                 "route": ghRequest.route, 
                                                  "activeOsmfile": menu.getActiveOSMfile()
                                                 }}, 
                                        "last");
@@ -651,11 +650,11 @@ function routeLatLng(request, doQuery) {
     routeResultsDiv.html('<img src="img/indicator.gif"/> Search Route ...');
     request.doRequest(urlForAPI, function (json) {
         lastghResponse = $.extend({}, json); // Copy, see http://api.jquery.com/jQuery.extend/
-        handleGhResponse(json, routeResultsDiv, doZoom, request, urlForHistory);
+        handleGhResponse(true, json, routeResultsDiv, doZoom, request, urlForHistory);
     });
 }
 
-function handleGhResponse(json, routeResultsDiv, doZoom, request, urlForHistory) {
+function handleGhResponse(callClickHandler, json, routeResultsDiv, doZoom, request, urlForHistory) {
         routeResultsDiv.html("");
         $("#saveTripButton").prop('disabled', false);
         if (json.message) {
@@ -676,7 +675,8 @@ function handleGhResponse(json, routeResultsDiv, doZoom, request, urlForHistory)
             return;
         }
 
-        function createClickHandler(geoJsons, currentLayerIndex, tabHeader, oneTab, hasElevation, useMiles) {
+        if (callClickHandler) {
+          function createClickHandler(geoJsons, currentLayerIndex, tabHeader, oneTab, hasElevation, useMiles) {
             return function () {
                 mapLayer.setPathIndex(currentLayerIndex);
                 mapLayer.clearLayers();
@@ -706,6 +706,7 @@ function handleGhResponse(json, routeResultsDiv, doZoom, request, urlForHistory)
                 tabHeader.addClass("current");
                 oneTab.addClass("current");
             };
+          }
         }
 
         var headerTabs = $("<ul id='route_result_tabs'/>");
@@ -819,7 +820,8 @@ function handleGhResponse(json, routeResultsDiv, doZoom, request, urlForHistory)
             }
         }
         // already select best path
-        firstHeader.click();
+        if (callClickHandler)
+           firstHeader.click();
 
         mapLayer.adjustMapSize();
         // TODO change bounding box on click
@@ -1109,14 +1111,19 @@ function handleTrip(data) {
             mapLayer.setDisabledForMapsContextMenu('intermediate', true);
             mapLayer.setDisabledForMapsContextMenu('end', true);
 
-            if (data.node.data.route !== undefined) {
-                for (i=0;i<data.node.data.route.length;i++) {
-                    var coord = data.node.data.route[i];
-                    if ((coord.lat!==undefined) && (coord.lng!==undefined))
-                        mapLayer.createStaticMarker(coord, i, data.node.data.route.length);
+            var points = urlTools.parseUrl(data.node.data.historyURL).point;
+            for (i=0; i<points.length; i++) {
+                var index = points[i].indexOf(",");
+                if (index >= 0) {
+                    var coord = {
+                        "lat": parseFloat(points[i].substr(0, index)),
+                        "lng": parseFloat(points[i].substr(index+1))
+                    }
+                    mapLayer.createStaticMarker(coord, i, points.length);
                 }
             }
-            handleGhResponse(json, routeResultsDiv, true, ghRequest, data.node.data.historyURL);
+
+            handleGhResponse(false, json, routeResultsDiv, true, ghRequest, data.node.data.historyURL);
         });
     }
 }
