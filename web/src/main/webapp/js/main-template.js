@@ -766,7 +766,8 @@ function handleGhResponse(callClickHandler, json, routeResultsDiv, doZoom, reque
 
             var oneTab = $("<div class='route_result_tab'>");
             routeResultsDiv.append(oneTab);
-            tabHeader.click(createClickHandler(geoJsons, pathIndex, tabHeader, oneTab, request.hasElevation(), request.useMiles));
+            if (callClickHandler)
+               tabHeader.click(createClickHandler(geoJsons, pathIndex, tabHeader, oneTab, request.hasElevation(), request.useMiles));
 
             var tmpTime = translate.createTimeString(path.time);
             var tmpDist = translate.createDistanceString(path.distance, request.useMiles);
@@ -1122,7 +1123,6 @@ function handleTrip(data) {
                     mapLayer.createStaticMarker(coord, i, points.length);
                 }
             }
-
             handleGhResponse(false, json, routeResultsDiv, true, ghRequest, data.node.data.historyURL);
         });
     }
