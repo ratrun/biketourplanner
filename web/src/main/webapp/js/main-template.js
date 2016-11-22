@@ -170,13 +170,19 @@ function mainInit(graphopperServerStartedOnce) {
             $("#roundTripButton").hide();
             var $tree = $('#tripTree');
             last_id += 1;
+            var route = [];
+            for (var i=0; i<ghRequest.route.length;i++) {
+                route.push({ "lat": ghRequest.route[i].lat, 
+                             "lng": ghRequest.route[i].lng });
+            }
 
             $tree.jstree().create_node("#" ,  { 
                                        "id" : last_id, 
-                                       "text" : "Tour " + last_id, 
+                                       "text" : "Tour " + last_id,
                                        "data" : {"historyURL": ghRequest.createHistoryURL(),
-                                                 "activeOsmfile": menu.getActiveOSMfile()
-                                                }}, 
+                                                 "activeOsmfile": menu.getActiveOSMfile(),
+                                                 "route" : route
+                                                }},
                                        "last");
 
             localStorage['tripData'] = JSON.stringify($tree.jstree(true).get_json('#', { 'flat': true }));
@@ -1027,9 +1033,9 @@ function getGhResponseFilePath(id) {
 
 $(function() {
     $('#tripTree').jstree({
-       "plugins" : [ "themes", "contextmenu", "dnd", "state", "types" ],
+       'plugins' : [ "themes", "contextmenu", "dnd", "state", "types" ],
        'core' : {
-       "check_callback" : true,
+       'check_callback' : true,
        'data' : tripData,
        }});
     $("#tripTree").on("select_node.jstree",
@@ -1112,18 +1118,12 @@ function handleTrip(data) {
             mapLayer.setDisabledForMapsContextMenu('intermediate', true);
             mapLayer.setDisabledForMapsContextMenu('end', true);
 
-            var points = urlTools.parseUrl(data.node.data.historyURL).point;
-            for (i=0; i<points.length; i++) {
-                var index = points[i].indexOf(",");
-                if (index >= 0) {
-                    var coord = {
-                        "lat": parseFloat(points[i].substr(0, index)),
-                        "lng": parseFloat(points[i].substr(index+1))
-                    }
-                    mapLayer.createStaticMarker(coord, i, points.length);
+            if (data.node.data.route) {
+                for (i=0; i<data.node.data.route.length; i++) {
+                        mapLayer.createStaticMarker(data.node.data.route[i], i, data.node.data.route.length);
                 }
-            }
-            handleGhResponse(false, json, routeResultsDiv, true, ghRequest, data.node.data.historyURL);
+           }
+           handleGhResponse(false, json, routeResultsDiv, true, ghRequest, data.node.data.historyURL);
         });
     }
 }
