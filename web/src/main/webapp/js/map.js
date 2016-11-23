@@ -301,6 +301,7 @@ function focus(coord, zoom, index) {
 
 module.exports.clearLayers = function () {
     routingLayer.clearLayers();
+    pathIndex = 0;
 };
 
 module.exports.getRoutingLayer = function () {
@@ -446,7 +447,7 @@ module.exports.createMarker = function (index, coord, setToEnd, setToStart, dele
 };
 
 module.exports.createStaticMarker = function (coord, i, amount) {
-    var icon = (i===0) ? iconFrom: (i==amount-i) ?  iconTo : new L.NumberedDivIcon({number: i});
+    var icon = (i===0) ? iconFrom: (i===amount-1) ?  iconTo : new L.NumberedDivIcon({number: i});
     return L.marker([coord.lat, coord.lng], {icon: icon}).addTo(routingLayer).bindPopup(' ' + i);
 };
 

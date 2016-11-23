@@ -163,11 +163,6 @@ function mainInit(graphopperServerStartedOnce) {
         var roundtripActive = $("#roundTripButton").prop("disabled");
         if ( (!roundtripActive) && (ghRequest.route.isResolved()) ||
              (roundtripActive) && (ghRequest.from.isResolved()) ) {
-            $("#tripDiv").show();
-            $(".route_result_tab").hide();
-            $("#routingSettings").hide();
-            $("#ABTourButton").hide();
-            $("#roundTripButton").hide();
             var $tree = $('#tripTree');
             last_id += 1;
             var route = [];
@@ -684,8 +679,8 @@ function handleGhResponse(callClickHandler, json, routeResultsDiv, doZoom, reque
         if (callClickHandler) {
           function createClickHandler(geoJsons, currentLayerIndex, tabHeader, oneTab, hasElevation, useMiles) {
             return function () {
-                mapLayer.setPathIndex(currentLayerIndex);
                 mapLayer.clearLayers();
+                mapLayer.setPathIndex(currentLayerIndex);
                 flagAll();
                 mapLayer.addDataToRoutingLayer(geoJsons);
                 if (hasElevation) {
