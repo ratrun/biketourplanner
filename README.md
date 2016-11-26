@@ -5,8 +5,7 @@ It allows the user to generate routing data from [OpenStreetMap](http://www.open
 
 BikeTourPlanner is a [nwjs](http://nwjs.io/) application.
 It uses offline maps which are provided by [OSM2VectorTiles](http://osm2vectortiles.org/about) and displayed using [Leaflet](https://github.com/mapbox/mapbox-gl-js) and [mapbox-gl-js](https://github.com/mapbox/mapbox-gl-js). 
-BikeTourPlanner comes with an integrated local vector tile map server which uses [nodejs](https://nodejs.org/en/). 
-BikeTourPlanner requires an installed Java 8 runtime.
+BikeTourPlanner comes with an integrated local vector tile map server which uses [nodejs](https://nodejs.org/en/). It requires an installed Java 8 runtime.
 
 The currently supported platforms are: 
 
