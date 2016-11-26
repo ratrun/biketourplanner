@@ -448,7 +448,8 @@ module.exports.createMarker = function (index, coord, setToEnd, setToStart, dele
 
 module.exports.createStaticMarker = function (coord, i, amount) {
     var icon = (i===0) ? iconFrom: (i===amount-1) ?  iconTo : new L.NumberedDivIcon({number: i});
-    return L.marker([coord.lat, coord.lng], {icon: icon}).addTo(routingLayer).bindPopup(' ' + i);
+    if ((coord.lat!==undefined)&&(coord.lng!==undefined))
+        L.marker([coord.lat, coord.lng], {icon: icon}).addTo(routingLayer).bindPopup(' ' + i);
 };
 
 function addOverlayLayer(name, id, minzoom) {

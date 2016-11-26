@@ -1115,7 +1115,7 @@ function handleTrip(data) {
 
             if (data.node.data.route) {
                 for (i=0; i<data.node.data.route.length; i++) {
-                        mapLayer.createStaticMarker(data.node.data.route[i], i, data.node.data.route.length);
+                    mapLayer.createStaticMarker(data.node.data.route[i], i, data.node.data.route.length);
                 }
            }
            handleGhResponse(false, json, routeResultsDiv, true, ghRequest, data.node.data.historyURL);
