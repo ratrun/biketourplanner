@@ -19,8 +19,8 @@ package com.graphhopper.routing.util;
 
 import com.graphhopper.routing.Path;
 import com.graphhopper.util.EdgeIteratorState;
-import gnu.trove.set.TIntSet;
-import gnu.trove.set.hash.TIntHashSet;
+import com.carrotsearch.hppc.IntSet;
+import com.graphhopper.coll.GHIntHashSet;
 import com.graphhopper.routing.weighting.*;
 
 /**
@@ -31,7 +31,7 @@ import com.graphhopper.routing.weighting.*;
 public class UniquePathWeighting extends AbstractAdjustedWeighting
 {
     // Contains the EdgeIds of the already visisted Edges
-    protected final TIntSet visitedEdges = new TIntHashSet();
+    protected final IntSet visitedEdges = new GHIntHashSet();
 
     public static int ALREADY_VISISTED_EDGES_PENALTY = 5;
 
