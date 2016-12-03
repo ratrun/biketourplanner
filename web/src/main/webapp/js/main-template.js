@@ -125,7 +125,7 @@ function mainInit(graphopperServerStartedOnce) {
     // fixing cross domain support e.g in Opera
     jQuery.support.cors = true;
 
-    gpxExport.addGpxExport(ghRequest);
+    //gpxExport.addGpxExport(ghRequest);
 
     if (isProduction())
         $('#hosting').show();
@@ -293,6 +293,7 @@ function mainInit(graphopperServerStartedOnce) {
                     switchingUrlParams = undefined;
                 }
                 checkInput();
+                gpxExport.addGpxExport(ghRequest);
             }, function (err) {
                 ghServerRespondedOk = false;
                 console.log(err);
