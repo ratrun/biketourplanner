@@ -157,8 +157,7 @@ function startGraphhopperServer(win) {
                                                          "Creating routing data", 
                                                          "Going to take a while depending on the area size. Press F12 to watch the console logs for details", 
                                                          45000);
-        if (data.toString('utf-8').indexOf('Started server at HTTP :8989') !==-1 )
-        {
+        if (data.toString('utf-8').indexOf('Started server at HTTP :8989') !==-1 ) {
              console.log("Routing server is ready!");
              // Close the otherwise long active notification for graph creation
              if (creatingnotification)
