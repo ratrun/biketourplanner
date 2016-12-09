@@ -243,8 +243,19 @@ function stopGraphhopperServer() {
   mapLayer.clearLayers();
   if (!graphhopperServerHasExited) {   // Inform the graphhopper server to close
       if (graphhopper!==undefined) {
-        var res = graphhopper.kill('SIGTERM');
-        console.log("graphhopper kill SIGTERM returned:" + res);
+        console.log("Requesting graphhopper server to stop!");
+        $.ajax({
+                                url: "http://localhost:8989/shutdown?token=osm",
+                                timeout: 50,
+                                type: "GET",
+                                dataType: "json",
+                                crossDomain: true,
+                                async: true
+                    });
+        setTimeout(function(){ 
+          var res = graphhopper.kill('SIGTERM');
+          console.log("graphhopper kill SIGTERM returned:" + res);
+        }, 100);
       }
   }
 }
@@ -298,7 +309,7 @@ function deletegraph(dir) {
 
 /*
  Display a dialog. The paramaters data and dataDivDestination are optional. 
- They specfiy text, which is to be put into a nav in the html template file.
+ They specify text, which is to be put into a nav in the html template file.
  */
 function showDialog( htmltemplate, height, width, data , dataNavDestination) {
     var opt = {resizable: false, show: true, height: height, width: width, focus: true};

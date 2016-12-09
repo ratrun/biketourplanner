@@ -3,6 +3,7 @@ var tileLayers = require('./config/tileLayers.js');
 var translate = require('./translate.js');
 
 var routingLayer;
+var coverBox;
 var map;
 var menuStart;
 var menuIntermediate;
@@ -60,19 +61,19 @@ var highlightUnpavedRouteStyle = { weight: 5,
 var alternativeRouteStye = {color: "darkgray", "weight": 6, "opacity": 0.8};
 
 var pavedUnPavedRouteStype = function(feature) {
-            if (feature.properties) {
-            if (feature.properties.pathIndex !== pathIndex)
-                return alternativeRouteStye;
-            else {
-                if (feature.properties.paved)
-                    return highlightRouteStyle;
-                else
-                    return highlightUnpavedRouteStyle;
-                }
+    if (feature.properties) {
+        if (feature.properties.pathIndex !== pathIndex)
+            return alternativeRouteStye;
+        else {
+            if (feature.properties.paved)
+                return highlightRouteStyle;
+            else
+                return highlightUnpavedRouteStyle;
             }
+        } else {
+            return highlightUnpavedRouteStyle;
+    }
 }
-
-module.exports.pavedUnPavedRouteStype = pavedUnPavedRouteStype;
 
 function createBounds(bounds, useMiles, firstCall) {
     map.fitBounds(new L.LatLngBounds(new L.LatLng(bounds.minLat, bounds.minLon),
@@ -101,13 +102,17 @@ function createBounds(bounds, useMiles, firstCall) {
         }
     };
 
+    if (!firstCall) {
+        map.removeLayer(routingLayer);
+        if (coverBox)
+          map.removeLayer(coverBox);
+    }
+
     if (bounds.initialized)
-        L.geoJson(geoJson, {
+     coverBox =  L.geoJson(geoJson, {
             "style": myStyle
         }).addTo(map);
 
-    if (!firstCall)
-        map.removeLayer(routingLayer);
     routingLayer = L.geoJson().addTo(map);
 }
 
@@ -216,8 +221,8 @@ function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selec
                                                                                     'poi_hospital',
                                                                                     'poi_label_hospital' ]});
            // Change the cursor style as a UI indicator.
-           maplayer._glMap.getCanvas().style.cursor = features.length ? 'pointer' : '';
-           if (features.length) {
+           if ( (features)&&(features.length) ) {
+             maplayer._glMap.getCanvas().style.cursor = features.length ? 'pointer' : '';
              $('#layerfeatures').show();
              $('#layerfeatures').css("visibility","visible");
              var feature= features[0];
@@ -261,6 +266,17 @@ function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selec
 
     createBounds(bounds, useMiles, true);
 
+    initialActionsDone = true;
+}
+
+function multipleCallableInitMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selectLayer, useMiles) {
+    adjustMapSize();
+    console.log("init map at " + JSON.stringify(bounds));
+    if (initialActionsDone) {
+        createBounds(bounds, useMiles, false);
+    } else {
+        initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selectLayer, useMiles);
+    }
     routingLayer.options = {
         style: pavedUnPavedRouteStype,
         contextmenu: true,
@@ -276,17 +292,6 @@ function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selec
             }]),
         contextmenuInheritItems: false
     };
-    initialActionsDone = true;
-}
-
-function multipleCallableInitMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selectLayer, useMiles) {
-    adjustMapSize();
-    console.log("init map at " + JSON.stringify(bounds));
-    if (initialActionsDone) {
-        createBounds(bounds, useMiles, false);
-    } else {
-        initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selectLayer, useMiles);
-    }
 }
 
 function focus(coord, zoom, index) {

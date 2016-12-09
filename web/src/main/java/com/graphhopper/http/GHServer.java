@@ -73,7 +73,7 @@ public class GHServer {
         ServletContextHandler servHandler = new ServletContextHandler(ServletContextHandler.NO_SECURITY | ServletContextHandler.NO_SESSIONS);
         servHandler.setErrorHandler(new GHErrorHandler());
         servHandler.setContextPath("/");
-
+        servHandler.addServlet(new ServletHolder(new ShutDownRequestServlet(this)), "/shutdown/*");
         servHandler.addServlet(new ServletHolder(new InvalidRequestServlet()), "/*");
 
         FilterHolder guiceFilter = new FilterHolder(injector.getInstance(GuiceFilter.class));
@@ -106,7 +106,6 @@ public class GHServer {
         gzipHandler.setHandler(handlers);
 
         server.setHandler(gzipHandler);
-        server.setStopAtShutdown(true);
         server.start();
         logger.info("Started server at HTTP " + host + ":" + httpPort);
     }
