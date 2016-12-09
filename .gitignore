@@ -21,6 +21,7 @@ debug.sh
 /web/src/main/webapp/js/config/options_prod.js
 *.pbf
 !/reader-osm/src/test/resources/com/graphhopper/reader/osm/*.pbf
+!/web/src/main/webapp/assets/font/*/*.pbf
 *.dem
 *.log
 core/TODO*.txt
