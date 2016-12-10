@@ -9,9 +9,12 @@
     "icon": "img/webappicon.png",
     "show": true,
     "position": "center",
-    "width": 1500,
-    "height": 900,
-    "toolbar": true
+    "width": 1360,
+    "height": 768,
+    "min_width": 1024,
+    "min_height": 768,
+    "resizable": true,
+    "frame": true
   },
   "repository": {
     "type": "git",
