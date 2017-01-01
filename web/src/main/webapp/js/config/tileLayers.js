@@ -143,7 +143,6 @@ function addVectorLayer(layerName, url) {
     styleTileURL[layerName] = url;
     var vectorlayer = L.mapboxGL({
                               attribution: osmAttr + " © <a href='https://www.mapbox.com/about/maps/'>Mapbox</a>",
-                              pitch: 0.01, // github.com/mapbox/mapbox-gl-js/issues/3143
                               style: stylejsonObj
                            });
     availableVectorTileLayers[layerName] = vectorlayer;
