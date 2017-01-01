@@ -29,7 +29,6 @@ if (!Function.prototype.bind) {
 
 var GHRequest = function (host, api_key) {
     this.host = host;
-    this.key = api_key;
     this.route = new GHRoute(new GHInput(), new GHInput());
     this.from = this.route.first();
     this.to = this.route.last();
@@ -40,7 +39,7 @@ var GHRequest = function (host, api_key) {
     this.useMiles = false;
     // use jsonp here if host allows CORS
     this.dataType = "json";
-    this.api_params = {"locale": "en", "vehicle": "car", "weighting": "fastest", "elevation": false, "ascendAvoidance": 0.0, "niceLevel": 3.0, "algorithm": "", "alternative_route": {"max_paths" : 1}, "round_trip" : {"distance" : 0, "seed" : 0}, "heading" : 180};
+    this.api_params = {"locale": "en", "vehicle": "car", "weighting": "fastest", "elevation": false, "key": api_key, "ascendAvoidance": 0.0, "niceLevel": 3.0, "algorithm": "", "alternative_route": {"max_paths" : 1}, "round_trip" : {"distance" : 0, "seed" : 0}, "heading" : 180};
 
     // register events
     this.route.addListener('route.add', function (evt) {
@@ -73,8 +72,7 @@ GHRequest.prototype.init = function (params) {
         if (key === "point" || key === "mathRandom" || key === "do_zoom" || key === "layer" || key === "use_miles")
             continue;
 
-        if ( key.indexOf('.') === -1 )
-        {
+        if ( key.indexOf('.') === -1 ) {
             this.api_params[key] = val;
         }
     }
@@ -134,7 +132,7 @@ GHRequest.prototype.initVehicle = function (vehicle) {
     this.api_params.vehicle = vehicle;
     var featureSet = this.features[vehicle];
 
-    if (featureSet && !featureSet.CHEnabled) {
+    if (featureSet && !featureSet.CHEnabled && featureSet.elevation) {
         this.api_params.CHEnabled = false;
         $('#niceLevelcontrol').show();
         $("#niceLevelcontrol").css("visibility","visible");
@@ -178,7 +176,7 @@ GHRequest.prototype.createGeocodeURL = function (host, prevIndex) {
     if (host)
         tmpHost = host;
 
-    var path = this.createPath(tmpHost + "/geocode?limit=6&type=" + this.dataType + "&key=" + this.key);
+    var path = this.createPath(tmpHost + "/geocode?limit=6&type=" + this.dataType);
     if (prevIndex >= 0 && prevIndex < this.route.size()) {
         var point = this.route.getIndex(prevIndex);
         if (point.isResolved()) {
@@ -189,11 +187,11 @@ GHRequest.prototype.createGeocodeURL = function (host, prevIndex) {
 };
 
 GHRequest.prototype.createURL = function () {
-    return this.createPath(this.host + "/route?" + this.createPointParams(false) + "&type=" + this.dataType + "&key=" + this.key);
+    return this.createPath(this.host + "/route?" + this.createPointParams(false) + "&type=" + this.dataType);
 };
 
 GHRequest.prototype.createGPXURL = function (withRoute, withTrack, withWayPoints) {
-    return this.createPath(this.host + "/route?" + this.createPointParams(false) + "&type=gpx&key=" + this.key + "&gpx.route=" + withRoute + "&gpx.track=" + withTrack + "&gpx.waypoints=" + withWayPoints);
+    return this.createPath(this.host + "/route?" + this.createPointParams(false) + "&type=gpx&gpx.route=" + withRoute + "&gpx.track=" + withTrack + "&gpx.waypoints=" + withWayPoints);
 };
 
 GHRequest.prototype.createHistoryURL = function () {
@@ -218,7 +216,7 @@ GHRequest.prototype.createPointParams = function (useRawInput) {
 GHRequest.prototype.createPath = function (url) {
     for (var key in this.api_params) {
         var val = this.api_params[key];
-        if ( val.toString() !== "[object Object]" )
+        if ( (val !== undefined) && val.toString() !== "[object Object]" )
         {
             if (GHRoute.isArray(val)) {
                 for (var keyIndex in val) {
@@ -292,7 +290,7 @@ GHRequest.prototype.doRequest = function (url, callback) {
 };
 
 GHRequest.prototype.getInfo = function () {
-    var url = this.host + "/info?type=" + this.dataType + "&key=" + this.key;
+    var url = this.host + "/info?type=" + this.dataType + "&key=" + this.getKey();
     console.log("GHRequest.prototype.getInfo url=" + url);
     var res = $.ajax({
         url: url,
@@ -310,10 +308,15 @@ GHRequest.prototype.setLocale = function (locale) {
         this.api_params.locale = locale;
 };
 
+GHRequest.prototype.getKey = function() {
+    return this.api_params["key"];
+}
+
 GHRequest.prototype.fetchTranslationMap = function (urlLocaleParam) {
     if (!urlLocaleParam)
         // let servlet figure out the locale from the Accept-Language header
         urlLocaleParam = "";
+
     if (this.host === undefined)
         this.host = "http://localhost:8989";
     var keyparam = "";

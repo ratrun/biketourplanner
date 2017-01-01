@@ -138,52 +138,7 @@ public class RoutingAlgorithmWithOSMIT {
     }
 
     @Test
-    public void testMonacoAllAlgorithmsWithBaseGraph() {
-        String vehicle = "car";
-        String graphFile = "target/monaco-gh";
-        String osmFile = DIR + "/monaco.osm.gz";
-        String importVehicles = vehicle;
 
-        Helper.removeDir(new File(graphFile));
-        GraphHopper hopper = new GraphHopperOSM().
-                // avoid that path.getDistance is too different to path.getPoint.calcDistance
-                setWayPointMaxDistance(0).
-                setDataReaderFile(osmFile).
-                setCHEnabled(false).
-                setGraphHopperLocation(graphFile).
-                setEncodingManager(new EncodingManager(importVehicles));
-
-        hopper.importOrLoad();
-
-        FlagEncoder encoder = hopper.getEncodingManager().getEncoder(vehicle);
-        Weighting weighting = hopper.createWeighting(new HintsMap("shortest"), encoder, hopper.getGraphHopperStorage());
-
-        List<AlgoHelperEntry> prepares = RoutingAlgorithmIT.createAlgos(hopper.getGraphHopperStorage(), hopper.getLocationIndex(),
-                true, TraversalMode.NODE_BASED, weighting, hopper.getEncodingManager());
-        AlgoHelperEntry chPrepare = prepares.get(prepares.size() - 1);
-        if (!(chPrepare.getQueryGraph() instanceof CHGraph))
-            throw new IllegalStateException("Last prepared QueryGraph has to be a CHGraph");
-
-        // set all normal algorithms to baseGraph of already prepared to see if all algorithms still work
-        Graph baseGraphOfCHPrepared = chPrepare.getBaseGraph();
-        for (AlgoHelperEntry ahe : prepares) {
-            if (!(ahe.getQueryGraph() instanceof CHGraph)) {
-                ahe.setQueryGraph(baseGraphOfCHPrepared);
-            }
-        }
-
-        List<OneRun> forEveryAlgo = createMonacoCar();
-        EdgeFilter edgeFilter = new DefaultEdgeFilter(encoder);
-        for (AlgoHelperEntry entry : prepares) {
-            LocationIndex idx = entry.getIdx();
-            for (OneRun oneRun : forEveryAlgo) {
-                List<QueryResult> list = oneRun.getList(idx, edgeFilter);
-                testCollector.assertDistance(entry, list, oneRun);
-            }
-        }
-    }
-
-    @Test
     public void testOneWayCircleBug() {
         // export from http://www.openstreetmap.org/export#map=19/51.37605/-0.53155
         List<OneRun> list = new ArrayList<OneRun>();
@@ -496,6 +451,7 @@ public class RoutingAlgorithmWithOSMIT {
     @Test
     public void testHarsdorf() {
         List<OneRun> list = new ArrayList<OneRun>();
+        // TODO somehow the bigger road is take even if we make it less preferred (e.g. introduce AVOID AT ALL costs for lanes=2&&maxspeed>50)
         // choose Unterloher Weg and the following residential + cycleway
         list.add(new OneRun(50.004333, 11.600254, 50.044449, 11.543434, 6929, 186));
         runAlgo(testCollector, DIR + "/north-bayreuth.osm.gz", "target/north-bayreuth-gh",
@@ -524,18 +480,27 @@ public class RoutingAlgorithmWithOSMIT {
     Graph runAlgo(TestAlgoCollector testCollector, String osmFile,
                   String graphFile, List<OneRun> forEveryAlgo, String importVehicles,
                   boolean testAlsoCH, String vehicle, String weightStr, boolean is3D) {
+
+        // for different weightings we need a different storage, otherwise we would need to remove the graph folder
+        // everytime we come with a different weighting
+        // graphFile += weightStr;
+
         AlgoHelperEntry algoEntry = null;
         OneRun tmpOneRun = null;
         try {
             Helper.removeDir(new File(graphFile));
             GraphHopper hopper = new GraphHopperOSM().
                     setStoreOnFlush(true).
-                    // avoid that path.getDistance is too different to path.getPoint.calcDistance
-                    setWayPointMaxDistance(0).
+                    setCHEnabled(testAlsoCH).
                     setDataReaderFile(osmFile).
-                    setCHEnabled(false).
                     setGraphHopperLocation(graphFile).
                     setEncodingManager(new EncodingManager(importVehicles));
+
+            // avoid that path.getDistance is too different to path.getPoint.calcDistance
+            hopper.setWayPointMaxDistance(0);
+
+            if (testAlsoCH)
+                hopper.getCHFactoryDecorator().addWeighting(weightStr);
             if (is3D)
                 hopper.setElevationProvider(new SRTMProvider().setCacheDir(new File(DIR)));
 
@@ -547,7 +512,7 @@ public class RoutingAlgorithmWithOSMIT {
             Weighting weighting = hopper.createWeighting(new HintsMap(weightStr), encoder, hopper.getGraphHopperStorage());
 
             Collection<AlgoHelperEntry> prepares = RoutingAlgorithmIT.createAlgos(hopper.getGraphHopperStorage(),
-                    hopper.getLocationIndex(), testAlsoCH, tMode, weighting, hopper.getEncodingManager());
+                    hopper.getLocationIndex(), testAlsoCH, tMode, weighting);
             EdgeFilter edgeFilter = new DefaultEdgeFilter(encoder);
             for (AlgoHelperEntry entry : prepares) {
                 algoEntry = entry;
@@ -600,7 +565,7 @@ public class RoutingAlgorithmWithOSMIT {
         for (int no = 0; no < MAX; no++) {
             for (int instanceNo = 0; instanceNo < instances.size(); instanceNo++) {
                 String[] algos = new String[]{
-                    ASTAR, DIJKSTRA_BI
+                        ASTAR, DIJKSTRA_BI
                 };
                 for (final String algoStr : algos) {
                     // an algorithm is not thread safe! reuse via clear() is ONLY appropriated if used from same thread!
