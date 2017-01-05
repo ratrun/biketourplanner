@@ -87,7 +87,7 @@ web.start_tile_server	Start map tile server	Menu item BikeTourPlanner 							Sta
 web.delete_map	Delete map	Menu item BikeTourPlanner 							Lösche Karte																																
 web.stop_routing_server	Stop routing server	Menu item BikeTourPlanner 							Stoppe Routing Server																																
 web.start_routing_server	Start routing server	Menu item BikeTourPlanner 							Starte Routing Server																																
-web.download_OSM_file	Download OSM file	Menu item BikeTourPlanner 							Download OSM Datei																																
+web.download_osm_file	Download OSM file	Menu item BikeTourPlanner 							Download OSM Datei																																
 web.change_routing_graph	Change routing graph	Menu item BikeTourPlanner 							Ändere Routing Graph																																
 web.calculate_new_routing_graph	Calculate new routing graph	Menu item BikeTourPlanner 							Erstelle neuen Routing Graph																																
 web.delete_routing_graph	Delete routing graph	Menu item BikeTourPlanner 							Lösche Routing Graph																																
@@ -97,3 +97,14 @@ web.routing	Routing	Menu item BikeTourPlanner 							Routing
 web.online_project_page	Online project page	Menu item BikeTourPlanner 							Online Information																																
 web.about	About	Menu item BikeTourPlanner 							Info zu BikeTourPlanner																																
 web.help	Help	Menu item BikeTourPlanner 							Hilfe																																
+web.steep	Steep	GUI element in BikeTourPlanner 							Steil																																
+web.flat	Flat	GUI element in BikeTourPlanner 							Flach																																
+web.fast	Fast	GUI element in BikeTourPlanner 							Kurz																																
+web.nice	Nice	GUI element in BikeTourPlanner 							Schön																																
+web.alternatives	Alternatives	GUI element in BikeTourPlanner 							Alternativen																																
+web.clone_and_change	Clone and change	GUI element in BikeTourPlanner 							Duplizieren und ändern																																
+web.roundtrip_distance	Roundtrip distance	GUI element in BikeTourPlanner 							Rundkurs Distanz																																
+web.use_heading	Set cardinal direction	GUI element in BikeTourPlanner 							Rundkurs Richtung																																
+web.save_trip_button	Save to library	GUI element in BikeTourPlanner 							In Bibliothek speichern																																
+web.routing_tab_heading	Route	GUI element in BikeTourPlanner 							Route																																
+web.library_tab_heading	Library	GUI element in BikeTourPlanner 							Bibliothek																																

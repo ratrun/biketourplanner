@@ -37,8 +37,8 @@
           </div>
         <div id="tabs">
             <ul>
-              <li><a href="#routingOptions">Route</a></li>
-              <li><a href="#tripDiv">Library</a></li>
+              <li><a href="#routingOptions"><span id="routing_tab_heading">Route</span></a></li>
+              <li><a href="#tripDiv"><span id="library_tab_heading">Library</span></a></li>
             </ul>
 
             <form id="tripForm">
@@ -69,7 +69,7 @@
                   <div id="dynamicrouteoptions" style="clear:both;">
                     <div id="ascendcontrol">
                       <div class="input-ascend">
-                        <span class="left">Steep</span><span class="right">Flat</span> <br>
+                        <span id="ascend_left" class="left">Steep</span><span id="ascend_right" class="right">Flat</span> <br>
                         <div id="slider-range-ascend" style="background-color: #dfe5e7; "></div>
                         <label for="ascendAvoidance" style="font-size:x-small;visibility: hidden">ascendAvoidance:</label>
                         <input type="text" id="ascendAvoidance" readonly style="border:0; color:#f6931f; font-weight:bold; width: 25px;font-size:x-small;visibility: hidden">
@@ -77,7 +77,7 @@
                     </div>
                     <div id="niceLevelcontrol">
                       <div class="input-niceLevel">
-                        <span class="left">Fast</span><span class="right">Nice</span> <br>
+                        <span id="niceLevel_left" class="left">Fast</span><span id="niceLevel_right" class="right">Nice</span> <br>
                         <div id="slider-range-niceLevel" style="background-color: #dfe5e7; "></div>
                         <label for="niceLevel" style="font-size:x-small;visibility: hidden">niceLevel:</label>
                         <input type="text" id="niceLevel" readonly style="border:0; color:#f6931f; font-weight:bold; width: 25px;font-size:x-small;visibility: hidden">
@@ -87,7 +87,7 @@
                     <div id="roundtripcontrol" style="clear:both;">
                       <label for="roundtripdistance">Roundtrip distance:</label>
                       <input id="roundtripdistance" style="border:0; width:45px; font-size:smaller;" name="value"><br>
-                      <input id="useHeading" type="checkbox">Set cardinal direction<br>
+                      <input id="useHeading" type="checkbox"> <span id="useHeadingSpan" class="left">Set cardinal direction </span>  <br>
                       <div id="headingknob">
                       <input id="roundtripheading" class="dial" data-thickness="1" data-width="100" data-height="100" data-min="0" data-max="360" value="0" data-displayInput=false data-cursor=true data-fgColor="#47d147" data-bgColor="#f6f6f6"><br>
                       </div>

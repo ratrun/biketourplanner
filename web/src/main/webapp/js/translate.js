@@ -54,6 +54,19 @@ function stringFormat(str, args) {
 function initI18N() {
     if (global.$) {
         $('#searchButton').attr("value", tr("search_button"));
+        $('#saveTripButton').attr("value", tr("save_trip_button"));
+        $('#routing_tab_heading').text(tr("routing_tab_heading"));
+        $('#library_tab_heading').text(tr("library_tab_heading"));
+        $('#ascend_left').text(tr("steep"));
+        $('#ascend_right').text(tr("flat"));
+        $('#niceLevel_left').text(tr("fast"));
+        $('#niceLevel_right').text(tr("nice"));
+        $('cloneChangeTripButton').attr("value", tr("clone_and_change"));
+        $("label[for='roundtripdistance']").text(tr("roundtrip_distance"));
+        $("label[for='alternativeRoutesMaxPaths']").text(tr("alternatives"));
+        $('#cloneChangeTripButton').attr("value", tr("clone_and_change"));
+        $('#useHeadingSpan').text(tr("use_heading"));
+
         var location_points = $("#locationpoints > div.pointDiv > input.pointInput");
         var l = location_points.size;
         $(location_points).each(function (index) {

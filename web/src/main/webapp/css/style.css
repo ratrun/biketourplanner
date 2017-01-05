@@ -191,8 +191,9 @@ body {
 
 #searchButton {
     float: right;
-    margin-bottom: 5px;
-    margin-right: 10px;
+    margin-bottom: 2px;
+    margin-right: 0px;
+    font-size: small;
 }
 
 #searchButton:hover {
@@ -206,8 +207,9 @@ body {
 
 #saveTripButton {
     margin-bottom: 5px;
-    margin-left: 5px;
-    margin-right: 5px;
+    margin-left: 0px;
+    margin-right: 3px;
+    font-size: small;
     float: left;
 }
 
@@ -536,9 +538,11 @@ td img.pic {
 #ABTourButton{
   float: left;
   visibility: hidden;
+  font-size: small;
 }
 
 #roundTripButton{
   float: right;
   visibility: hidden;
+  font-size: small;
 }

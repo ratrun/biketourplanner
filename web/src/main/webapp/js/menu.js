@@ -522,7 +522,7 @@ function initBikeTourPlannerMenu() {
                              this.enabled = false;
                           }
     });
-    graphhopperSubMenu.append(new gui.MenuItem({ label: translate.tr('download_OSM_file'),
+    graphhopperSubMenu.append(new gui.MenuItem({ label: translate.tr('download_osm_file'),
         click: function() {
                 var text = $("#OSMDownLoadText");
                 text.html("Please manually download the extract to your " + path.join(gui.process.cwd(), 'data/osmfiles') + "folder!");
