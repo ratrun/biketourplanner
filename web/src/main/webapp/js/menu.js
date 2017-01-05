@@ -48,10 +48,12 @@ function startLocalVectorTileServer(win) {
     });
     tilesServerHasExited = false;
 
-    stopTileServerMenuItem.enabled = true;
-    showInstalledMapsMenuItem.enabled = true;
-    startTileServerMenuItem.enabled = false;
-    deleteMapMenuItem.enabled = false;
+    if (stopTileServerMenuItem !== undefined) {
+        stopTileServerMenuItem.enabled = true;
+        showInstalledMapsMenuItem.enabled = true;
+        startTileServerMenuItem.enabled = false;
+        deleteMapMenuItem.enabled = false;
+    }
     showHtmlNotification("./img/mtb.png", 'Starting tile server!' , '', 1000);
 
     console.log('mbtiles started: ' + mbtiles);
@@ -675,10 +677,12 @@ function webkitapp(win) {
         } else {
             console.log("Tileserver responded with " + err);
             tilesServerHasExited = false;
-            stopTileServerMenuItem.enabled = true;
-            showInstalledMapsMenuItem.enabled = true;
-            startTileServerMenuItem.enabled = false;
-            deleteMapMenuItem.enabled = false;
+            if (stopTileServerMenuItem !== undefined) {
+                stopTileServerMenuItem.enabled = true;
+                showInstalledMapsMenuItem.enabled = true;
+                startTileServerMenuItem.enabled = false;
+                deleteMapMenuItem.enabled = false;
+            }
         }
     });
 
@@ -701,10 +705,12 @@ function webkitapp(win) {
         } else {
             console.log("http://127.0.0.0:8989 responded with " + err);
             graphhopperServerHasExited = false;
-            stopGraphhopperServerMenuItem.enabled = true;
-            changeGraphMenuItem.enabled = false;
-            startGraphhopperServerMenuItem.enabled = false;
-            calculateGraphMenuItem.enabled = false;
+            if (stopGraphhopperServerMenuItem !== undefined) {
+                stopGraphhopperServerMenuItem.enabled = true;
+                changeGraphMenuItem.enabled = false;
+                startGraphhopperServerMenuItem.enabled = false;
+                calculateGraphMenuItem.enabled = false;
+            }
         }
     });
 }
