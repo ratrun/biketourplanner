@@ -209,8 +209,6 @@ function mainInit(graphopperServerStartedOnce) {
   }
 
     var urlParams = urlTools.parseUrlWithHisto();
-    // Fixme: delete the following line, which enforces English GUI
-    urlParams.locale = 'en';
     ghRequest = new GHRequest(host, ghenv.routing.api_key);
     if ((!graphopperServerStartedOnce) && (switchingUrlParams === undefined))
        ghRequest.initVehicle("bike");
@@ -314,11 +312,15 @@ function mainInit(graphopperServerStartedOnce) {
     $(window).resize(function () {
         mapLayer.adjustMapSize();
     });
+
     if (menu.runningUnderNW) {
         nw.Window.get().on('close', function(){
             // Save eventually altered trip data
             localStorage['tripData'] = JSON.stringify($('#tripTree').jstree(true).get_json('#', { 'flat': true }));
         });
+        setTimeout(function() {
+           menu.initBikeTourPlannerMenu();
+        }, 1000);
     }
 
     $("#locationpoints").sortable({

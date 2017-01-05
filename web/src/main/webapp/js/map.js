@@ -146,17 +146,17 @@ function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selec
         zoomControl: false
     });
 
-    addOverlayLayer('Lodging', ['poi_lodging', 'poi_lodging_label'], 8);
-    addOverlayLayer('Campsite', ['poi_campsites', 'poi_campsites_label'], 8);
-    addOverlayLayer('Bicycle shop', [ 'poi_bicycle_shops', 'poi_label_bicycle_shops'], 8);
-    addOverlayLayer('Alpine hut', [ 'poi_alpine_hut', 'poi_label_alpine_hut'], 8);
-    addOverlayLayer('Mountain pass', [ 'poi_mountain_pass', 'poi_label_mountain_pass'], 8);
-    addOverlayLayer('Hospital', ['poi_hospital', 'poi_label_hospital' ], 8);
-    addOverlayLayer('Drinking water', ['poi_drinking_water'], 11);    
-    addOverlayLayer('Supermarket', ['poi_supermarket'], 11);
-    addOverlayLayer('Restaurant', ['poi_restaurant'], 11);
-    addOverlayLayer('Fast food', ['poi_fast_food'], 11);
-    addOverlayLayer('Fuel', ['poi_fuel'], 11);
+    addOverlayLayer(translate.tr('lodging'), ['poi_lodging', 'poi_lodging_label'], 8);
+    addOverlayLayer(translate.tr('campsites'), ['poi_campsites', 'poi_campsites_label'], 8);
+    addOverlayLayer(translate.tr('bicycle_shops'), [ 'poi_bicycle_shops', 'poi_label_bicycle_shops'], 8);
+    addOverlayLayer(translate.tr('alpine_huts'), [ 'poi_alpine_hut', 'poi_label_alpine_hut'], 8);
+    addOverlayLayer(translate.tr('mountain_pass'), [ 'poi_mountain_pass', 'poi_label_mountain_pass'], 8);
+    addOverlayLayer(translate.tr('hospital'), ['poi_hospital', 'poi_label_hospital' ], 8);
+    addOverlayLayer(translate.tr('drinking_water'), ['poi_drinking_water'], 11);    
+    addOverlayLayer(translate.tr('supermarket'), ['poi_supermarket'], 11);
+    addOverlayLayer(translate.tr('restaurants'), ['poi_restaurant'], 11);
+    addOverlayLayer(translate.tr('fast_food'), ['poi_fast_food'], 11);
+    addOverlayLayer(translate.tr('fuel'), ['poi_fuel'], 11);
 
     var _startItem = {
         text: translate.tr('set_start'),

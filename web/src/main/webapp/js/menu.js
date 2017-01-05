@@ -28,6 +28,7 @@ var activeOsmfile = localStorage.activeOsmfile;
 var gui;
 var main = require('./main-template.js');
 var runningUnderNW = false;
+var translate;
 
 var osplatform;
 
@@ -139,11 +140,6 @@ function startGraphhopperServer(win) {
     });
 
     console.log('graphhopper started!');
-    graphhopperServerHasExited = false;
-    stopGraphhopperServerMenuItem.enabled = true;
-    changeGraphMenuItem.enabled = false;
-    startGraphhopperServerMenuItem.enabled = false;
-    calculateGraphMenuItem.enabled = false;
 
     graphhopper.on('error', function (err) {
       console.log('graphhopper error' + err);
@@ -155,7 +151,7 @@ function startGraphhopperServer(win) {
         if (data.toString('utf-8').indexOf('start creating graph from') !==-1 )
              creatingnotification = showHtmlNotification("./img/mtb.png", 
                                                          "Creating routing data", 
-                                                         "Going to take a while depending on the area size. Press F12 to watch the console logs for details", 
+                                                         "Going to take a while depending on the covered area size. Press F12 to watch the console logs for details", 
                                                          45000);
         if (data.toString('utf-8').indexOf('Started server at HTTP :8989') !==-1 ) {
              console.log("Routing server is ready!");
@@ -199,9 +195,10 @@ function startGraphhopperServer(win) {
         console.log("win.on close tilesServerHasExited=" + tilesServerHasExited + " ,graphhopperServerHasExited=" + graphhopperServerHasExited);
         shutdownapp = true;
         if ((tilesServerHasExited) && (graphhopperServerHasExited)) {
-            console.log("close2");
+            console.log("close1");
             this.close(true);
         } else {
+           console.log("close2");
            if (!tilesServerHasExited)
               stopLocalVectorTileServer();
            if (!graphhopperServerHasExited)
@@ -224,6 +221,7 @@ function stopLocalVectorTileServer() {
           // Inform the tile server via SIGTERM to close
           var res = mbtiles.kill('SIGTERM');
           console.log("mbtiles kill SIGTERM returned:" + res);
+          tilesServerHasExited = res;
       }
    } else { // Call special shutdown URL
       $.getJSON("http://127.0.0.1:3000/4cede326-7166-4cbd-994f-699c6dc271e9", function( data ) {
@@ -423,20 +421,14 @@ function graphFolderSelectionDialogWithCallback(buttonText, absolutpath, callbac
 }
 
 // Here we define the menu functionality for the BikeTourPlanner application
-function webkitapp(win) {
-    gui.App.clearCache();
-    runningUnderNW = true;
-    var os = global.require('os');
-    osplatform = os.platform();
-    console.log("System:" + osplatform + " nwjs version:" + gui.process.versions['node-webkit']);
+function initBikeTourPlannerMenu() {
     var menu = new gui.Menu({type: "menubar"});
-    fs = global.require('fs');
     // Create a sub-menu
     var mapSubMenu = new gui.Menu();
     var separator = new gui.MenuItem({ type: 'separator' , enabled : false });
     var country_extracts = global.require('./ratrun-mbtiles-server/country_extracts.json');
 
-    mapSubMenu.append(new gui.MenuItem({ label: 'Download map',
+    mapSubMenu.append(new gui.MenuItem({ label: translate.tr('download_map'),
         click: function() {
                             var dialog;
                             var selected_country_file_name;
@@ -480,7 +472,7 @@ function webkitapp(win) {
                             $("#map_selection_dialog").dialog('open');
                           }
     }));
-    showInstalledMapsMenuItem = new gui.MenuItem({ label: 'Show installed maps', enabled : tilesServerHasExited,
+    showInstalledMapsMenuItem = new gui.MenuItem({ label: translate.tr('show_installed_maps'), enabled : tilesServerHasExited,
         click: function() {  console.log("showInstalledMaps requesting maps");
                              $.getJSON("http://127.0.0.1:3000/mbtilesareas.json", function( data ) {
                                     showDialog("installedmaps.html", 170, 300, JSON.stringify(data).replace(/{\"country\"\:\"/g,'').replace(/\"}/g,'<br>').replace(/[\",\]\[]/g,''), 'maplist');
@@ -489,10 +481,10 @@ function webkitapp(win) {
     });
     mapSubMenu.append(showInstalledMapsMenuItem);
 
-    stopTileServerMenuItem = new gui.MenuItem({ label: 'Stop tile server', enabled : tilesServerHasExited,
+    stopTileServerMenuItem = new gui.MenuItem({ label: translate.tr('stop_tile_server'), enabled : tilesServerHasExited,
         click: function() { stopLocalVectorTileServer(); }
     });
-    startTileServerMenuItem = new gui.MenuItem({ label: 'Start tile server', enabled : !tilesServerHasExited,
+    startTileServerMenuItem = new gui.MenuItem({ label: translate.tr('start_tile_server'), enabled : !tilesServerHasExited,
         click: function() { 
                              startLocalVectorTileServer(win);
                              this.enabled = false;
@@ -501,7 +493,7 @@ function webkitapp(win) {
     mapSubMenu.append(separator);
     mapSubMenu.append(stopTileServerMenuItem);
     mapSubMenu.append(startTileServerMenuItem);
-    deleteMapMenuItem = new gui.MenuItem({ label: 'Delete map', enabled : !tilesServerHasExited,
+    deleteMapMenuItem = new gui.MenuItem({ label: translate.tr('delete_map'), enabled : !tilesServerHasExited,
         click: function() { stopLocalVectorTileServer();
                             chooseFile('#mbtilesFileDialog', path.join(gui.process.cwd(), 'data/mbtiles'));
         }
@@ -510,7 +502,7 @@ function webkitapp(win) {
     
     menu.append(
         new gui.MenuItem({
-            label: 'Map',
+            label: translate.tr('map'),
             submenu: mapSubMenu 
         })
     );
@@ -518,19 +510,19 @@ function webkitapp(win) {
     var graphhopperSubMenu = new gui.Menu()
     var win = gui.Window.get();
 
-    stopGraphhopperServerMenuItem = new gui.MenuItem({ label: 'Stop routing server', enabled : !graphhopperServerHasExited,
+    stopGraphhopperServerMenuItem = new gui.MenuItem({ label: translate.tr('stop_routing_server'), enabled : !graphhopperServerHasExited,
         click: function() { 
                              console.log('Stop routing server clicked');
                              stopGraphhopperServer();
                            }
     });
-    startGraphhopperServerMenuItem = new gui.MenuItem({ label: 'Start routing server', enabled : graphhopperServerHasExited,
+    startGraphhopperServerMenuItem = new gui.MenuItem({ label: translate.tr('start_routing_server'), enabled : graphhopperServerHasExited,
         click: function() {  console.log('Start routing server clicked');
                              startGraphhopperServer(win);
                              this.enabled = false;
                           }
     });
-    graphhopperSubMenu.append(new gui.MenuItem({ label: 'Download OSM file',
+    graphhopperSubMenu.append(new gui.MenuItem({ label: translate.tr('download_OSM_file'),
         click: function() {
                 var text = $("#OSMDownLoadText");
                 text.html("Please manually download the extract to your " + path.join(gui.process.cwd(), 'data/osmfiles') + "folder!");
@@ -552,13 +544,13 @@ function webkitapp(win) {
                 });
         }
     }));
-    changeGraphMenuItem = new gui.MenuItem({ label: 'Change routing graph', enabled : !graphhopperServerHasExited,
+    changeGraphMenuItem = new gui.MenuItem({ label: translate.tr('change_routing_graph'), enabled : !graphhopperServerHasExited,
         click: function() {
                              graphFolderSelectionDialogWithCallback("Change routing graph", false, changeActiveRoutingGraph);
                           }
     });
     graphhopperSubMenu.append(changeGraphMenuItem);
-    calculateGraphMenuItem = new gui.MenuItem({ label: 'Calculate new routing graph', enabled : !graphhopperServerHasExited,
+    calculateGraphMenuItem = new gui.MenuItem({ label: translate.tr('calculate_new_routing_graph'), enabled : !graphhopperServerHasExited,
         click: function() {
                              chooseFile('#osmFileDialog', path.join(gui.process.cwd(), 'data/osmfiles'));
                           }
@@ -568,36 +560,35 @@ function webkitapp(win) {
     graphhopperSubMenu.append(separator);
     graphhopperSubMenu.append(stopGraphhopperServerMenuItem);
     graphhopperSubMenu.append(startGraphhopperServerMenuItem);
-    deleteGraphMenuItem = new gui.MenuItem({ label: 'Delete routing data', enabled : tilesServerHasExited,
+    deleteGraphMenuItem = new gui.MenuItem({ label: translate.tr('delete_routing_graph'), enabled : tilesServerHasExited,
         click: function() {
-                graphFolderSelectionDialogWithCallback("Delete routing data", true, deletegraph);
+                graphFolderSelectionDialogWithCallback("Delete routing graph", true, deletegraph);
         }
     });
     graphhopperSubMenu.append(deleteGraphMenuItem);
 
     menu.append(
         new gui.MenuItem({
-            label: 'Routing',
+            label: translate.tr('routing'),
             submenu: graphhopperSubMenu 
         })
     );
 
     // Create the help sub-menu
     var helpSubMenu = new gui.Menu();
-    //helpSubMenu.append(new gui.MenuItem({ label: 'Help: Fixme' ,  enabled : false}));
-    helpSubMenu.append(new gui.MenuItem({ label: 'Vector tile map keys' ,
+    helpSubMenu.append(new gui.MenuItem({ label: translate.tr('vector_tile_map_keys') ,
         click: function() {
                             showDialog("mapkeys.html", 382, 630);
                           }
     }));
 
-    helpSubMenu.append(new gui.MenuItem({ label: 'Online project page' ,
+    helpSubMenu.append(new gui.MenuItem({ label: translate.tr('online_project_page') ,
         click: function() {
                             showDialog("https://ratrun.github.io/BikeTourPlannerGHPages/", win.height-100, 800);
                           }
     }));
 
-    helpSubMenu.append(new gui.MenuItem({ label: 'About' ,
+    helpSubMenu.append(new gui.MenuItem({ label: translate.tr('about') ,
         click: function() {
                             showDialog("about.html", 310, 450);
                           }
@@ -605,13 +596,30 @@ function webkitapp(win) {
 
     menu.append(
         new gui.MenuItem({
-            label: 'Help',
+            label: translate.tr('help'),
             submenu: helpSubMenu
         })
     );
 
     // Append Menu to Window
     gui.Window.get().menu = menu;
+    // Set initial state
+    graphhopperServerHasExited = false;
+    stopGraphhopperServerMenuItem.enabled = true;
+    changeGraphMenuItem.enabled = false;
+    startGraphhopperServerMenuItem.enabled = false;
+    calculateGraphMenuItem.enabled = false;
+}
+
+function webkitapp(win) {
+    gui.App.clearCache();
+    runningUnderNW = true;
+    var os = global.require('os');
+    osplatform = os.platform();
+    console.log("System:" + osplatform + " nwjs version:" + gui.process.versions['node-webkit']);
+
+    fs = global.require('fs');
+    translate = require('./translate.js');
 
     // Check our two servers and start them in case that they are not responding quickly
     var http = global.require('https');
@@ -644,7 +652,7 @@ function webkitapp(win) {
     console.log("Start graphhopper server handling");
     var request = http.get({hostname: '127.0.0.1', port: 8989}, function (res) {
     });
-    
+/*
     request.setTimeout( 100, function( ) {
        if (graphhopperServerHasExited) {
            console.log("Our graphhopper routing server did not respond: Starting it!");
@@ -652,7 +660,7 @@ function webkitapp(win) {
        } else
            console.log("Graphhopper server request timeout");
     });
-
+*/
     request.on("error", function(err) {
         if ((err.code === 'ECONNREFUSED')&&((graphhopperServerHasExited))) {
             console.log("GraphhopperServer ECONNREFUSED: Starting it!");
@@ -769,3 +777,4 @@ module.exports.runningUnderNW = runningUnderNW;
 module.exports.getActiveOSMfile = getActiveOSMfile;
 module.exports.infoDialog = infoDialog; 
 module.exports.switchGraph = changeActiveRoutingGraph;
+module.exports.initBikeTourPlannerMenu = initBikeTourPlannerMenu;

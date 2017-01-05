@@ -10,7 +10,7 @@ BikeTourPlanner comes with an integrated local vector tile map server which uses
 The currently supported platforms are: 
 
 * Linux 64-bit 
-* Microsoft Windows 64-bit. 
+* Microsoft Windows 64-bit / 32 bit  should work, but is not tested
 
 Implementation of support for Mac OS X 64-bit should be possible with few changes.
 
