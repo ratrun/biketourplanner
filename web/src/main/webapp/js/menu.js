@@ -29,6 +29,7 @@ var gui;
 var main = require('./main-template.js');
 var runningUnderNW = false;
 var translate;
+var shortcut;
 
 var osplatform;
 
@@ -172,9 +173,11 @@ function startGraphhopperServer(win) {
     graphhopper.on('close', function (code) {
         console.log('graphhopper child process closed with code ' + code + ' shutdownapp=' + shutdownapp);
         graphhopperServerHasExited = true;
-        if (shutdownapp)
-           win.close();
-        else {
+        if (shutdownapp) {
+            // Unregister the global desktop shortcut.
+            gui.App.unregisterGlobalHotKey(shortcut);
+            win.close();
+        } else {
           showHtmlNotification("./img/mtb.png", 'Routing server stopped !!' , '', 1000);
           stopGraphhopperServerMenuItem.enabled = false;
           changeGraphMenuItem.enabled = true;
@@ -617,6 +620,36 @@ function webkitapp(win) {
     var os = global.require('os');
     osplatform = os.platform();
     console.log("System:" + osplatform + " nwjs version:" + gui.process.versions['node-webkit']);
+    
+    //See https://github.com/nwjs/nw.js/issues/4115 for toggling full screen via F11
+    var option = {
+      key : "F11",
+      active : function() {
+        win.toggleFullscreen();
+      },
+      failed : function(msg) {
+        // :(, fail to register the |key| or couldn't parse the |key|.
+        console.log(msg);
+      }
+    };
+
+    // Create a shortcut with |option|.
+    shortcut = new gui.Shortcut(option);
+
+    // Register global desktop shortcut, which can work without focus.
+    gui.App.registerGlobalHotKey(shortcut);
+
+    // If register |shortcut| successfully and user struck "Ctrl+Shift+A", |shortcut|
+    // will get an "active" event.
+
+    // You can also add listener to shortcut's active and failed event.
+    shortcut.on('active', function() {
+      console.log("Global desktop keyboard shortcut: " + this.key + " active."); 
+    });
+
+    shortcut.on('failed', function(msg) {
+      console.log(msg);
+    });
 
     fs = global.require('fs');
     translate = require('./translate.js');
