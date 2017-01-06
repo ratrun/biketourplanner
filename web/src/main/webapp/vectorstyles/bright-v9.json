@@ -176,6 +176,24 @@
             "interactive": true
         },
         {
+            "id": "landuse_military",
+            "type": "fill",
+            "source": "mapbox",
+            "source-layer": "landuse",
+            "filter": [
+                "==",
+                "class",
+                "military"
+            ],
+            "paint": {
+                "fill-color": "#ffe6ff"
+            },
+            "metadata": {
+                "mapbox:group": "1444849388993.3071"
+            },
+            "interactive": true
+        },
+        {
             "id": "landuse_cemetery",
             "type": "fill",
             "source": "mapbox",
