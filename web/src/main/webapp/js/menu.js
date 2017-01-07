@@ -185,6 +185,7 @@ function startGraphhopperServer(win) {
           changeGraphMenuItem.enabled = true;
           startGraphhopperServerMenuItem.enabled = true;
           calculateGraphMenuItem.enabled = true;
+          deleteGraphMenuItem.enabled = true;
         }
     });
 
@@ -229,13 +230,13 @@ function stopLocalVectorTileServer() {
           tilesServerHasExited = res;
       }
    } else { // Call special shutdown URL
-      $.getJSON("http://127.0.0.1:3000/4cede326-7166-4cbd-994f-699c6dc271e9", function( data ) {
-            console.log("Tile server stop response was" + data);
-      });
       stopTileServerMenuItem.enabled = false;
       showInstalledMapsMenuItem.enabled = false;
       startTileServerMenuItem.enabled = true;
       deleteMapMenuItem.enabled = true;
+      $.getJSON("http://127.0.0.1:3000/4cede326-7166-4cbd-994f-699c6dc271e9", function( data ) {
+            console.log("Tile server stop response was" + data);
+      });
    }
   }
 }
@@ -614,6 +615,7 @@ function initBikeTourPlannerMenu() {
     changeGraphMenuItem.enabled = false;
     startGraphhopperServerMenuItem.enabled = false;
     calculateGraphMenuItem.enabled = false;
+    deleteGraphMenuItem.enabled = false;
 }
 
 function webkitapp(win) {
@@ -710,6 +712,7 @@ function webkitapp(win) {
                 changeGraphMenuItem.enabled = false;
                 startGraphhopperServerMenuItem.enabled = false;
                 calculateGraphMenuItem.enabled = false;
+                deleteGraphMenuItem.enabled = true;
             }
         }
     });
