@@ -58,6 +58,7 @@ web.set_intermediate=Setze als Zwischenziel
 web.set_end=Setze als Ziel
 web.center_map=Zentriere Karte hier
 web.show_coords=Zeige Koordinaten
+web.create_poi=Erstelle POI
 web.route=Route
 web.delete_from_route=Lösche aus Route
 web.marker=Marker

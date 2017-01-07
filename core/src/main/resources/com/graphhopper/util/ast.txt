@@ -58,6 +58,7 @@ web.set_intermediate=Poner como intermediu
 web.set_end=Poner como final
 web.center_map=Centrar el mapa equí
 web.show_coords=Ver coordenaes
+web.create_poi=
 web.route=Ruta
 web.delete_from_route=Quitar de la ruta
 web.marker=Marcador

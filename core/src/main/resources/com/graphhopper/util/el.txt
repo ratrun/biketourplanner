@@ -58,6 +58,7 @@ web.set_intermediate=Ορισμός ενδιάμεσου σημείου
 web.set_end=Ορισμός προορισμού
 web.center_map=Κεντράρισμα χάρτη εδώ
 web.show_coords=Εμφάνιση συντεταγμένων
+web.create_poi=
 web.route=Διαδρομή
 web.delete_from_route=Αφαίρεση από διαδρομή
 web.marker=Δείκτης

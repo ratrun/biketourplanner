@@ -58,6 +58,7 @@ web.set_intermediate=Selectează ca punct intermediar
 web.set_end=Selectează ca punct de sosire
 web.center_map=Centrează harta aici
 web.show_coords=Arată coordonatele
+web.create_poi=
 web.route=Intinerariu
 web.delete_from_route=Șterge din intinerariu
 web.marker=Punct de interes

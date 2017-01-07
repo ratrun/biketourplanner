@@ -58,6 +58,7 @@ web.set_intermediate=Додати проміжну точку
 web.set_end=Встановити кінець
 web.center_map=Відцентрувати мапу тут
 web.show_coords=Показати координати
+web.create_poi=
 web.route=Маршрут
 web.delete_from_route=Вилучити з маршруту
 web.marker=Значок

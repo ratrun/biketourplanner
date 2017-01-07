@@ -58,6 +58,7 @@ web.set_intermediate=
 web.set_end=
 web.center_map=
 web.show_coords=
+web.create_poi=
 web.route=
 web.delete_from_route=
 web.marker=

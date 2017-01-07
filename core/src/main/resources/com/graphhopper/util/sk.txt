@@ -58,6 +58,7 @@ web.set_intermediate=Nastaviť ako bod trasy
 web.set_end=Nastaviť ako koniec
 web.center_map=Vycentrovať mapu sem
 web.show_coords=Zobraziť súradnice
+web.create_poi=
 web.route=Trasa
 web.delete_from_route=Odstrániť z trasy
 web.marker=Značka

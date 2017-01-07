@@ -1019,7 +1019,7 @@ module.exports.setFlag = setFlag;
 // Retrieve tour data from localStorage
 var tripData = JSON.parse(localStorage.getItem("tripData"));
 if (tripData === null) {
-    tripData = [];
+    tripData = [{"id":"0", "parent" : "#", "text": "POI"}];
     // Initialize tourData in localStorage
     localStorage['tripData'] = JSON.stringify(tripData);
 }

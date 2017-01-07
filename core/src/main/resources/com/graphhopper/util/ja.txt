@@ -58,6 +58,7 @@ web.set_intermediate=
 web.set_end=
 web.center_map=
 web.show_coords=座標を表示
+web.create_poi=
 web.route=経路
 web.delete_from_route=経路から取り除く
 web.marker=ピン

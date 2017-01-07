@@ -124,17 +124,23 @@ function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selec
         separator: true,
         index: 10
     }, {
+        text: translate.tr('create_poi'),
+        callback: function (e) {
+            alert("FIXME: Create POI" + e.latlng.lat + "," + e.latlng.lng);
+        },
+        index: 11
+    }, {
         text: translate.tr('show_coords'),
         callback: function (e) {
             alert(e.latlng.lat + "," + e.latlng.lng);
         },
-        index: 11
+        index: 12
     }, {
         text: translate.tr('center_map'),
         callback: function (e) {
             map.panTo(e.latlng);
         },
-        index: 12
+        index: 13
     }];
 
     map = L.map('map', {

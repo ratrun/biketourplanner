@@ -58,6 +58,7 @@ web.set_intermediate=경유지로 설정
 web.set_end=도착지로 설정
 web.center_map=여기를 지도의 중심으로 설정
 web.show_coords=좌표 보기
+web.create_poi=
 web.route=경로
 web.delete_from_route=경로에서 삭제
 web.marker=마커

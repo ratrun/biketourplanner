@@ -58,6 +58,7 @@ web.set_intermediate=Postavi kao posrednik
 web.set_end=Postavi kao kraj
 web.center_map=Postavi kao centar karte
 web.show_coords=Prikaži koordinate
+web.create_poi=
 web.route=Ruta
 web.delete_from_route=Izbriši iz rute
 web.marker=Oznaka

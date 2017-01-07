@@ -58,6 +58,7 @@ web.set_intermediate=הגדרה כאמצע
 web.set_end=הגדרה כסוף
 web.center_map=למרכז את המפה לכאן
 web.show_coords=הצגת נקודות ציון
+web.create_poi=
 web.route=דרך
 web.delete_from_route=מחיקה מהדרך
 web.marker=הדגשה

@@ -58,6 +58,7 @@ web.set_intermediate=Imposta punto intermedio
 web.set_end=Imposta arrivo
 web.center_map=Centra la mappa qui
 web.show_coords=Mostra coordinate
+web.create_poi=
 web.route=Itinerario
 web.delete_from_route=Elimina dall'itinerario
 web.marker=Marker
