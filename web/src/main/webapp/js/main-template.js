@@ -1019,7 +1019,7 @@ module.exports.setFlag = setFlag;
 // Retrieve tour data from localStorage
 var tripData = JSON.parse(localStorage.getItem("tripData"));
 if (tripData === null) {
-    tripData = [{"id":"0", "parent" : "#", "text": "POI"}];
+    tripData = [{"id": "0", "parent" : "#", "text": "POIs"}];
     // Initialize tourData in localStorage
     localStorage['tripData'] = JSON.stringify(tripData);
 }
@@ -1033,7 +1033,11 @@ $(function() {
     $('#tripTree').jstree({
        'plugins' : [ "themes", "contextmenu", "dnd", "state", "types" ],
        'core' : {
-       'check_callback' : true,
+       'check_callback' : function (operation, node, node_parent, node_position, more) {
+            // operation can be 'create_node', 'rename_node', 'delete_node', 'move_node' or 'copy_node'
+            // in case of 'rename_node' node_position is filled with the new node name
+            return node.id === "0" ? false : true;
+       },
        'data' : tripData,
        }});
     $("#tripTree").on("select_node.jstree",
@@ -1099,7 +1103,7 @@ function saveghResponses (response, id, callback) {
 }
 
 function handleTrip(data) { 
-    if (menu.runningUnderNW) {
+    if ((menu.runningUnderNW) && (data.node.id !== "0")) {
         var absolutFileName = getGhResponseFilePath(data.node.id);
         var fs = global.require('fs');
         fs.readFile(absolutFileName, (err, fdata) => {
