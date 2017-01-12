@@ -126,7 +126,8 @@ function initMap(bounds, setStartCoord, setIntermediateCoord, setEndCoord, selec
     }, {
         text: translate.tr('create_poi'),
         callback: function (e) {
-            POIDialog("Create POI at " + e.latlng.lat + "," + e.latlng.lng);
+            var defaulIconNumber = 5;
+            POIDialog("Create new POI at " + e.latlng.lat + "," + e.latlng.lng, defaulIconNumber);
         },
         index: 11
     }, {
@@ -496,7 +497,16 @@ function addOverlayLayer(name, id, minzoom) {
     layers_menu.appendChild(link);
 }
 
-function POIDialog(title) {
+var selectedPOIText = null;
+function POIDialog(title, iconNumber) {
+    if (selectedPOIText === null)
+        selectedPOIText = document.getElementById('selected-poi-text');
+    selectedPOIText.value = iconNumber;
+
+    document.getElementById('poi-dialog').addEventListener('changed', function(e){
+       selectedPOIText.value = iconSelect.getSelectedValue();
+    });
+
     var iconSelect = new IconSelect("poi-dialog", 
         {'selectedIconWidth':48,
         'selectedIconHeight':48,
@@ -677,6 +687,7 @@ function POIDialog(title) {
     icons.push({'iconFilePath':'images/icons/zoom-out-alt.svg',               'iconValue':'186'})
 
     iconSelect.refresh(icons);
+    iconSelect.setSelectedIndex(iconNumber);
 
     $("#poi-dialog").dialog({
       resizable: false,
