@@ -1,1 +1,1 @@
-﻿This folder contains the user specific OSM files
+﻿This folder contains user specific OSM files
