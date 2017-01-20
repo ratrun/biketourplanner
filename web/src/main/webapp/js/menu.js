@@ -454,7 +454,7 @@ function initBikeTourPlannerMenu() {
                                         "Download": function () {
                                             stopLocalVectorTileServer();
                                             showHtmlNotification("./img/mtb.png", 'Starting download of' , selected_country_file_name, 6000);
-                                            download("https://osm2vectortiles-downloads.os.zhdk.cloud.switch.ch/v2.0/extracts/" + selected_country_file_name + ".mbtiles", "ratrun-mbtiles-server\\" + selected_country_file_name + ".mbtiles",
+                                            download("https://openmaptiles.org/about.os.zhdk.cloud.switch.ch/v2.0/extracts/" + selected_country_file_name + ".mbtiles", "ratrun-mbtiles-server\\" + selected_country_file_name + ".mbtiles",
                                             function(result) {
                                                showHtmlNotification("./img/mtb.png", 'Download result:', result, 6000);
                                                startLocalVectorTileServer(win);

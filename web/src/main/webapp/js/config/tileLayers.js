@@ -109,7 +109,7 @@ module.exports.setActivelayer = function (layerEvent)
     // Obviously the style needs to be changed together with every layer change - this we do here:
     if (styleTileURL[layerEvent.name])
     {
-       layerEvent.layer.options.style.sources.mapbox.tiles[0] = styleTileURL[layerEvent.name]; 
+       layerEvent.layer.options.style.sources.openmaptiles.tiles[0] = styleTileURL[layerEvent.name]; 
        module.exports.activeLayer = availableVectorTileLayers[layerEvent.name];
        localStorage['lastlayerName'] = layerEvent.name;
     }
@@ -122,7 +122,7 @@ module.exports.selectLayer = function (layerName) {
         defaultLayer = module.exports.defaultLayer;
         try {
              // Change the tile url
-             defaultLayer.options.style.sources.mapbox.tiles[0] = styleTileURL[module.exports.activeLayerName];
+             defaultLayer.options.style.sources.openmaptiles.tiles[0] = styleTileURL[module.exports.activeLayerName];
             }
          catch(err) {
             // Ignore for raster tile layer
@@ -137,9 +137,10 @@ module.exports.selectLayer = function (layerName) {
 var stylejsonObj = require('../../vectorstyles/bright-v9.json');
 
 function addVectorLayer(layerName, url) {
-    stylejsonObj.sources.mapbox.tiles[0] = url;
-    stylejsonObj.sprite = "http://" + host + ":8989/assets/bright-v8";
-    stylejsonObj.glyphs = "http://" + host + ":8989/assets/font/{fontstack}/{range}.pbf";
+    stylejsonObj.sources.openmaptiles.tiles[0] = url;
+    stylejsonObj.sprite = "http://" + host + ":8989/assets/sprite";
+    //stylejsonObj.glyphs = "http://" + host + ":8989/assets/font/{fontstack}/{range}.pbf";
+    stylejsonObj.glyphs = "https://free.tilehosting.com/fonts/{fontstack}/{range}.pbf?key=RiS4gsgZPZqeeMlIyxFo", 
     styleTileURL[layerName] = url;
     var vectorlayer = L.mapboxGL({
                               attribution: osmAttr + " © <a href='https://www.mapbox.com/about/maps/'>Mapbox</a>",
@@ -162,11 +163,11 @@ module.exports.setHost = function (hostname) {
     if (hostname === "")
         host = "localhost";
     console.log("tileLayers module.exports.setHost host=" + host + " hostname=" + hostname);
-
+/*
     if (mapboxgl.supported()) {
-        addVectorLayer("Osm2VectorTiles.org", "http://osm2vectortiles-0.tileserver.com/v2/{z}/{x}/{y}.pbf");
+        addVectorLayer("OpenMapTiles.org", "https://openmaptiles.org.tileserver.com/v3/{z}/{x}/{y}.pbf");
     }
-
+*/
     // Get the list of served vector tile areas
     $.getJSON("http://" + host + ":3000/mbtilesareas.json", function( data ) {
         var i = 0;
