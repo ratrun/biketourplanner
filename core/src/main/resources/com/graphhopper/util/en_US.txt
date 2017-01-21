@@ -107,3 +107,6 @@ web.use_heading=Set cardinal direction
 web.save_trip_button=Save to library
 web.routing_tab_heading=Route
 web.library_tab_heading=Library
+web.a_b_tour=A_B_tour
+web.roundtrip=roundtrip
+web.unspecific=Unspecific

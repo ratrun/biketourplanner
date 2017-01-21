@@ -54,6 +54,8 @@ function stringFormat(str, args) {
 function initI18N() {
     if (global.$) {
         $('#searchButton').attr("value", tr("search_button"));
+        $('#ABTourButton').attr("value", tr("a_b_tour"));
+        $('#roundTripButton').attr("value", tr("roundtrip"));
         $('#saveTripButton').attr("value", tr("save_trip_button"));
         $('#routing_tab_heading').text(tr("routing_tab_heading"));
         $('#library_tab_heading').text(tr("library_tab_heading"));

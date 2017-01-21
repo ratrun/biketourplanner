@@ -20,7 +20,7 @@ var showInstalledMapsMenuItem;
 var changeGraphMenuItem;
 var deleteMapMenuItem;
 
-var tilesServerHasExited = true;
+var tileServerHasExited = true;
 var graphhopperServerHasExited = true;
 var shutdownapp = false;
 var fs;
@@ -46,8 +46,7 @@ function startLocalVectorTileServer(win) {
        cwd: 'ratrun-mbtiles-server',
        detached: false
     });
-    tilesServerHasExited = false;
-
+    tileServerHasExited = false;
     if (stopTileServerMenuItem !== undefined) {
         stopTileServerMenuItem.enabled = true;
         showInstalledMapsMenuItem.enabled = true;
@@ -72,12 +71,12 @@ function startLocalVectorTileServer(win) {
 
     mbtiles.on('close', function (code) {
         console.log('tiles server child process closed with code ' + code);
-        tilesServerHasExited = true;
+        tileServerHasExited = true;
     });
 
     mbtiles.on('exit', function (code, signal) {
         console.log('tiles server child process exited with code ' + code +' signal=' + signal);
-        tilesServerHasExited = true;
+        tileServerHasExited = true;
         setTimeout(function(){ 
               if (signal === 'SIGTERM')
                 this.close(true);
@@ -198,14 +197,14 @@ function startGraphhopperServer(win) {
 
     win.on('close', function() {
         this.hide(); // Pretend to be closed already
-        console.log("win.on close tilesServerHasExited=" + tilesServerHasExited + " ,graphhopperServerHasExited=" + graphhopperServerHasExited);
+        console.log("win.on close tileServerHasExited=" + tileServerHasExited + " ,graphhopperServerHasExited=" + graphhopperServerHasExited);
         shutdownapp = true;
-        if ((tilesServerHasExited) && (graphhopperServerHasExited)) {
+        if ((tileServerHasExited) && (graphhopperServerHasExited)) {
             console.log("close1");
             this.close(true);
         } else {
            console.log("close2");
-           if (!tilesServerHasExited)
+           if (!tileServerHasExited)
               stopLocalVectorTileServer();
            if (!graphhopperServerHasExited)
               stopGraphhopperServer();
@@ -221,13 +220,13 @@ function stopLocalVectorTileServer() {
   console.log("stopLocalVectorTileServer mbtiles=" + mbtiles);
   var mapLayer = require('./map.js');
   mapLayer.clearLayers();
-  if (!tilesServerHasExited) {
+  if (!tileServerHasExited) {
    if (shutdownapp) {
       if (mbtiles !== undefined) {
           // Inform the tile server via SIGTERM to close
           var res = mbtiles.kill('SIGTERM');
           console.log("mbtiles kill SIGTERM returned:" + res);
-          tilesServerHasExited = res;
+          tileServerHasExited = res;
       }
    } else { // Call special shutdown URL
       stopTileServerMenuItem.enabled = false;
@@ -478,7 +477,7 @@ function initBikeTourPlannerMenu() {
                             $("#map_selection_dialog").dialog('open');
                           }
     }));
-    showInstalledMapsMenuItem = new gui.MenuItem({ label: translate.tr('show_installed_maps'), enabled : tilesServerHasExited,
+    showInstalledMapsMenuItem = new gui.MenuItem({ label: translate.tr('show_installed_maps'), enabled : tileServerHasExited,
         click: function() {  console.log("showInstalledMaps requesting maps");
                              $.getJSON("http://127.0.0.1:3000/mbtilesareas.json", function( data ) {
                                     showDialog("installedmaps.html", 170, 300, JSON.stringify(data).replace(/{\"country\"\:\"/g,'').replace(/\"}/g,'<br>').replace(/[\",\]\[]/g,''), 'maplist');
@@ -487,10 +486,11 @@ function initBikeTourPlannerMenu() {
     });
     mapSubMenu.append(showInstalledMapsMenuItem);
 
-    stopTileServerMenuItem = new gui.MenuItem({ label: translate.tr('stop_tile_server'), enabled : tilesServerHasExited,
+    stopTileServerMenuItem = new gui.MenuItem({ label: translate.tr('stop_tile_server'), enabled : !tileServerHasExited,
         click: function() { stopLocalVectorTileServer(); }
     });
-    startTileServerMenuItem = new gui.MenuItem({ label: translate.tr('start_tile_server'), enabled : !tilesServerHasExited,
+    
+    startTileServerMenuItem = new gui.MenuItem({ label: translate.tr('start_tile_server'), enabled : tileServerHasExited,
         click: function() { 
                              startLocalVectorTileServer(win);
                              this.enabled = false;
@@ -499,7 +499,7 @@ function initBikeTourPlannerMenu() {
     mapSubMenu.append(separator);
     mapSubMenu.append(stopTileServerMenuItem);
     mapSubMenu.append(startTileServerMenuItem);
-    deleteMapMenuItem = new gui.MenuItem({ label: translate.tr('delete_map'), enabled : !tilesServerHasExited,
+    deleteMapMenuItem = new gui.MenuItem({ label: translate.tr('delete_map'), enabled : !tileServerHasExited,
         click: function() { stopLocalVectorTileServer();
                             chooseFile('#mbtilesFileDialog', path.join(gui.process.cwd(), 'data/mbtiles'));
         }
@@ -566,7 +566,7 @@ function initBikeTourPlannerMenu() {
     graphhopperSubMenu.append(separator);
     graphhopperSubMenu.append(stopGraphhopperServerMenuItem);
     graphhopperSubMenu.append(startGraphhopperServerMenuItem);
-    deleteGraphMenuItem = new gui.MenuItem({ label: translate.tr('delete_routing_graph'), enabled : tilesServerHasExited,
+    deleteGraphMenuItem = new gui.MenuItem({ label: translate.tr('delete_routing_graph'), enabled : tileServerHasExited,
         click: function() {
                 graphFolderSelectionDialogWithCallback("Delete routing graph", true, deletegraph);
         }
@@ -664,7 +664,7 @@ function webkitapp(win) {
     });
 
     request.setTimeout( 100, function( ) {
-       if (tilesServerHasExited) {
+       if (tileServerHasExited) {
           console.log("Tileserver was stopped and did not respond: Starting it!");
           startLocalVectorTileServer(win);
        } else
@@ -673,12 +673,12 @@ function webkitapp(win) {
 
     request.on("error", function(err) {
         console.log("http://127.0.0.0:3000 responded with " + err);
-        if ((err.code === 'ECONNREFUSED')&& (tilesServerHasExited)) {
+        if ((err.code === 'ECONNREFUSED')&& (tileServerHasExited)) {
             console.log("Tileserver was stopped and connection was refused: Starting it!");
             startLocalVectorTileServer(win);
         } else {
-            console.log("Tileserver responded with " + err);
-            tilesServerHasExited = false;
+            console.log("Tileserver responded with " + err + " stopTileServerMenuItem=" + stopTileServerMenuItem);
+            tileServerHasExited = false;
             if (stopTileServerMenuItem !== undefined) {
                 stopTileServerMenuItem.enabled = true;
                 showInstalledMapsMenuItem.enabled = true;

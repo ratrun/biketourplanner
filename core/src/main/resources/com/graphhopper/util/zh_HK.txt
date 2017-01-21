@@ -107,3 +107,6 @@ web.use_heading=
 web.save_trip_button=
 web.routing_tab_heading=
 web.library_tab_heading=
+web.a_b_tour=
+web.roundtrip=
+web.unspecific=

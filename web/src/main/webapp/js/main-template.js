@@ -780,15 +780,15 @@ function handleGhResponse(callClickHandler, json, routeResultsDiv, doZoom, reque
             if (path.haswaytypeinfo === "yes")
             {
                 if (path.unpavedDistance !== 0)
-                    tmpwaytype += "<br/>Unpaved:" + translate.createDistanceString(path.unpavedDistance, request.useMiles);
+                    tmpwaytype += "<br/>" + translate.tr2("unpaved") + ":" + translate.createDistanceString(path.unpavedDistance, request.useMiles);
                 if (path.cyclewayDistance !== 0 )
-                    tmpwaytype += "<br/>Cycleway:" + translate.createDistanceString(path.cyclewayDistance, request.useMiles);
+                    tmpwaytype += "<br/>" + translate.tr2("cycleway") + ":" + translate.createDistanceString(path.cyclewayDistance, request.useMiles);
                 if (path.pushingSectionDistance !== 0)
-                    tmpwaytype += "<br/>Pushing:" + translate.createDistanceString(path.pushingSectionDistance, request.useMiles);
+                    tmpwaytype += "<br/>" + translate.tr2("off_bike") + ":" + translate.createDistanceString(path.pushingSectionDistance, request.useMiles);
                 if (path.roadDistance !== 0)
-                    tmpwaytype += "<br/>Road:" + translate.createDistanceString(path.roadDistance, request.useMiles);
+                    tmpwaytype += "<br/>" + translate.tr2("road") + ":" + translate.createDistanceString(path.roadDistance, request.useMiles);
                 if (path.unspecificWayDistance !== 0)
-                    tmpwaytype += "<br/>Unspecific:" + translate.createDistanceString(path.unspecificWayDistance, request.useMiles);
+                    tmpwaytype += "<br/>" + translate.tr2("unspecific") + ":" + translate.createDistanceString(path.unspecificWayDistance, request.useMiles);
             }
 
             var routeInfo = $("<div class='route_description'>");

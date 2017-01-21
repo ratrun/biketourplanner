@@ -109,3 +109,6 @@ web.use_heading	Set cardinal direction	GUI element in BikeTourPlanner 							Run
 web.save_trip_button	Save to library	GUI element in BikeTourPlanner 							In Bibliothek speichern																																
 web.routing_tab_heading	Route	GUI element in BikeTourPlanner 							Route																																
 web.library_tab_heading	Library	GUI element in BikeTourPlanner 							Bibliothek																																
+web.a_b_tour	A-B-tour	GUI element in BikeTourPlanner 							A-B-Tour																																
+web.roundtrip	Roundtrip	GUI element in BikeTourPlanner 							Rundtour																																
+web.unspecific	Unspecific	GUI element in BikeTourPlanner 							Unspezifisch																																
