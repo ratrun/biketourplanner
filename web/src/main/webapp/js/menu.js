@@ -270,13 +270,13 @@ var download = function(url, dest, cb) {
 
         // check if response is success
         if (response.statusCode !== 200) {
-            return cb('Response status was ' + response.statusCode);
+            return cb(response.statusCode);
         }
 
         response.pipe(file);
 
         file.on('finish', function() {
-            file.close(cb('Download of ' + url + ' finished!'));  // close() is async, call cb after close completes.
+            file.close(cb(200));  // close() is async, call cb after close completes.
         });
     });
 
@@ -285,7 +285,7 @@ var download = function(url, dest, cb) {
         fs.unlink(dest);
 
         if (cb) {
-            return cb(err.message);
+            return cb(err);
         }
     });
 
@@ -293,7 +293,7 @@ var download = function(url, dest, cb) {
         fs.unlink(dest); // Delete the file async. (But we don't check the result)
 
         if (cb) {
-            return cb(err.message);
+            return cb(err);
         }
     });
 };
@@ -453,11 +453,16 @@ function initBikeTourPlannerMenu() {
                                         "Download": function () {
                                             stopLocalVectorTileServer();
                                             showHtmlNotification("./img/mtb.png", 'Starting download of' , selected_country_file_name, 6000);
-                                            download("https://openmaptiles.org/about.os.zhdk.cloud.switch.ch/v2.0/extracts/" + selected_country_file_name + ".mbtiles", "ratrun-mbtiles-server\\" + selected_country_file_name + ".mbtiles",
+                                            download("https://openmaptiles.os.zhdk.cloud.switch.ch/v3.3/extracts/" + 
+                                                    selected_country_file_name + ".mbtiles", "data\\mbtiles\\" 
+                                                    + selected_country_file_name + ".mbtiles",
                                             function(result) {
-                                               showHtmlNotification("./img/mtb.png", 'Download result:', result, 6000);
-                                               startLocalVectorTileServer(win);
-                                               infoDialog("Restart the application such that the new map becomes selectable!");
+                                                showHtmlNotification("./img/mtb.png", 'Download result:', result.message, 6000);
+                                                if (result === 200) {
+                                                   startLocalVectorTileServer(win);
+                                                   infoDialog("Map download succeeded! <br>Restart the application now to ensure that the new map becomes selectable!");
+                                                } else 
+                                                   infoDialog("Map download failed with result code:" + result);
                                             });
                                             $(this).dialog("close");
                                         },
