@@ -1996,7 +1996,42 @@
         }
       }
     },
-        {
+            {
+            "id": "landuse_military",
+            "type": "fill",
+            "metadata": {
+                "mapbox:group": "1444849388993.3071"
+            },
+            "source": "openmaptiles",
+            "source-layer": "landuse",
+            "filter": [
+                "==",
+                "class",
+                "military"
+            ],
+            "paint": {
+                "fill-color": "#ffe6ff",
+                "fill-opacity": 0.6
+            }
+        },
+            {
+            "id": "landuse_stadium",
+            "type": "fill",
+            "metadata": {
+                "mapbox:group": "1444849388993.3071"
+            },
+            "source": "openmaptiles",
+            "source-layer": "landuse",
+            "filter": [
+                "==",
+                "class",
+                "stadium"
+            ],
+            "paint": {
+                "fill-color": "#b3ffb3",
+                "fill-opacity": 0.8
+            }
+        },        {
             "id": "poi_campsites",
             "type": "symbol",
             "source": "bicyclenodes",
@@ -4061,7 +4096,7 @@
           [
             "<=",
             "rank",
-            14
+            15
           ],
           [
             "has",
