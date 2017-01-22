@@ -4,7 +4,7 @@ BikeTourPlanner is an open source desktop application for offline planning of bi
 It allows the user to generate routing data from [OpenStreetMap](http://www.openstreetmap.org/about)(OSM) data on demand.
 
 BikeTourPlanner is a [nwjs](http://nwjs.io/) application.
-It uses offline maps which are provided by [OSM2VectorTiles](http://osm2vectortiles.org/about) and displayed using [Leaflet](https://github.com/mapbox/mapbox-gl-js) and [mapbox-gl-js](https://github.com/mapbox/mapbox-gl-js). 
+It uses offline maps which are provided by [OpenMapTiles](https://openmaptiles.org/about/) and displayed using [Leaflet](https://github.com/mapbox/mapbox-gl-js) and [mapbox-gl-js](https://github.com/mapbox/mapbox-gl-js). 
 BikeTourPlanner comes with an integrated local vector tile map server which uses [nodejs](https://nodejs.org/en/). It requires an installed Java 8 runtime.
 
 The currently supported platforms are: 
@@ -32,7 +32,7 @@ Development requires installed [nodejs](https://nodejs.org/en/) version 0.18.6.
 These are the installation steps for Linux: 
 
 ```
-npm install -g nw@0.19.0-sdk 
+npm install -g nw@0.19.5-sdk 
 git clone --recursive https://github.com/ratrun/biketourplanner
 cd biketourplanner/web/src/main/webapp
 cd web
