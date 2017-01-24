@@ -48,7 +48,7 @@ Verify that the tile server works by starting
 Here you should see the following output:
 
 ```
-Serving files from /home/wenks/biketourplanner/web/src/main/webapp/data/mbtiles
+Serving files from /home/ratrun/biketourplanner/web/src/main/webapp/data/mbtiles
 Listening on port: 3000
 Serving following areas:
 bicyclenodes
