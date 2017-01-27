@@ -33,8 +33,12 @@ var shortcut;
 
 var osplatform;
 
-if (activeOsmfile === undefined)
+if (activeOsmfile === undefined) {
     activeOsmfile = 'liechtenstein-latest.osm.pbf';
+    console.log('defaulting activeOsmfile to:' + activeOsmfile);
+} else {
+    console.log('activeOsmfile set to:' + activeOsmfile);
+}
 
 function startLocalVectorTileServer(win) {
     var exec = global.require('child_process').spawn;
