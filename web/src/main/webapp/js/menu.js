@@ -33,12 +33,19 @@ var shortcut;
 
 var osplatform;
 
-if (activeOsmfile === undefined) {
-    activeOsmfile = 'liechtenstein-latest.osm.pbf';
-    console.log('defaulting activeOsmfile to:' + activeOsmfile);
-} else {
-    console.log('activeOsmfile set to:' + activeOsmfile);
+/* Fall back to liechtenstein in case persistence value was lost 
+ * as either its a new installation, or the user has interrupted 
+ * an ongoing graph calculation*/
+function defaultActiveOsmfile() {
+    if (activeOsmfile === undefined) {
+        activeOsmfile = 'liechtenstein-latest.osm.pbf';
+        console.log('defaulting activeOsmfile to:' + activeOsmfile);
+    } else {
+        console.log('activeOsmfile is set to:' + activeOsmfile);
+    }
 }
+
+defaultActiveOsmfile();
 
 function startLocalVectorTileServer(win) {
     var exec = global.require('child_process').spawn;
@@ -112,6 +119,7 @@ function startGraphhopperServer(win) {
     var graphpath = path.join('data/graphs',  activeOsmfile);
     console.log("Checking for " + graphpath);
     if (!fs.existsSync(graphpath)) { // We do not have a pre-calculated graph
+       defaultActiveOsmfile();
        var osmfilepath = path.join('data/osmfiles', activeOsmfile);
        if (!fs.existsSync(osmfilepath)) {
          activeOsmfile = 'liechtenstein-latest.osm.pbf';
