@@ -128,6 +128,8 @@ function startGraphhopperServer(win) {
          localStorage['activeOsmfile'] = activeOsmfile;
          graphpath = path.join('data/graphs',  activeOsmfile);
        }
+    } else {
+        osmfilepath = path.join('data/osmfiles', activeOsmfile);
     }
     console.log('Starting graphhopper with graph path=' + graphpath + ' and osmfilepath=' + osmfilepath);
     showHtmlNotification("./img/mtb.png", 'Starting routing server for ' + activeOsmfile, '', 1000);

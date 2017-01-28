@@ -989,7 +989,6 @@ $(function() {
     });
 });
 
-
 $(function() {
     $( "#slider-range-alternativeRoutesMaxPaths" ).slider({
       range: "max",
