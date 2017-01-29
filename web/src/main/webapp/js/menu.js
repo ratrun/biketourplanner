@@ -133,8 +133,8 @@ function startGraphhopperServer(win) {
     }
     console.log('Starting graphhopper with graph path=' + graphpath + ' and osmfilepath=' + osmfilepath);
     showHtmlNotification("./img/mtb.png", 'Starting routing server for ' + activeOsmfile, '', 1000);
-    var initialpercent = 40; // Intitial percentage of heap space of total available RAM to reserve for graphhopper
-    var maxpercent = 80; // Max percentage of total available RAM to reserve as max heap space for graphhopper
+    var initialpercent = 50; // Intitial percentage of heap space of total available RAM to reserve for graphhopper
+    var maxpercent = 95; // Max percentage of total available RAM to reserve as max heap space for graphhopper
     var initialreserved = Math.trunc((os.totalmem() * (initialpercent/100))/(1024*1000));
     var maxreserved = Math.trunc((os.totalmem() * (maxpercent/100))/(1024*1000));
     console.log('Installed RAM:' + os.totalmem() + ' Bytes. Initial heap ' + initialpercent + '%=' + initialreserved + 'MB, max heap ' + maxpercent + '%=' +  maxreserved +'MB');
