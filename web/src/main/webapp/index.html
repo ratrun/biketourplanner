@@ -9,9 +9,9 @@
         <title>BikeTourPlanner</title>
         <meta name="description" content="A fast route planner for biking, hiking and more! Based on OpenStreetMap including elevation data. Try out for free!"/>
 
-        <script type="text/javascript" src="js/lib/jquery-1.12.4.min.js"></script>
+        <script type="text/javascript" src="js/lib/jquery-3.1.1.min.js"></script>
         <script type="text/javascript" src="js/lib/d3.min.js"></script>
-        <link rel="stylesheet" href="css/leaflet.css?v=1.0.1" />
+        <link rel="stylesheet" href="css/leaflet.css?v=1.0.2" />
         <link rel="stylesheet" href="css/leaflet.elevation-0.0.4.css" />
         <link rel="stylesheet" href="css/leaflet_numbered_markers.css" />
         <link rel="stylesheet" href="css/leaflet.contextmenu.css" />
@@ -156,22 +156,19 @@
             <nav id="layer_menu"></nav>
         </div>
         <div id="dialogGraphSelect" class="hidden" title="Select routing data">
-        <p><span style="float:left; margin:12px 12px 20px 0;"></span>
+        <span style="float:left; margin:12px 12px 20px 0;"></span>
             <div id="graphTree"></div>
-        </p>
         </div>
         <div id="dialogDownLoadOSM" class="hidden" title="Instructions for the download of OSM files">
-            <p><span style="float:left; margin:12px 12px 20px 0;"></span>
+            <span style="float:left; margin:12px 12px 20px 0;"></span>
                 You now get directed to the best place for downloading of OSM extracts, which is <a href="http://www.geofabrik.de">Geofabrik</a> <br>
                 <div id="OSMDownLoadText"></div> <br>
                 After the download has finished, the new file should show up in the <em>Calculate new routing graph</em> submenue from the <em>Routing</em> menu. 
                 <br><br><strong>Stop the routing server and calculate a new routing graph for activation after the download! </strong> 
-            </p>
         </div>
         <div id="infoDialog" class="hidden" title="Information">
-          <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>
+          <span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>
               <div id="infoDialogText"></div>
-          </p>
         </div>
         <pre id='layerfeatures'></pre>
         <input style="display:none;" id="osmFileDialog" type="file" accept=".pbf,.osm"/>
