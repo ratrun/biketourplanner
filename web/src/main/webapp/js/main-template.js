@@ -987,7 +987,15 @@ $(function() {
     $( "#roundtripdistance" ).spinner({
       min: 0,
       step: 10.0,
+      max: 500,
       spin: function( event, ui ) {
+        seed = 0;
+        if ($(this).spinner('value') > 0) {
+           ghRequest.api_params.round_trip.distance = 1000 * $(this).spinner('value');
+           graphHopperSubmit();
+        }
+      }, 
+      change:function( event, ui ) {
         seed = 0;
         if ($(this).spinner('value') > 0) {
            ghRequest.api_params.round_trip.distance = 1000 * $(this).spinner('value');
