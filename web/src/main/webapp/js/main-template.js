@@ -98,7 +98,7 @@ function enableRoundTripButton(newseed, headingEnabled) {
   seed = newseed;
 }
 
-function enableABButton() {
+function enableABButton(clearmap) {
   $("#roundTripButton").show();
   $("#ABTourButton").show();
   $("#roundTripButton").prop("disabled", false);
@@ -110,14 +110,17 @@ function enableABButton() {
   $("#routingSettings").show();
   $( "#tabs" ).tabs({ active: 0 });
   
-  mapLayer.clearLayers();
-  mapLayer.adjustMapSize();
+  if (clearmap) {
+    mapLayer.clearLayers();
+    mapLayer.adjustMapSize();
+  }
   $("#1_Div").show();
   ghRequest.api_params.algorithm = "";
   mapLayer.setDisabledForMapsContextMenu('start', false);
   mapLayer.setDisabledForMapsContextMenu('intermediate', false);
   mapLayer.setDisabledForMapsContextMenu('end', false);
 }
+
 function mainInit(graphopperServerStartedOnce) {
   if (!graphopperServerStartedOnce) {
     tileLayers.setHost("localhost");
@@ -194,7 +197,7 @@ function mainInit(graphopperServerStartedOnce) {
     });
 
     $("#ABTourButton").click(function(e) {
-        enableABButton();
+        enableABButton(true);
     });
 
     $("#roundtripheading").knob({
@@ -206,10 +209,15 @@ function mainInit(graphopperServerStartedOnce) {
             graphHopperSubmit();
         }
     });
+  } else {
+      var roundtripActive = $("#roundTripButton").prop("disabled");
+      if (!roundtripActive)
+          enableABButton(false);
   }
 
     var urlParams = urlTools.parseUrlWithHisto();
     ghRequest = new GHRequest(host, ghenv.routing.api_key);
+
     if ((!graphopperServerStartedOnce) && (switchingUrlParams === undefined))
        ghRequest.initVehicle("bike");
     $.when(ghRequest.fetchTranslationMap(urlParams.locale), ghRequest.getInfo())
@@ -928,7 +936,7 @@ function tripSubmit() {
         if (historyURL) {
             $("#tripDiv").hide();
             // Activate buttons based on urlParams.algorithm
-            (urlParams.algorithm === "roundTrip") ? enableRoundTripButton(urlParams["round_trip.seed"], false) : enableABButton();
+            (urlParams.algorithm === "roundTrip") ? enableRoundTripButton(urlParams["round_trip.seed"], false) : enableABButton(true);
             if ((selectedActiveOsmfile !== undefined) && (selectedActiveOsmfile !== menu.getActiveOSMfile())) {
                 menu.switchGraph(selectedActiveOsmfile); // This triggers a call of mainInit when the new graph is loaded.
                 menu.infoDialog("Be patient!<br> Switching to graph " + selectedActiveOsmfile + " will take a while!");
@@ -1074,7 +1082,7 @@ $( function() {
         $("#ABTourButton").hide();
         $("#roundTripButton").hide();
      } else {
-        enableABButton();
+        enableABButton(true);
      }
    }});
 });
