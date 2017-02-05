@@ -195,6 +195,7 @@ GHRequest.prototype.createGPXURL = function (withRoute, withTrack, withWayPoints
 };
 
 GHRequest.prototype.createHistoryURL = function () {
+    var skip = {"key": true};
     return this.createPath("?" + this.createPointParams(true)) + "&use_miles=" + !!this.useMiles;
 };
 
@@ -213,9 +214,12 @@ GHRequest.prototype.createPointParams = function (useRawInput) {
     return (str);
 };
 
-GHRequest.prototype.createPath = function (url) {
+GHRequest.prototype.createPath = function (url, skipParameters) {
     for (var key in this.api_params) {
         var val = this.api_params[key];
+        if(skipParameters && skipParameters[key])
+            continue;
+        
         if ( (val !== undefined) && val.toString() !== "[object Object]" )
         {
             if (GHRoute.isArray(val)) {
@@ -309,7 +313,7 @@ GHRequest.prototype.setLocale = function (locale) {
 };
 
 GHRequest.prototype.getKey = function() {
-    return this.api_params["key"];
+    return this.api_params.key;
 }
 
 GHRequest.prototype.fetchTranslationMap = function (urlLocaleParam) {
