@@ -1,88 +1,40 @@
-L.MapboxGL = L.Layer.extend({
-    options: {
-      updateInterval: 32
-    },
-
+L.MapboxGL = L.Class.extend({
     initialize: function (options) {
         L.setOptions(this, options);
 
-
-         /**
-         * Create a version of `fn` that only fires once every `time` millseconds.
-         *
-         * @param {Function} fn the function to be throttled
-         * @param {number} time millseconds required between function calls
-         * @param {*} context the value of `this` with which the function is called
-         * @returns {Function} debounced function
-         * @private
-         */
-        var throttle = function (fn, time, context) {
-            var lock, args, wrapperFn, later;
-
-            later = function () {
-                // reset lock and call if queued
-                lock = false;
-                if (args) {
-                    wrapperFn.apply(context, args);
-                    args = false;
-                }
-            };
-
-            wrapperFn = function () {
-                if (lock) {
-                    // called too soon, queue to call later
-                    args = arguments;
-
-                } else {
-                    // call and lock until later
-                    fn.apply(context, arguments);
-                    setTimeout(later, time);
-                    lock = true;
-                }
-            };
-
-            return wrapperFn;
-        };
-
-        // setup throttling the update event when panning
-        this._throttledUpdate = throttle(L.Util.bind(this._update, this), this.options.updateInterval);
+//        if (options.accessToken) {
+//            mapboxgl.accessToken = options.accessToken;
+//        } else {
+//            throw new Error('You should provide a Mapbox GL access token as a token option.');
+//        }
     },
 
     onAdd: function (map) {
+        this._map = map;
+
         if (!this._glContainer) {
             this._initContainer();
         }
 
         map._panes.tilePane.appendChild(this._glContainer);
+        map.on('zoomanim', this._animateZoom, this);
+        map.on('move', this._update, this);
 
         this._initGL();
-
-        this._offset = this._map.containerPointToLayerPoint([0, 0]);
-
-        // work around https://github.com/mapbox/mapbox-gl-leaflet/issues/47
-        if (map.options.zoomAnimation) {
-            L.DomEvent.on(map._proxy, L.DomUtil.TRANSITION_END, this._transitionEnd, this);
-        }
     },
 
     onRemove: function (map) {
-        if (this._map.options.zoomAnimation) {
-            L.DomEvent.off(this._map._proxy, L.DomUtil.TRANSITION_END, this._transitionEnd, this);
-        }
-
         map.getPanes().tilePane.removeChild(this._glContainer);
+        map.off('zoomanim', this._animateZoom, this);
+        map.off('move', this._update, this);
+        map.attributionControl.removeAttribution(this.options.attribution);
         this._glMap.remove();
         this._glMap = null;
     },
 
-    getEvents: function () {
-        return {
-            move: this._throttledUpdate, // sensibly throttle updating while panning
-            zoomanim: this._animateZoom, // applys the zoom animation to the <canvas>
-            zoom: this._pinchZoom, // animate every zoom event for smoother pinch-zooming
-            zoomstart: this._zoomStart, // flag starting a zoom to disable panning
-            zoomend: this._zoomEnd
-        };
+    addTo: function (map) {
+        map.addLayer(this);
+        return this;
     },
 
     _initContainer: function () {
@@ -95,40 +47,28 @@ L.MapboxGL = L.Layer.extend({
 
     _initGL: function () {
         var center = this._map.getCenter();
-
         var options = L.extend({}, this.options, {
             container: this._glContainer,
             interactive: false,
             center: [center.lng, center.lat],
             zoom: this._map.getZoom() - 1,
-            attributionControl: false
+            attributionControl: true
         });
 
         this._glMap = new mapboxgl.Map(options);
-
         // allow GL base map to pan beyond min/max latitudes
         this._glMap.transform.latRange = null;
-
-        // treat child <canvas> element like L.ImageOverlay
-        L.DomUtil.addClass(this._glMap._canvas, 'leaflet-image-layer');
-        L.DomUtil.addClass(this._glMap._canvas, 'leaflet-zoom-animated');
+        this._map.attributionControl.addAttribution(this.options.attribution);
     },
 
-    _update: function (e) {
-        // update the offset so we can correct for it later when we zoom
-        this._offset = this._map.containerPointToLayerPoint([0, 0]);
-
-        if (this._zooming) {
-          return;
-        }
-
+    _update: function () {
         var size = this._map.getSize(),
             container = this._glContainer,
             gl = this._glMap,
             topLeft = this._map.containerPointToLayerPoint([0, 0]);
 
         L.DomUtil.setPosition(container, topLeft);
-
+        
         var center = this._map.getCenter();
 
         // gl.setView([center.lat, center.lng], this._map.getZoom() - 1, 0);
@@ -141,65 +81,18 @@ L.MapboxGL = L.Layer.extend({
         if (gl.transform.width !== size.x || gl.transform.height !== size.y) {
             container.style.width  = size.x + 'px';
             container.style.height = size.y + 'px';
-            if (gl._resize !== null && gl._resize !== undefined){
-                gl._resize();    
-            } else {
-                gl.resize();    
-            }
+            gl.resize();
         } else {
-          gl._update();
+            gl._update();
         }
     },
 
-    // update the map constantly during a pinch zoom
-    _pinchZoom: function (e) {
-      this._glMap.jumpTo({
-        zoom: this._map.getZoom() - 1,
-        center: this._map.getCenter()
-      });
-    },
-
-    // borrowed from L.ImageOverlay https://github.com/Leaflet/Leaflet/blob/master/src/layer/ImageOverlay.js#L139-L144
     _animateZoom: function (e) {
-      var scale = this._map.getZoomScale(e.zoom),
-          offset = this._map._latLngToNewLayerPoint(this._map.getBounds().getNorthWest(), e.zoom, e.center);
-
-      L.DomUtil.setTransform(this._glMap._canvas, offset.subtract(this._offset), scale);
-    },
-
-    _zoomStart: function (e) {
-      this._zooming = true;
-    },
-
-    _zoomEnd: function () {
-      var scale = this._map.getZoomScale(this._map.getZoom()),
-          offset = this._map._latLngToNewLayerPoint(this._map.getBounds().getNorthWest(), this._map.getZoom(), this._map.getCenter());
-
-      L.DomUtil.setTransform(this._glMap._canvas, offset.subtract(this._offset), scale);
-
-      this._zooming = false;
-    },
-
-    _transitionEnd: function (e) {
-      L.Util.requestAnimFrame(function () {
-          var zoom = this._map.getZoom(),
-          center = this._map.getCenter(),
-          offset = this._map.latLngToContainerPoint(this._map.getBounds().getNorthWest());
-
-          // reset the scale and offset
-          L.DomUtil.setTransform(this._glMap._canvas, offset, 1);
-
-          // enable panning once the gl map is ready again
-          this._glMap.once('moveend', L.Util.bind(function () {
-              this._zoomEnd();
-          }, this));
-
-          // update the map position
-          this._glMap.jumpTo({
-              center: center,
-              zoom: zoom - 1
-          });
-      }, this);
+        var origin = e.origin.add(this._map._getMapPanePos()).subtract(this._map.getSize().divideBy(2));
+        this._glMap.zoomTo(e.zoom - 1, {
+            duration: 250,
+            offset: [origin.x, origin.y]
+        });
     }
 });
 

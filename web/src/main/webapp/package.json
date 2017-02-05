@@ -24,9 +24,9 @@
     "url": "https://github.com/ratrun/biketourplanner/issues"
   },  
   "dependencies": {
-    "d3": "^3.5.17",
-    "jquery": "^3.1.1",
-    "leaflet": "^1.0.3"
+    "d3": "^3.5.9",
+    "jquery": "^2.1.4",
+    "leaflet": "^0.7.7"
   },
   "scripts": {
     "start": "nw ."
