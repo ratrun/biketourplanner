@@ -994,8 +994,8 @@ $(function() {
            ghRequest.api_params.round_trip.distance = 1000 * $(this).spinner('value');
            graphHopperSubmit();
         }
-      }, 
-      change:function( event, ui ) {
+      },
+      change: function( event, ui ) {
         seed = 0;
         if ($(this).spinner('value') > 0) {
            ghRequest.api_params.round_trip.distance = 1000 * $(this).spinner('value');
