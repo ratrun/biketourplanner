@@ -23,6 +23,7 @@ import com.graphhopper.GraphHopperAPI;
 import com.graphhopper.PathWrapper;
 import com.graphhopper.util.CmdArgs;
 import com.graphhopper.util.Helper;
+import com.graphhopper.util.TranslationMap;
 import com.graphhopper.util.exceptions.PointOutOfBoundsException;
 import com.graphhopper.util.shapes.GHPoint;
 import org.json.JSONObject;
@@ -32,6 +33,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import static org.junit.Assert.*;
@@ -133,6 +135,19 @@ public class GraphHopperServletIT extends BaseServletTester {
         assertEquals(23, instructions.size());
         assertEquals("Continue onto la Callisa", instructions.get(0).get("text"));
         assertEquals("At roundabout, take exit 2", instructions.get(3).get("text"));
+    }
+
+    @Test
+    public void testInitInstructionsWithTurnDescription() {
+        GraphHopperAPI hopper = new GraphHopperWeb();
+        assertTrue(hopper.load(getTestRouteAPIUrl()));
+        GHRequest request = new GHRequest(42.554851, 1.536198, 42.510071, 1.548128);
+        GHResponse rsp = hopper.route(request);
+        assertEquals("Continue onto Carrer Antoni Fiter i Rossell", rsp.getBest().getInstructions().get(2).getName());
+
+        request.getHints().put("turn_description", false);
+        rsp = hopper.route(request);
+        assertEquals("Carrer Antoni Fiter i Rossell", rsp.getBest().getInstructions().get(2).getName());
     }
 
     @Test

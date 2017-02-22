@@ -261,9 +261,9 @@ public abstract class BikeCommonFlagEncoder extends AbstractFlagEncoder {
         }
 
         // use the way if it is tagged for bikes
-        if (way.hasTag("bicycle", intendedValues) || 
-            way.hasTag("bicycle", "dismount") || 
-            way.hasTag("highway", "cycleway"))
+        if (way.hasTag("bicycle", intendedValues) ||
+                way.hasTag("bicycle", "dismount") ||
+                way.hasTag("highway", "cycleway"))
             return acceptBit;
 
         // accept only if explicitly tagged for bike usage
@@ -319,7 +319,7 @@ public abstract class BikeCommonFlagEncoder extends AbstractFlagEncoder {
      *
      * @param way:   needed to retrieve tags
      * @param speed: speed guessed e.g. from the road type or other tags
-     * @return The assumed avererage speed.
+     * @return The assumed average speed.
      */
     @Override
     protected double applyMaxSpeed(ReaderWay way, double speed) {
