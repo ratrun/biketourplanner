@@ -89,7 +89,7 @@ web.delete_map	Delete map	Menu item BikeTourPlanner 							Lösche Karte
 web.stop_routing_server	Stop routing server	Menu item BikeTourPlanner 							Stoppe Routing Server																																
 web.start_routing_server	Start routing server	Menu item BikeTourPlanner 							Starte Routing Server																																
 web.download_osm_file	Download OSM file	Menu item BikeTourPlanner 							Download OSM Datei																																
-web.change_routing_graph	Change routing graph	Menu item BikeTourPlanner 							Ändere Routing Graph																																
+web.change_routing_graph	Change routing graph	Menu item BikeTourPlanner 							Wechsle Routing Graph																																
 web.calculate_new_routing_graph	Calculate new routing graph	Menu item BikeTourPlanner 							Erstelle neuen Routing Graph																																
 web.delete_routing_graph	Delete routing graph	Menu item BikeTourPlanner 							Lösche Routing Graph																																
 web.vector_tile_map_keys	Vector Tile map keys	Menu item BikeTourPlanner 							Kartenlegende																																
