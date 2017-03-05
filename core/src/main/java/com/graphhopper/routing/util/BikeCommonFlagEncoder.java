@@ -36,7 +36,7 @@ import static com.graphhopper.routing.util.PriorityCode.*;
  * @author Nop
  * @author ratrun
  */
-public abstract class BikeCommonFlagEncoder extends AbstractFlagEncoder {
+abstract public class BikeCommonFlagEncoder extends AbstractFlagEncoder {
     /**
      * Reports whether this edge is unpaved.
      */
@@ -202,7 +202,7 @@ public abstract class BikeCommonFlagEncoder extends AbstractFlagEncoder {
 
     @Override
     public int getVersion() {
-        return 1;
+        return 2;
     }
 
     @Override
