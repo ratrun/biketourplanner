@@ -32,7 +32,7 @@ Development requires installed [nodejs](https://nodejs.org/en/) version 0.18.6.
 These are the installation steps for Linux: 
 
 ```
-npm install -g nw@0.19.5-sdk 
+npm install -g nw@0.21.3-sdk 
 git clone --recursive https://github.com/ratrun/biketourplanner
 cd biketourplanner/web/src/main/webapp
 cd web

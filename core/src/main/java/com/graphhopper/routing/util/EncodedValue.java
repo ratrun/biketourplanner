@@ -101,6 +101,10 @@ public class EncodedValue {
         return bits;
     }
 
+    public double getFactor() {
+        return factor;
+    }
+
     public long setDefaultValue(long flags) {
         return setValue(flags, defaultValue);
     }
