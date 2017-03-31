@@ -11,7 +11,7 @@ The following steps are simpler and only need the JRE, a jar file and an OSM fil
     Afterwards you can start a local vector tile server from the ../ratrun-mbtiles-server directory by running `npm install` and `npm start` there.
     When you re-load the page, you should be able to see the vector maps of your areas as top entries on the tile layer selector on the right of the map. When you choose one of these layers, you are using your local vector tile server.
 
-To see how GraphHopper is configured for production usage, see the [deployment guide](./../core/deploy.md).
+See [here](./../core/elevation.md) how to easily enable elevation data. To see how GraphHopper is configured for production usage, see the [deployment guide](./../core/deploy.md).
 
 ## Troubleshooting
 
