@@ -128,6 +128,16 @@ GHRequest.prototype.init = function (params) {
     }
 };
 
+GHRequest.prototype.setEarliestDepartureTime = function (localdatetime) {
+    this.api_params.earliestDepartureTime = localdatetime;
+};
+
+GHRequest.prototype.getEarliestDepartureTime = function () {
+    if (this.api_params.earliestDepartureTime)
+        return this.api_params.earliestDepartureTime;
+    return undefined;
+};
+
 GHRequest.prototype.initVehicle = function (vehicle) {
     this.api_params.vehicle = vehicle;
     var featureSet = this.features[vehicle];
@@ -169,6 +179,10 @@ GHRequest.prototype.hasElevation = function () {
 
 GHRequest.prototype.getVehicle = function () {
     return this.api_params.vehicle;
+};
+
+GHRequest.prototype.isPublicTransit = function () {
+    return this.getVehicle() === "pt";
 };
 
 GHRequest.prototype.createGeocodeURL = function (host, prevIndex) {

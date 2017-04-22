@@ -22,6 +22,7 @@ import com.graphhopper.util.PointList;
 import com.graphhopper.util.WayTypeInfo;
 import com.graphhopper.util.shapes.BBox;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -45,6 +46,11 @@ public class PathWrapper {
     private PointList waypointList = PointList.EMPTY;
     private PointList pointList = PointList.EMPTY;
     private WayTypeInfo wayTypeInfo;
+    private int numChanges;
+
+    private long firstPtLegDeparture;
+    private final List<Trip.Leg> legs = new ArrayList<>();
+    private BigDecimal fare;
 
     /**
      * @return the description of this route alternative to make it meaningful for the user e.g. it
@@ -264,6 +270,30 @@ public class PathWrapper {
         return this;
     }
 
+    public void setNumChanges(int numChanges) {
+        this.numChanges = numChanges;
+    }
+
+    public int getNumChanges() {
+        return numChanges;
+    }
+
+    public void setFirstPtLegDeparture(long firstPtLegDeparture) {
+        this.firstPtLegDeparture = firstPtLegDeparture;
+    }
+
+    public List<Trip.Leg> getLegs() {
+        return legs;
+    }
+
+    public void setFare(BigDecimal fare) {
+        this.fare = fare;
+    }
+
+    public BigDecimal getFare() {
+        return fare;
+    }
+
     public void setWayTypeInfo(WayTypeInfo wayTypeInfo) {
         this.wayTypeInfo = wayTypeInfo;
     }
@@ -271,5 +301,5 @@ public class PathWrapper {
     public WayTypeInfo getWayTypeInfo() {
         return wayTypeInfo;
     }
-
 }
+

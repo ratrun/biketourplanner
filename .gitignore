@@ -44,3 +44,4 @@ local.properties
 /core/nbproject/
 /reader-overlay-data/nbproject/
 /biketourplanner/nbproject/private/
+/graph-cache
