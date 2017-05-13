@@ -15,7 +15,7 @@
  */
 package com.graphhopper.http;
 
-import org.json.JSONObject;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -32,7 +32,7 @@ public class ShutDownRequestServlet extends GHBaseServlet {
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         logger.info("Shutdown request received from " + req.getRemoteAddr() + " : " + req.getRequestURL()+ " : " + req.getQueryString() );
-        JSONObject json = new JSONObject();
+        ObjectNode json = objectMapper.createObjectNode();
         if (!req.getRequestURI().equals("/shutdown")) {
            json.put("message", "Not found");
            writeJsonError(res, HttpServletResponse.SC_NOT_FOUND, json);

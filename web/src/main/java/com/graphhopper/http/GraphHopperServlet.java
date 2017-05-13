@@ -17,14 +17,16 @@
  */
 package com.graphhopper.http;
 
-import com.graphhopper.*;
+import com.graphhopper.GHRequest;
+import com.graphhopper.GHResponse;
+import com.graphhopper.GraphHopperAPI;
+import com.graphhopper.PathWrapper;
 import com.graphhopper.routing.util.EncodingManager;
 import com.graphhopper.routing.util.FlagEncoder;
 import com.graphhopper.routing.util.HintsMap;
 import static com.graphhopper.util.Parameters.Routing.*;
 import com.graphhopper.util.StopWatch;
 import com.graphhopper.util.shapes.GHPoint;
-import org.json.JSONObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -87,6 +89,9 @@ public class GraphHopperServlet extends GHBaseServlet {
 
         if (!ghRsp.hasErrors()) {
             try {
+                if(requestPoints.isEmpty()){
+                    throw new IllegalArgumentException("You have to pass at least one point");
+                }
                 List<Double> favoredHeadings = Collections.EMPTY_LIST;
                 try {
                     favoredHeadings = getDoubleParamList(httpReq, "heading");
@@ -181,9 +186,9 @@ public class GraphHopperServlet extends GHBaseServlet {
                 ((Map) infoMap).put("took", Math.round(took * 1000));
 
             if (ghRsp.hasErrors())
-                writeJsonError(httpRes, SC_BAD_REQUEST, new JSONObject(map));
+                writeJsonError(httpRes, SC_BAD_REQUEST, objectMapper.getNodeFactory().pojoNode(map));
             else {
-                writeJson(httpReq, httpRes, new JSONObject(map));
+                writeJson(httpReq, httpRes, objectMapper.getNodeFactory().pojoNode(map));
             }
         }
     }

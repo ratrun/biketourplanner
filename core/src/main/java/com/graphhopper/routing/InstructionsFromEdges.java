@@ -33,7 +33,7 @@ import com.graphhopper.util.shapes.GHPoint;
  * @author jan soe
  */
 public class InstructionsFromEdges implements Path.EdgeVisitor {
-    private final Graph graph;
+
     private final Weighting weighting;
     private final FlagEncoder encoder;
     private final NodeAccess nodeAccess;
@@ -74,7 +74,6 @@ public class InstructionsFromEdges implements Path.EdgeVisitor {
     private EdgeExplorer crossingExplorer;
 
     public InstructionsFromEdges(int tmpNode, Graph graph, Weighting weighting, FlagEncoder encoder, NodeAccess nodeAccess, Translation tr, InstructionList ways) {
-        this.graph = graph;
         this.weighting = weighting;
         this.encoder = encoder;
         this.nodeAccess = nodeAccess;
@@ -280,19 +279,13 @@ public class InstructionsFromEdges implements Path.EdgeVisitor {
         In most cases this will be a simple follow the current street and we don't necessarily
         need a turn instruction
          */
-        int prevEdge = -1;
-        EdgeIterator flagIter = crossingExplorer.setBaseNode(baseNode);
-        while (flagIter.next()) {
-            if (flagIter.getAdjNode() == prevNode || flagIter.getBaseNode() == prevNode)
-                prevEdge = flagIter.getEdge();
-
-        }
-        if (prevEdge == -1) {
-            throw new IllegalStateException("Couldn't find the edges for " + prevNode + "-" + baseNode + "-" + adjNode);
+        if (prevEdge == null) {
+            // TODO Should we log this case?
+            return sign;
         }
 
         long flag = edge.getFlags();
-        long prevFlag = graph.getEdgeIteratorState(prevEdge, baseNode).getFlags();
+        long prevFlag = prevEdge.getFlags();
 
         boolean surroundingStreetsAreSlower = surroundingEdges.surroundingStreetsAreSlowerByFactor(1);
 
