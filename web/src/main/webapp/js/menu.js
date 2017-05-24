@@ -146,7 +146,7 @@ function startGraphhopperServer(win) {
     //-Xms<size>        set initial Java heap size
     //-Xmx<size>        set maximum Java heap size
     graphhopper = exec( exename , ['-d64 -Xmx' + maxreserved + 'm', '-Xms' + initialreserved + 'm', '-jar', 
-                       'graphhopper-web-0.9-SNAPSHOT-with-dep.jar', 
+                       'graphhopper-web-0.10-SNAPSHOT-with-dep.jar', 
                        'jetty.resourcebase=../', 
                        'jetty.port=8989', 
                        'config=config.properties', 

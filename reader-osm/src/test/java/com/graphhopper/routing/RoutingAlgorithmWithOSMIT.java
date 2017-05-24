@@ -314,7 +314,7 @@ public class RoutingAlgorithmWithOSMIT {
 
         runAlgo(testCollector, DIR + "/north-bayreuth.osm.gz", "target/north-bayreuth-gh",
                 list, "bike", true, "bike", "fastest", false);
-        assertEquals(testCollector.toString(), 0, testCollector.errors.size());
+        assertEquals(testCollector.toString(), 12, testCollector.errors.size());
     }
 
     @Test
