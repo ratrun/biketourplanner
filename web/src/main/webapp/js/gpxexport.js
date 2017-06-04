@@ -57,10 +57,12 @@ module.exports.addGpxExport = function (ghRequest) {
             //https://github.com/nwjs/nw.js/issues/4844
             if (menu.runningUnderNW) {
                 nw.Window.open(ghRequest.createGPXURL(withRoute, withTrack, withWayPoint), {}, function(win_new) {
-                        // console.info(win_new); // undefined bug
+                        //console.info(win_new); // undefined bug
+                        /*
                         chrome.windows.getCurrent(function(win_current) {
                             chrome.windows.remove(win_current.id); // remove the white window
                         });
+                        */
                 });
             } else
                window.open(ghRequest.createGPXURL(withRoute, withTrack, withWayPoint));
