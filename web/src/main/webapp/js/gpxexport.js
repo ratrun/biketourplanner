@@ -53,7 +53,7 @@ module.exports.addGpxExport = function (ghRequest) {
     var dialog;
 
     function exportGPX(withRoute, withTrack, withWayPoint) {
-        if (ghRequest.route.isResolved()) {
+        //if (ghRequest.route.isResolved()) {
             //https://github.com/nwjs/nw.js/issues/4844
             if (menu.runningUnderNW) {
                 nw.Window.open(ghRequest.createGPXURL(withRoute, withTrack, withWayPoint), {}, function(win_new) {
@@ -66,7 +66,7 @@ module.exports.addGpxExport = function (ghRequest) {
                 });
             } else
                window.open(ghRequest.createGPXURL(withRoute, withTrack, withWayPoint));
-        }
+        //}
         return false;
     }
 
