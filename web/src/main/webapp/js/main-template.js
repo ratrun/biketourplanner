@@ -69,7 +69,7 @@ if (global.window) {
     };
 }
 
-function enableRoundTripButton(newseed, headingEnabled) {
+function enableRoundTripButton(newseed, distance, headingEnabled) {
   $("#roundTripButton").show();
   $("#ABTourButton").show();
   $("#roundTripButton").prop("disabled", true);
@@ -78,10 +78,14 @@ function enableRoundTripButton(newseed, headingEnabled) {
   $("#roundtripcontrol").css("visibility","visible");
   $("#roundtripdistance").show();
   $("#roundtripdistance").css("visibility","visible");
-  $("#roundtripdistance").spinner( "value", 40 );
+  $("#roundtripdistance").spinner( "value", distance / 1000 );
   ghRequest.api_params.round_trip.distance = 1000 * $("#roundtripdistance").spinner('value');
   $("#alternativeRoutecontrol").hide();
-  $("#useHeading").prop("checked",headingEnabled);
+  $("#useHeading").prop("checked",headingEnabled!==undefined);
+  if (headingEnabled!==undefined) {
+      $("#roundtripheading").val(headingEnabled[0]).trigger('change');
+
+  }
   $("#1_Div").hide();
   $("#routingSettings").show();
   $( "#tabs" ).tabs({ active: 0 });
@@ -193,7 +197,7 @@ function mainInit(graphopperServerStartedOnce) {
     });
 
     $("#roundTripButton").click(function(e) {
-        enableRoundTripButton(0, false);
+        enableRoundTripButton(0, 40000, undefined);
     });
 
     $("#ABTourButton").click(function(e) {
@@ -912,7 +916,7 @@ function graphHopperSubmit() {
     if($("#roundTripButton").prop("disabled")) {
         ghRequest.api_params.round_trip.seed = seed;
         seed ++;
-        if (seed==3)
+        if (seed===3)
            seed = 0;
         ghRequest.api_params.round_trip.distance = 1000 * $("#roundtripdistance").spinner('value');
         if (!$("#useHeading").prop("checked")) 
@@ -936,7 +940,7 @@ function tripSubmit() {
         if (historyURL) {
             $("#tripDiv").hide();
             // Activate buttons based on urlParams.algorithm
-            (urlParams.algorithm === "roundTrip") ? enableRoundTripButton(urlParams["round_trip.seed"], false) : enableABButton(true);
+            (urlParams.algorithm === "roundTrip") ? enableRoundTripButton(urlParams["round_trip"].seed, urlParams["round_trip"].distance, urlParams.heading) : enableABButton(true);
             if ((selectedActiveOsmfile !== undefined) && (selectedActiveOsmfile !== menu.getActiveOSMfile())) {
                 menu.switchGraph(selectedActiveOsmfile); // This triggers a call of mainInit when the new graph is loaded.
                 menu.infoDialog("Be patient!<br> Switching to graph " + selectedActiveOsmfile + " will take a while!");
@@ -946,6 +950,8 @@ function tripSubmit() {
                initFromParams(urlParams, true);
                graphHopperSubmit();
             }
+            // Activate buttons based on urlParams.algorithm
+            (urlParams.algorithm === "roundTrip") ? enableRoundTripButton(urlParams["round_trip"].seed, urlParams["round_trip"].distance, urlParams.heading) : enableABButton(true);
         }
     }
 }
