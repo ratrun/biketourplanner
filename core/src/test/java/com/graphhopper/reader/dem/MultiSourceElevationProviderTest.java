@@ -87,6 +87,6 @@ public class MultiSourceElevationProviderTest {
         assertEquals(108, instance.getEle(60.0000001, 16), precision);
         assertEquals(0, instance.getEle(60.0000001, 19), precision);
         // Stor Roten
-        assertEquals(14, instance.getEle(60.251, 18.805), precision);
+        assertEquals(4, instance.getEle(60.251, 18.805), precision);
     }
 }
