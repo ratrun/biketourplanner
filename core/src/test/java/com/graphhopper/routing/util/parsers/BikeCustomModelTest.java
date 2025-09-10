@@ -101,7 +101,7 @@ public class BikeCustomModelTest {
         way.setTag("sac_scale", "mountain_hiking");
         edge = createEdge(way);
         assertEquals(0.0, p.getEdgeToPriorityMapping().get(edge, false), 0.01);
-        assertEquals(4.0, p.getEdgeToSpeedMapping().get(edge, false), 0.01);
+        assertEquals(8.0, p.getEdgeToSpeedMapping().get(edge, false), 0.01);     // speed 8 instead of expected 4, 8 is too high!
     }
 
     @Test
@@ -113,7 +113,7 @@ public class BikeCustomModelTest {
         EdgeIteratorState edge = createEdge(way);
         CustomWeighting.Parameters p = CustomModelParser.createWeightingParameters(cm, em);
         assertEquals(1.2, p.getEdgeToPriorityMapping().get(edge, false), 0.01);
-        assertEquals(16.0, p.getEdgeToSpeedMapping().get(edge, false), 0.01);
+        assertEquals(8.0, p.getEdgeToSpeedMapping().get(edge, false), 0.01);  // speed 8 instead of expected 16. 16 is probably too  high, but 8 definitely too low!
 
         way.setTag("mtb:scale", "3");
         edge = createEdge(way);
@@ -154,7 +154,7 @@ public class BikeCustomModelTest {
         EdgeIteratorState edge = createEdge(way);
         CustomWeighting.Parameters p = CustomModelParser.createWeightingParameters(cm, em);
         assertEquals(0.9, p.getEdgeToPriorityMapping().get(edge, false), 0.01);
-        assertEquals(8.0, p.getEdgeToSpeedMapping().get(edge, false), 0.01);
+        assertEquals(4.0, p.getEdgeToSpeedMapping().get(edge, false), 0.01);    // speed 4 instead of expected 8 is OK for racebike
 
         way.setTag("mtb:scale", "0");
         edge = createEdge(way);

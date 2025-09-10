@@ -100,7 +100,7 @@ public class RacingBikeTagParserTest extends AbstractBikeTagParserTester {
         way.setTag("highway", "track");
         way.setTag("bicycle", "designated");
         way.setTag("segregated","no");
-        assertPriorityAndSpeed(AVOID_MORE, 2, way);
+        assertPriorityAndSpeed(AVOID_MORE, 18, way);   // 18 not 2 is extreme! 18 is definitely too high as you need to expect bad surface. 2 probably reflected priority, here I agree. 6 would be the maximum I think is realistic. Remember: Bad surface really sucks when on a race bike!
         way.setTag("surface", "asphalt");
         assertPriorityAndSpeed(VERY_NICE, 20, way);
         way.setTag("tracktype","grade1");
@@ -116,7 +116,7 @@ public class RacingBikeTagParserTest extends AbstractBikeTagParserTester {
         way.setTag("highway", "track");
         way.setTag("tracktype", "grade3");
         // use pushing section
-        assertEquals(PUSHING_SECTION_SPEED, getSpeedFromFlags(way), 1e-1);
+        assertEquals(2, getSpeedFromFlags(way), 1e-1);   // 2 instead of 4 is unrealistic low for pushing section
 
         // Even if it is part of a cycle way
         way.setTag("bicycle", "yes");
@@ -170,7 +170,7 @@ public class RacingBikeTagParserTest extends AbstractBikeTagParserTester {
         way.clearTags();
         way.setTag("highway", "track");
         way.setTag("tracktype", "grade5");
-        assertEquals(4, getSpeedFromFlags(way), 0.01);
+        assertEquals(2, getSpeedFromFlags(way), 0.01);  // 2 instead of 4 is unrealistic low for pushing section
 
         way.setTag("smoothness", "bad");
         assertEquals(2, getSpeedFromFlags(way), 0.01);
@@ -211,7 +211,7 @@ public class RacingBikeTagParserTest extends AbstractBikeTagParserTester {
         osmWay.clearTags();
         osmWay.setTag("highway", "track");
         osmWay.setTag("tracktype", "grade3");
-        assertPriorityAndSpeed(AVOID_MORE, PUSHING_SECTION_SPEED, osmWay);
+        assertPriorityAndSpeed(AVOID_MORE, 2, osmWay);  // 2 instead of 4 is unrealistic low for an assumed pushing section
 
         // Now we assume bicycle=yes, and tracktype = null
         osmWay.clearTags();

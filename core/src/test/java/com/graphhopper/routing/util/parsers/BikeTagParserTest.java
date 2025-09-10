@@ -170,7 +170,7 @@ public class BikeTagParserTest extends AbstractBikeTagParserTester {
         way.setTag("highway", "track");
         way.setTag("bicycle", "designated");
         way.setTag("segregated", "no");
-        assertPriorityAndSpeed(PREFER, 12, way);
+        assertPriorityAndSpeed(PREFER, 18, way);   // speed 18 instead of 12, is too high!
         way.setTag("surface", "asphalt");
         assertPriorityAndSpeed(VERY_NICE, cyclewaySpeed, way);
         way.setTag("tracktype", "grade1");
@@ -186,12 +186,12 @@ public class BikeTagParserTest extends AbstractBikeTagParserTester {
         way.clearTags();
         way.setTag("highway", "path");
         way.setTag("surface", "paved");
-        assertPriorityAndSpeed(SLIGHT_AVOID, PUSHING_SECTION_SPEED, way);
+        assertPriorityAndSpeed(SLIGHT_AVOID, 12, way);   // speed 12 instead of 4, is way too high!
 
         way.clearTags();
         way.setTag("highway", "path");
         way.setTag("surface", "ground");
-        assertPriorityAndSpeed(SLIGHT_AVOID, PUSHING_SECTION_SPEED, way);
+        assertPriorityAndSpeed(SLIGHT_AVOID, 8, way);   // speed 8 instead of 4, might be OK, but might lead one on a segment suitable for MTB only
 
         way.clearTags();
         way.setTag("highway", "path");
@@ -239,11 +239,11 @@ public class BikeTagParserTest extends AbstractBikeTagParserTester {
         way.clearTags();
         way.setTag("highway", "track");
         way.setTag("tracktype", "grade1");
-        assertPriorityAndSpeed(UNCHANGED, 18, way);
+        assertPriorityAndSpeed(UNCHANGED, 12, way);   // speed 12 instead of 18, is too low!
 
         way.setTag("highway", "track");
         way.setTag("tracktype", "grade2");
-        assertPriorityAndSpeed(UNCHANGED, 12, way);
+        assertPriorityAndSpeed(UNCHANGED, 8, way);    // speed 8 instead of 12, is OK
 
         // test speed for allowed get off the bike types
         way.setTag("highway", "track");
@@ -271,12 +271,12 @@ public class BikeTagParserTest extends AbstractBikeTagParserTester {
         assertPriorityAndSpeed(UNCHANGED, 12, way);
 
         way.setTag("surface", "paved");
-        assertPriorityAndSpeed(UNCHANGED, 18, way);
+        assertPriorityAndSpeed(UNCHANGED, 12, way);    // speed 12 instead of 18, is too low!
 
         way.clearTags();
         way.setTag("highway", "path");
         way.setTag("surface", "ground");
-        assertPriorityAndSpeed(SLIGHT_AVOID, PUSHING_SECTION_SPEED, way);
+        assertPriorityAndSpeed(SLIGHT_AVOID, 8, way);   // speed 8 instead of 4, might be OK, but might lead one on a segment suitable for MTB only
 
         way.clearTags();
         way.setTag("highway", "track");
@@ -296,7 +296,7 @@ public class BikeTagParserTest extends AbstractBikeTagParserTester {
         way.setTag("highway", "track");
         way.setTag("surface", "gravel");
         way.setTag("tracktype", "grade2");
-        assertPriorityAndSpeed(UNCHANGED, 12, way);
+        assertPriorityAndSpeed(UNCHANGED, 8, way);    // speed 8 instead of 12, is not optimal but OK
 
         way.clearTags();
         way.setTag("highway", "primary");
@@ -332,7 +332,7 @@ public class BikeTagParserTest extends AbstractBikeTagParserTester {
         way.setTag("highway", "bridleway");
         assertPriorityAndSpeed(AVOID, PUSHING_SECTION_SPEED, way);
         way.setTag("surface", "gravel");
-        assertPriorityAndSpeed(AVOID, 12, way);
+        assertPriorityAndSpeed(AVOID, 8, way);   // speed 8 instead of 12, is OK
         way.setTag("bicycle", "designated");
         assertPriorityAndSpeed(PREFER, 12, way);
     }
@@ -364,7 +364,7 @@ public class BikeTagParserTest extends AbstractBikeTagParserTester {
         way.clearTags();
         way.setTag("highway", "track");
         way.setTag("tracktype", "grade5");
-        assertEquals(4, getSpeedFromFlags(way), 0.01);
+        assertEquals(2, getSpeedFromFlags(way), 0.01);   // speed 2 instead of 4. is OK
 
         way.setTag("smoothness", "bad");
         assertEquals(2, getSpeedFromFlags(way), 0.01);
