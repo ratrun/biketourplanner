@@ -7,11 +7,15 @@ public class RacingBikeAverageSpeedParser extends BikeCommonAverageSpeedParser {
     public RacingBikeAverageSpeedParser(EncodedValueLookup lookup) {
         this(lookup.getDecimalEncodedValue(VehicleSpeed.key("racingbike")),
                 lookup.getEnumEncodedValue(Smoothness.KEY, Smoothness.class),
-                lookup.getDecimalEncodedValue(FerrySpeed.KEY));
+                lookup.getDecimalEncodedValue(FerrySpeed.KEY),
+                lookup.getEnumEncodedValue(BikeNetwork.KEY, RouteNetwork.class));
     }
 
-    protected RacingBikeAverageSpeedParser(DecimalEncodedValue speedEnc, EnumEncodedValue<Smoothness> smoothnessEnc, DecimalEncodedValue ferrySpeedEnc) {
-        super(speedEnc, smoothnessEnc, ferrySpeedEnc);
+    protected RacingBikeAverageSpeedParser(DecimalEncodedValue speedEnc,
+                                           EnumEncodedValue<Smoothness> smoothnessEnc,
+                                           DecimalEncodedValue ferrySpeedEnc,
+                                           EnumEncodedValue<RouteNetwork> bikeRouteEnc) {
+        super(speedEnc, smoothnessEnc, ferrySpeedEnc, bikeRouteEnc);
 
         setTrackTypeSpeed("grade1", 20); // paved
         setTrackTypeSpeed("grade2", 10); // now unpaved ...
@@ -52,7 +56,11 @@ public class RacingBikeAverageSpeedParser extends BikeCommonAverageSpeedParser {
         setHighwaySpeed("tertiary", 20);
         setHighwaySpeed("tertiary_link", 20);
 
-        // overwite map from BikeCommon
+        // TODO NOW: remove this comment
+        // why we have in master 18 for this important highway tag?
+        setHighwaySpeed("cycleway", 20);
+
+        // overwrite map from BikeCommon
         setSmoothnessSpeedFactor(Smoothness.EXCELLENT, 1.2d);
         setSmoothnessSpeedFactor(Smoothness.VERY_BAD, 0.1);
         setSmoothnessSpeedFactor(Smoothness.HORRIBLE, 0.1);

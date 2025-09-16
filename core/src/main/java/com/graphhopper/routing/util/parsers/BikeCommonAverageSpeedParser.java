@@ -1,11 +1,9 @@
 package com.graphhopper.routing.util.parsers;
 
 import com.graphhopper.reader.ReaderWay;
-import com.graphhopper.routing.ev.DecimalEncodedValue;
-import com.graphhopper.routing.ev.EdgeIntAccess;
-import com.graphhopper.routing.ev.EnumEncodedValue;
-import com.graphhopper.routing.ev.Smoothness;
+import com.graphhopper.routing.ev.*;
 import com.graphhopper.routing.util.FerrySpeedCalculator;
+import com.graphhopper.storage.IntsRef;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -25,9 +23,14 @@ public abstract class BikeCommonAverageSpeedParser extends AbstractAverageSpeedP
     private final Map<String, Integer> highwaySpeeds = new HashMap<>();
     private final EnumEncodedValue<Smoothness> smoothnessEnc;
     private final Set<String> restrictedValues = Set.of("no", "agricultural", "forestry", "restricted", "military", "emergency", "private", "permit");
+    private final EnumEncodedValue<RouteNetwork> bikeRouteEnc;
 
-    protected BikeCommonAverageSpeedParser(DecimalEncodedValue speedEnc, EnumEncodedValue<Smoothness> smoothnessEnc, DecimalEncodedValue ferrySpeedEnc) {
+    protected BikeCommonAverageSpeedParser(DecimalEncodedValue speedEnc,
+                                           EnumEncodedValue<Smoothness> smoothnessEnc,
+                                           DecimalEncodedValue ferrySpeedEnc,
+                                           EnumEncodedValue<RouteNetwork> bikeRouteEnc) {
         super(speedEnc, ferrySpeedEnc);
+        this.bikeRouteEnc = bikeRouteEnc;
         this.smoothnessEnc = smoothnessEnc;
 
         setTrackTypeSpeed("grade1", 18); // paved
@@ -67,10 +70,11 @@ public abstract class BikeCommonAverageSpeedParser extends AbstractAverageSpeedP
         setHighwaySpeed("steps", MIN_SPEED);
 
         setHighwaySpeed("cycleway", 18);
-        setHighwaySpeed("path", PUSHING_SECTION_SPEED);
-        setHighwaySpeed("footway", PUSHING_SECTION_SPEED);
-        setHighwaySpeed("platform", PUSHING_SECTION_SPEED);
-        setHighwaySpeed("pedestrian", PUSHING_SECTION_SPEED);
+        setHighwaySpeed("path", 6);
+        setHighwaySpeed("footway", 6);
+        setHighwaySpeed("platform", 6);
+        setHighwaySpeed("pedestrian", 6);
+        setHighwaySpeed("bridleway", 6);
         setHighwaySpeed("track", 12);
         setHighwaySpeed("service", 12);
         setHighwaySpeed("residential", 18);
@@ -91,8 +95,6 @@ public abstract class BikeCommonAverageSpeedParser extends AbstractAverageSpeedP
         // special case see tests and #191
         setHighwaySpeed("motorway", 18);
         setHighwaySpeed("motorway_link", 18);
-
-        setHighwaySpeed("bridleway", PUSHING_SECTION_SPEED);
 
         // note that this factor reduces the speed but only until MIN_SPEED
         setSmoothnessSpeedFactor(Smoothness.MISSING, 1.0d);
@@ -118,13 +120,14 @@ public abstract class BikeCommonAverageSpeedParser extends AbstractAverageSpeedP
         return Math.min(speed, maxSpeed);
     }
 
-    @Override
     public void handleWayTags(int edgeId, EdgeIntAccess edgeIntAccess, ReaderWay way) {
-        // TODO NOW official bike route is at least like bicycle=yes => boosts speed for path and track
-        // designated = isDesignate(way) || MISSING != bikeRouteEnc.getEnum(false, edgeId, edgeIntAccess);
+        throw new IllegalArgumentException("use handleWayTags with relationFlags");
+    }
 
-        String highwayValue = way.getTag("highway");
-        if (highwayValue == null) {
+    @Override
+    public void handleWayTags(int edgeId, EdgeIntAccess edgeIntAccess, ReaderWay way, IntsRef relationFlags) {
+        String highwayValue = way.getTag("highway", "");
+        if (highwayValue.isEmpty()) {
             if (FerrySpeedCalculator.isFerry(way)) {
                 double ferrySpeed = FerrySpeedCalculator.minmax(ferrySpeedEnc.getDecimal(false, edgeId, edgeIntAccess), avgSpeedEnc);
                 setSpeed(false, edgeId, edgeIntAccess, ferrySpeed);
@@ -150,19 +153,27 @@ public abstract class BikeCommonAverageSpeedParser extends AbstractAverageSpeedP
                 || pushingRestriction && !way.hasTag("bicycle", INTENDED)
                 || way.hasTag("service")) {
             speed = PUSHING_SECTION_SPEED;
-        } else if (highwayValue != null) {
+
+        } else {
+
+            boolean bikeDesignated = isDesignated(way) || RouteNetwork.MISSING != bikeRouteEnc.getEnum(false, edgeId, edgeIntAccess);
+            boolean bikeAllowed = way.hasTag("bicycle", "yes") || bikeDesignated;
+            boolean isRacingBike = this instanceof RacingBikeAverageSpeedParser;
+
+            // increase speed for certain highway tags because of a good surface or a more permissive bike access
             switch (highwayValue) {
                 case "path", "track", "bridleway":
-                    // speed change (increase or decrease)
                     if (surfaceSpeed != null)
-                        speed = isDesignated(way) || way.hasTag("bicycle", "yes") ? surfaceSpeed : surfaceSpeed * 0.7;
+                        speed = Math.max(speed, bikeAllowed ? surfaceSpeed : surfaceSpeed * 0.7);
+                    else if (isRacingBike)
+                        break; // no speed increase if no surface tag
 
                 case "footway", "pedestrian", "platform":
-                    // (potential additional) speed increase if allowed for bike
-                    if (isDesignated(way))
+                    // speed increase if bike allowed or even designated
+                    if (bikeDesignated)
                         speed = Math.max(speed, highwaySpeeds.get("cycleway"));
                     else if (way.hasTag("bicycle", "yes"))
-                        speed = Math.max(speed, highwaySpeeds.get("track"));
+                        speed = Math.max(speed, 12);
             }
         }
 
