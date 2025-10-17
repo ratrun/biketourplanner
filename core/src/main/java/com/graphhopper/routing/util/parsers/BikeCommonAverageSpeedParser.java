@@ -52,12 +52,12 @@ public abstract class BikeCommonAverageSpeedParser extends AbstractAverageSpeedP
         setSurfaceSpeed("unpaved", 12);
         setSurfaceSpeed("compacted", 14);
         setSurfaceSpeed("dirt", 10);
-        setSurfaceSpeed("earth", 12);
+        setSurfaceSpeed("earth", 10);
+        setSurfaceSpeed("ground", 10);
         setSurfaceSpeed("fine_gravel", 14); // should not be faster than compacted
         setSurfaceSpeed("grass", 8);
         setSurfaceSpeed("grass_paver", 8);
         setSurfaceSpeed("gravel", 12);
-        setSurfaceSpeed("ground", 12);
         setSurfaceSpeed("ice", MIN_SPEED);
         setSurfaceSpeed("metal", 10);
         setSurfaceSpeed("mud", 10);
@@ -162,7 +162,10 @@ public abstract class BikeCommonAverageSpeedParser extends AbstractAverageSpeedP
 
             // increase speed for certain highway tags because of a good surface or a more permissive bike access
             switch (highwayValue) {
-                case "path", "track", "bridleway":
+                case "track": // assume bicycle=yes even if no bicycle tag
+                    bikeAllowed = bikeAllowed || !way.hasTag("bicycle");
+
+                case "path", "bridleway":
                     if (surfaceSpeed != null)
                         speed = Math.max(speed, bikeAllowed ? surfaceSpeed : surfaceSpeed * 0.7);
                     else if (isRacingBike)
@@ -172,7 +175,7 @@ public abstract class BikeCommonAverageSpeedParser extends AbstractAverageSpeedP
                     // speed increase if bike allowed or even designated
                     if (bikeDesignated)
                         speed = Math.max(speed, highwaySpeeds.get("cycleway"));
-                    else if (way.hasTag("bicycle", "yes"))
+                    else if (bikeAllowed)
                         speed = Math.max(speed, 12);
             }
         }
