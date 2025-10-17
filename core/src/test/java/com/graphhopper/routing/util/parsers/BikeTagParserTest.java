@@ -238,7 +238,7 @@ public class BikeTagParserTest extends AbstractBikeTagParserTester {
         way.clearTags();
         way.setTag("highway", "track");
         way.setTag("tracktype", "grade1");
-        assertPriorityAndSpeed(UNCHANGED, 12, way);   // NOK: was 18. Why did you change this?
+        assertPriorityAndSpeed(UNCHANGED, 18, way);
 
         way.setTag("highway", "track");
         way.setTag("tracktype", "grade2");
@@ -270,7 +270,7 @@ public class BikeTagParserTest extends AbstractBikeTagParserTester {
         assertPriorityAndSpeed(UNCHANGED, 12, way);
 
         way.setTag("surface", "paved");
-        assertPriorityAndSpeed(UNCHANGED, 12, way);   // NOK: was 18. Why did you change this?
+        assertPriorityAndSpeed(UNCHANGED, 18, way);
 
         way.clearTags();
         way.setTag("highway", "path");
@@ -355,7 +355,7 @@ public class BikeTagParserTest extends AbstractBikeTagParserTester {
         way.clearTags();
         way.setTag("highway", "residential");
         way.setTag("surface", "ground");
-        assertEquals(12, getSpeedFromFlags(way), 0.01);
+        assertEquals(10, getSpeedFromFlags(way), 0.01);
 
         way.setTag("smoothness", "bad");
         assertEquals(8, getSpeedFromFlags(way), 0.01);
