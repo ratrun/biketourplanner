@@ -978,7 +978,6 @@ public class OSMReaderTest {
                 .addWayTagParser(new CountryParser(countryEnc));
         BaseGraph graph = new BaseGraph.Builder(em).create();
         OSMReader reader = new OSMReader(graph, em, osmParsers, new OSMReaderConfig());
-        reader.setCountryRuleFactory(new CountryRuleFactory());
         reader.setAreaIndex(createCountryIndex());
         reader.setFile(new File(getClass().getResource("test-osm12.xml").getFile()));
         reader.readGraph();
