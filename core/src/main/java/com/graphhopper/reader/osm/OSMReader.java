@@ -167,15 +167,13 @@ public class OSMReader {
             throw new IllegalStateException("BaseGraph must be initialize before we can read OSM");
 
         WaySegmentParser.Builder waySegmentParserBuilder = new WaySegmentParser.Builder(baseGraph.getNodeAccess(), baseGraph.getDirectory())
-
                 .setWayFilter(this::acceptWay)
                 .setSplitNodeFilter(this::isBarrierNode)
                 .setWayPreprocessor(this::preprocessWay)
                 .setRelationPreprocessor(this::preprocessRelations)
                 .setRelationProcessor(this::processRelation)
                 .setEdgeHandler(this::addEdge)
-                .setWorkerThreads(config.getWorkerThreads())
-                .build();
+                .setWorkerThreads(config.getWorkerThreads());
         if (encodingManager.hasEncodedValue(NoisyRoadNearby.KEY)) {
             waySegmentParserBuilder
                     // todonow: we could move the pass1 way handling and the pass2 node handling of the standard way segment parser to pass0/1,

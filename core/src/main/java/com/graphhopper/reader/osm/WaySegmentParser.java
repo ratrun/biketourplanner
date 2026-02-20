@@ -72,6 +72,8 @@ public class WaySegmentParser {
     };
     private Runnable pass1FinishHook = () -> {
     };
+    private Consumer<ReaderNode> pass2NodePreHook = node -> {
+    };
     private Predicate<ReaderWay> wayFilter = way -> true;
     private Runnable pass2AfterNodesHook = () -> {
     };

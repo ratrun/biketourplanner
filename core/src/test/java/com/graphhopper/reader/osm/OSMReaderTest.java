@@ -945,7 +945,6 @@ public class OSMReaderTest {
         osmParsers.addWayTagParser(OSMRoadAccessParser.forCar(roadAccessEnc));
         BaseGraph graph = new BaseGraph.Builder(em).create();
         OSMReader reader = new OSMReader(graph, em, osmParsers, new OSMReaderConfig());
-        reader.setCountryRuleFactory(new CountryRuleFactory());
         reader.setAreaIndex(createCountryIndex());
         // there are two edges, both with highway=track, one in Berlin, one in Paris
         reader.setFile(new File(getClass().getResource("test-osm11.xml").getFile()));
