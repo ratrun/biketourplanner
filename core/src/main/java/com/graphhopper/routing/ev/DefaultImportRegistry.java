@@ -162,6 +162,16 @@ public class DefaultImportRegistry implements ImportRegistry {
                     (lookup, props) -> new OSMFootwayParser(
                             lookup.getEnumEncodedValue(Footway.KEY, Footway.class))
             );
+        else if (Sidewalk.KEY.equals(name))
+            return ImportUnit.create(name, props -> Sidewalk.create(),
+                    (lookup, props) -> new OSMSidewalkParser(
+                            lookup.getEnumEncodedValue(Sidewalk.KEY, Sidewalk.class))
+            );
+        else if (Cycleway.KEY.equals(name))
+            return ImportUnit.create(name, props -> Cycleway.create(),
+                    (lookup, props) -> new OSMCyclewayParser(
+                            lookup.getEnumEncodedValue(Cycleway.KEY, Cycleway.class))
+            );
         else if (OSMWayID.KEY.equals(name))
             return ImportUnit.create(name, props -> OSMWayID.create(),
                     (lookup, props) -> new OSMWayIDParser(
@@ -219,7 +229,7 @@ public class DefaultImportRegistry implements ImportRegistry {
             return ImportUnit.create(name, props -> BusAccess.create(),
                     (lookup, props) -> new ModeAccessParser(OSMRoadAccessParser.toOSMRestrictions(TransportationMode.BUS),
                             lookup.getBooleanEncodedValue(name), true, lookup.getBooleanEncodedValue(Roundabout.KEY),
-                            PMap.toSet(props.getString("restrictions", "")), PMap.toSet(props.getString("barriers", ""))),
+                            PMap.toSet(props.getString("allow", "")), PMap.toSet(props.getString("restrict", ""))),
                     "roundabout"
             );
 
@@ -227,7 +237,7 @@ public class DefaultImportRegistry implements ImportRegistry {
             return ImportUnit.create(name, props -> HovAccess.create(),
                     (lookup, props) -> new ModeAccessParser(OSMRoadAccessParser.toOSMRestrictions(TransportationMode.HOV),
                             lookup.getBooleanEncodedValue(name), true, lookup.getBooleanEncodedValue(Roundabout.KEY),
-                            PMap.toSet(props.getString("restrictions", "")), PMap.toSet(props.getString("barriers", ""))),
+                            PMap.toSet(props.getString("allow", "")), PMap.toSet(props.getString("restrict", ""))),
                     "roundabout"
             );
         else if (FootTemporalAccess.KEY.equals(name))

@@ -131,6 +131,7 @@ public class WaySegmentParser {
                 " pass1: " + (int) sw1.getSeconds() + "s, " +
                 " pass2: " + (int) sw2.getSeconds() + "s, " +
                 " total: " + (int) (sw0.getSeconds() + sw1.getSeconds() + sw2.getSeconds()) + "s");
+                " memory: " + Helper.getMemInfo());
     }
 
     /**

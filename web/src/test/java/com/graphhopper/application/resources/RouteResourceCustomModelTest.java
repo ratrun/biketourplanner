@@ -64,6 +64,7 @@ public class RouteResourceCustomModelTest {
                 putObject("datareader.file", "../core/files/north-bayreuth.osm.gz").
                 putObject("graph.location", DIR).
                 putObject("graph.elevation.provider", "srtm").
+                putObject("graph.elevation.clear", true).
                 putObject("graph.elevation.cache_dir", "../core/files/").
                 putObject("custom_areas.directory", "./src/test/resources/com/graphhopper/application/resources/areas").
                 putObject("import.osm.ignored_highways", "").
@@ -124,7 +125,7 @@ public class RouteResourceCustomModelTest {
         // the bus profile is a custom profile and we can use its CH preparation as long as we do not add a custom model
         String body = "{\"points\": [[11.58199, 50.0141], [11.5865, 50.0095]], \"profile\": \"bus\"}";
         JsonNode path = getPath(body);
-        assertEquals(610, path.get("distance").asDouble(), 10);
+        assertEquals(611, path.get("distance").asDouble(), 10);
         assertEquals(27_000, path.get("time").asLong(), 1_000);
     }
 

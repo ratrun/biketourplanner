@@ -701,6 +701,12 @@ public class GraphHopper {
         if (cacheDirStr.isEmpty() && ghConfig.has("graph.elevation.cachedir"))
             throw new IllegalArgumentException("use graph.elevation.cache_dir not cachedir in configuration");
 
+        boolean interpolate = ghConfig.has("graph.elevation.interpolate")
+                ? "bilinear".equals(ghConfig.getString("graph.elevation.interpolate", "none"))
+                : ghConfig.getBool("graph.elevation.calc_mean", false);
+        boolean removeTempElevationFiles = ghConfig.getBool("graph.elevation.clear",
+                ghConfig.getBool("graph.elevation.cgiar.clear", false));
+
         ElevationProvider elevationProvider = ElevationProvider.NOOP;
         if (eleProviderStr.equalsIgnoreCase("hgt")) {
             elevationProvider = new HGTProvider(cacheDirStr);
@@ -720,6 +726,14 @@ public class GraphHopper {
             elevationProvider = new SonnyProvider(cacheDirStr);
         } else if (eleProviderStr.equalsIgnoreCase("multi3")) {
             elevationProvider = new MultiSource3ElevationProvider(cacheDirStr);
+        } else if (eleProviderStr.equalsIgnoreCase("pmtiles")) {
+            int zoom = ghConfig.getInt("graph.elevation.pmtiles.zoom", -1);
+            String terrainEncoding = ghConfig.getString("graph.elevation.pmtiles.terrain_encoding", "terrarium");
+            elevationProvider = new PMTilesElevationProvider(
+                    ghConfig.getString("graph.elevation.pmtiles.location", "/tmp/planet.pmtiles"),
+                    PMTilesElevationProvider.TerrainEncoding.valueOf(terrainEncoding.toUpperCase(Locale.ROOT)),
+                    interpolate, zoom, cacheDirStr)
+                    .setAutoRemoveTemporaryFiles(removeTempElevationFiles);
         } else if (!eleProviderStr.isEmpty() && !eleProviderStr.equalsIgnoreCase("noop")) {
             throw new IllegalArgumentException("Did not find elevation provider: " + eleProviderStr);
         }
@@ -732,13 +746,6 @@ public class GraphHopper {
                 throw new IllegalArgumentException("use graph.elevation.base_url not baseurl in configuration");
 
             DAType elevationDAType = DAType.fromString(ghConfig.getString("graph.elevation.dataaccess", "MMAP"));
-
-            boolean interpolate = ghConfig.has("graph.elevation.interpolate")
-                    ? "bilinear".equals(ghConfig.getString("graph.elevation.interpolate", "none"))
-                    : ghConfig.getBool("graph.elevation.calc_mean", false);
-
-            boolean removeTempElevationFiles = ghConfig.getBool("graph.elevation.cgiar.clear", true);
-            removeTempElevationFiles = ghConfig.getBool("graph.elevation.clear", removeTempElevationFiles);
 
             provider
                     .setAutoRemoveTemporaryFiles(removeTempElevationFiles)
@@ -948,6 +955,7 @@ public class GraphHopper {
 
         AreaIndex<CustomArea> areaIndex = new AreaIndex<>(customAreas);
 
+        eleProvider.init();
         logger.info("start creating graph from " + osmFile);
         OSMReader reader = new OSMReader(baseGraph.getBaseGraph(), encodingManager, osmParsers, osmReaderConfig)
                 .setFile(_getOSMFile()).
@@ -977,7 +985,7 @@ public class GraphHopper {
     }
 
     public static void sortGraphAlongHilbertCurve(BaseGraph graph) {
-        logger.info("sorting graph along Hilbert curve...");
+        logger.info("sorting graph along Hilbert curve.... (memory:" + getMemInfo() + ")");
         StopWatch sw = StopWatch.started();
         NodeAccess na = graph.getNodeAccess();
         final int order = 31; // using 15 would allow us to use ints for sortIndices, but this would result in (marginally) slower routing
@@ -1000,7 +1008,7 @@ public class GraphHopper {
         }
         IntArrayList newEdgesByOldEdges = ArrayUtil.invert(edgeOrder);
         IntArrayList newNodesByOldNodes = IntArrayList.from(ArrayUtil.invert(nodeOrder));
-        logger.info("calculating sort order took: " + sw.stop().getTimeString());
+        logger.info("calculating sort order took: " + sw.stop().getTimeString() + ", memory:" + getMemInfo());
         sortGraphForGivenOrdering(graph, newNodesByOldNodes, newEdgesByOldEdges);
     }
 
