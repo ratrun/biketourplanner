@@ -1000,7 +1000,7 @@ public class OSMReaderTest {
                 .build();
         OSMParsers osmParsers = new OSMParsers();
         BaseGraph graph = new BaseGraph.Builder(em).create();
-        OSMReader reader = new OSMReader(graph, osmParsers, new OSMReaderConfig());
+        OSMReader reader = new OSMReader(graph, em, osmParsers, new OSMReaderConfig());
         reader.setFile(new File(getClass().getResource("test-osm-street-name.xml").getFile()));
         reader.readGraph();
 
