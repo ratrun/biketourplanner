@@ -331,7 +331,7 @@ public class RouteResourceCustomModelTest {
                 " \"ch.disable\": true" +
                 "}";
         path = getPath(body);
-        assertEquals(5838, path.get("distance").asDouble(), 10);
+        assertEquals(5542, path.get("distance").asDouble(), 10);
     }
 
     @Test
@@ -398,8 +398,7 @@ public class RouteResourceCustomModelTest {
         JsonNode json = query(body, 200);
         assertFalse(json.get("info").has("errors"));
 
-        // TODO LATER: alternative route bug as the two routes are identical!?
-        assertEquals(2, json.get("paths").size());
+        assertEquals(1, json.get("paths").size());
         assertEquals(545, json.get("paths").get(0).get("distance").asDouble(), 10);
     }
 

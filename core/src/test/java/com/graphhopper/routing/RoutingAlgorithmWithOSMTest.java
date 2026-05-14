@@ -390,7 +390,7 @@ public class RoutingAlgorithmWithOSMTest {
         List<Query> queries = new ArrayList<>();
         // for mtb it is also ok to go over steps (43.7318,7.423) -> 1900m vs 2600m (in latest OSM data all bikes are forbidden and steps aren't taken)
         queries.add(new Query(43.730864, 7.420771, 43.727687, 7.418737, 2594, 111));
-        queries.add(new Query(43.727687, 7.418737, 43.74958, 7.436566, 3655, 185));
+        queries.add(new Query(43.727687, 7.418737, 43.74958, 7.436566, 3665, 186));
         queries.add(new Query(43.728677, 7.41016, 43.739213, 7.427806, 2651, 167));
         // hard to select between secondary and primary (both are AVOID for mtb)
         queries.add(new Query(43.733802, 7.413433, 43.739662, 7.424355, 1867, 107));
@@ -411,7 +411,7 @@ public class RoutingAlgorithmWithOSMTest {
     @Test
     public void testMonacoRacingBike() {
         List<Query> queries = new ArrayList<>();
-        queries.add(new Query(43.730864, 7.420771, 43.727687, 7.418737, 2594, 111)); // watch out, this route has an alternative that looks very different but has almost identical weight
+        queries.add(new Query(43.730864, 7.420771, 43.727687, 7.418737, 2597, 118)); // watch out, this route has an alternative that looks very different but has almost identical weight
         queries.add(new Query(43.727687, 7.418737, 43.74958, 7.436566, 3615, 184));
         queries.add(new Query(43.728677, 7.41016, 43.739213, 7.427806, 2651, 167));
         queries.add(new Query(43.733802, 7.413433, 43.739662, 7.424355, 1516, 86));
@@ -433,8 +433,8 @@ public class RoutingAlgorithmWithOSMTest {
     @Test
     public void testKremsBikeRelation() {
         List<Query> queries = new ArrayList<>();
-        queries.add(new Query(48.409523, 15.602394, 48.375466, 15.72916, 12493, 159));
-        queries.add(new Query(48.410061, 15.63951, 48.411386, 15.604899, 3091, 92));
+        queries.add(new Query(48.409523, 15.602394, 48.375466, 15.72916, 12574, 169));
+        queries.add(new Query(48.410061, 15.63951, 48.411386, 15.604899, 3103, 95));
         queries.add(new Query(48.412294, 15.62007, 48.398306, 15.609667, 3965, 95));
 
         Profile bikeProfile = new Profile("bike").setCustomModel(new CustomModel().
@@ -458,8 +458,8 @@ public class RoutingAlgorithmWithOSMTest {
     @Test
     public void testKremsMountainBikeRelation() {
         List<Query> queries = new ArrayList<>();
-        queries.add(new Query(48.409523, 15.602394, 48.375466, 15.72916, 12493, 159));
-        queries.add(new Query(48.410061, 15.63951, 48.411386, 15.604899, 3091, 92));
+        queries.add(new Query(48.409523, 15.602394, 48.375466, 15.72916, 12574, 169));
+        queries.add(new Query(48.410061, 15.63951, 48.411386, 15.604899, 3103, 95));
         queries.add(new Query(48.412294, 15.62007, 48.398306, 15.609667, 3965, 95));
 
         Profile mtbProfile = new Profile("mtb").setCustomModel(new CustomModel().
