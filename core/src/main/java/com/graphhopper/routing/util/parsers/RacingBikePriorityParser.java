@@ -48,7 +48,7 @@ public class RacingBikePriorityParser extends BikeCommonPriorityParser {
         } else if ("track".equals(highway)) {
             String trackType = way.getTag("tracktype");
             if ("grade1".equals(trackType) || goodSurface.contains(way.getTag("surface", "")))
-                weightToPrioMap.put(110d, VERY_NICE);
+                weightToPrioMap.put(110d, SLIGHT_PREFER);
             else if (trackType == null || trackType.startsWith("grade"))
                 weightToPrioMap.put(110d, AVOID_MORE);
         }
