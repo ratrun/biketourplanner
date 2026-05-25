@@ -151,8 +151,11 @@ public abstract class BikeCommonAverageSpeedParser extends AbstractAverageSpeedP
                     bikeAllowed = bikeAllowed || !way.hasTag("bicycle");
 
                 case "path", "bridleway":
-                    if (surfaceSpeed != null)
+                    if (surfaceSpeed != null) {
                         speed = Math.max(speed, bikeAllowed ? surfaceSpeed : surfaceSpeed * 0.7);
+                        if (isRacingBike)
+                            speed = Math.min(speed, highwaySpeeds.get("cycleway"));  // force same limitation as for speed on highway=cycleway: Reasoning: Slow down because of pedestrians
+                    }
                     else if (isRacingBike)
                         break; // no speed increase if no surface tag
 
