@@ -27,7 +27,7 @@ public abstract class BikeCommonPriorityParser implements TagParser {
     protected final Map<String, PriorityCode> avoidHighwayTags = new HashMap<>();
     protected final DecimalEncodedValue priorityEnc;
     // Car speed limit which switches the preference from UNCHANGED to AVOID_IF_POSSIBLE
-    int avoidSpeedLimit;
+    Double avoidSpeedLimit;
     protected final Set<String> goodSurface = Set.of("paved", "asphalt", "concrete");
 
     // This is the specific bicycle class
@@ -49,7 +49,7 @@ public abstract class BikeCommonPriorityParser implements TagParser {
         avoidHighwayTags.put("secondary_link", AVOID);
         avoidHighwayTags.put("bridleway", AVOID);
 
-        avoidSpeedLimit = 71;
+        avoidSpeedLimit = 71.0;
     }
 
     @Override

@@ -33,7 +33,7 @@ public class RacingBikePriorityParser extends BikeCommonPriorityParser {
 
         setSpecificClassBicycle("roadcycling");
 
-        avoidSpeedLimit = 81;
+        avoidSpeedLimit = Double.POSITIVE_INFINITY;
     }
 
     @Override
