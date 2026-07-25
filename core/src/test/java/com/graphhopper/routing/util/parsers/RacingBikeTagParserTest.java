@@ -419,6 +419,10 @@ public class RacingBikeTagParserTest extends AbstractBikeTagParserTester {
 
         way.setTag("class:bicycle", "-2");
         assertPriority(BEST, way);
+
+        way.setTag("class:bicycle:roadcycling", "-3");
+        assertPriority(REACH_DESTINATION, way);
+
     }
 
     @Test
