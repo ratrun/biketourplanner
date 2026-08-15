@@ -15,7 +15,7 @@ public class RoundaboutInstructionTest {
     private final Translation tr = new TranslationMap().doImport().getWithFallBack(Locale.US);
 
     private RoundaboutInstruction createExitedRoundabout(String name) {
-        RoundaboutInstruction ri = new RoundaboutInstruction(Instruction.USE_ROUNDABOUT, name, new PointList());
+        RoundaboutInstruction ri = new RoundaboutInstruction(Instruction.ROUNDABOUT_USE, name, new PointList());
         ri.setExited();
         ri.increaseExitNumber();
         return ri;

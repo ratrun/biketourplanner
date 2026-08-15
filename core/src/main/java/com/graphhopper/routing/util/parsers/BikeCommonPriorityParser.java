@@ -22,12 +22,10 @@ public abstract class BikeCommonPriorityParser implements TagParser {
     private static final List<String> CYCLEWAY_BICYCLE_KEYS = List.of("cycleway:bicycle", "cycleway:both:bicycle", "cycleway:left:bicycle", "cycleway:right:bicycle");
 
     // pushing section highways are parts where you need to get off your bike and push it
-    protected final HashSet<String> pushingSectionsHighways = new HashSet<>();
+    protected final Set<String> pushingSectionsHighways = new HashSet<>();
     protected final Set<String> preferHighwayTags = new HashSet<>();
     protected final Map<String, PriorityCode> avoidHighwayTags = new HashMap<>();
     protected final DecimalEncodedValue priorityEnc;
-    // Car speed limit which switches the preference from UNCHANGED to AVOID_IF_POSSIBLE
-    int avoidSpeedLimit;
     protected final Set<String> goodSurface = Set.of("paved", "asphalt", "concrete");
 
     // This is the specific bicycle class
@@ -45,13 +43,9 @@ public abstract class BikeCommonPriorityParser implements TagParser {
         avoidHighwayTags.put("motorway_link", REACH_DESTINATION);
         avoidHighwayTags.put("trunk", REACH_DESTINATION);
         avoidHighwayTags.put("trunk_link", REACH_DESTINATION);
-        avoidHighwayTags.put("primary", BAD);
-        avoidHighwayTags.put("primary_link", BAD);
         avoidHighwayTags.put("secondary", AVOID);
         avoidHighwayTags.put("secondary_link", AVOID);
         avoidHighwayTags.put("bridleway", AVOID);
-
-        avoidSpeedLimit = 71;
     }
 
     @Override
@@ -69,7 +63,7 @@ public abstract class BikeCommonPriorityParser implements TagParser {
     }
 
     // Conversion of class value to priority. See http://wiki.openstreetmap.org/wiki/Class:bicycle
-    private PriorityCode convertClassValueToPriority(String tagvalue) {
+    PriorityCode convertClassValueToPriority(String tagvalue) {
         try {
             return switch (Integer.parseInt(tagvalue)) {
                 case 3 -> BEST;
@@ -99,26 +93,24 @@ public abstract class BikeCommonPriorityParser implements TagParser {
                 weightToPrioMap.put(100d, PREFER);
         }
 
+        double maxSpeed = Math.max(OSMMaxSpeedParser.parseMaxSpeed(way, false), OSMMaxSpeedParser.parseMaxSpeed(way, true));
+        boolean highSpeed = maxSpeed != MaxSpeed.MAXSPEED_MISSING && maxSpeed >= 71;
         if ("cycleway".equals(highway)) {
             if (way.hasTag("foot", INTENDED) && !way.hasTag("segregated", "yes"))
                 weightToPrioMap.put(100d, PREFER);
             else
                 weightToPrioMap.put(100d, VERY_NICE);
-        }
-
-        double maxSpeed = Math.max(OSMMaxSpeedParser.parseMaxSpeed(way, false), OSMMaxSpeedParser.parseMaxSpeed(way, true));
-        if (preferHighwayTags.contains(highway) || maxSpeed <= 30) {
-            if (maxSpeed == MaxSpeed.MAXSPEED_MISSING || maxSpeed < avoidSpeedLimit) {
+        } else if (preferHighwayTags.contains(highway) || maxSpeed <= 30) {
+            if (!highSpeed) {
                 weightToPrioMap.put(40d, SLIGHT_PREFER);
                 if (way.hasTag("tunnel", INTENDED))
                     weightToPrioMap.put(40d, UNCHANGED);
             }
-        } else if (avoidHighwayTags.containsKey(highway)
-                || (maxSpeed != MaxSpeed.MAXSPEED_MISSING && maxSpeed >= avoidSpeedLimit && !"track".equals(highway))) {
-            PriorityCode priorityCode = avoidHighwayTags.get(highway);
-            weightToPrioMap.put(50d, priorityCode == null ? AVOID : priorityCode);
+        } else if (avoidHighwayTags.containsKey(highway) || highSpeed && !"track".equals(highway)) {
+            PriorityCode priorityCode = avoidHighwayTags.getOrDefault(highway, AVOID);
+            weightToPrioMap.put(50d, priorityCode);
             if (way.hasTag("tunnel", INTENDED)) {
-                PriorityCode worse = priorityCode == null ? BAD : priorityCode.worse().worse();
+                PriorityCode worse = priorityCode.worse().worse();
                 weightToPrioMap.put(50d, worse == EXCLUDE ? REACH_DESTINATION : worse);
             }
         }

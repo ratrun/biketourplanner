@@ -101,12 +101,14 @@ public class GraphHopper {
     private OSMParsers osmParsers;
     private int defaultSegmentSize = AbstractDataAccess.SEGMENT_SIZE_DEFAULT;
     private String ghLocation = "";
-    private DAType dataAccessDefaultType = DAType.RAM_STORE;
+    private DAType dataAccessDefaultType = DAType.RAM;
+    // false = purely in-memory graph: nothing is loaded from or flushed to disc
+    private boolean fileBacked = true;
     private final LinkedHashMap<String, String> dataAccessConfig = new LinkedHashMap<>();
     private boolean sortGraph = true;
     private boolean elevation = false;
     private LockFactory lockFactory = new NativeFSLockFactory();
-    private boolean allowWrites = true;
+    private boolean readOnly = false;
     private boolean fullyLoaded = false;
     private final OSMReaderConfig osmReaderConfig = new OSMReaderConfig();
     // for routing
@@ -227,18 +229,13 @@ public class GraphHopper {
     }
 
     /**
-     * Only valid option for in-memory graph and if you e.g. want to disable store on flush for unit
-     * tests. Specify storeOnFlush to true if you want that existing data will be loaded FROM disc
-     * and all in-memory data will be flushed TO disc after flush is called e.g. while OSM import.
-     *
-     * @param storeOnFlush true by default
+     * Only valid option for the in-memory graph: if true (default) existing data will be loaded
+     * FROM disc and all in-memory data will be flushed TO disc when flush is called, e.g. after
+     * the OSM import. Disable e.g. for unit tests.
      */
-    public GraphHopper setStoreOnFlush(boolean storeOnFlush) {
+    public GraphHopper setFileBacked(boolean fileBacked) {
         ensureNotLoaded();
-        if (storeOnFlush)
-            dataAccessDefaultType = DAType.RAM_STORE;
-        else
-            dataAccessDefaultType = DAType.RAM;
+        this.fileBacked = fileBacked;
         return this;
     }
 
@@ -418,16 +415,17 @@ public class GraphHopper {
         this.locationIndex = locationIndex;
     }
 
-    public boolean isAllowWrites() {
-        return allowWrites;
+    public boolean isReadOnly() {
+        return readOnly;
     }
 
     /**
-     * Specifies if it is allowed for GraphHopper to write. E.g. for read only filesystems it is not
-     * possible to create a lock file and so we can avoid write locks.
+     * Marks the graph folder as read-only, e.g. for a read-only filesystem: no lock file is
+     * created, the backing files are never modified and memory mapped DataAccess objects map them
+     * read-only (enforced by the OS).
      */
-    public GraphHopper setAllowWrites(boolean allowWrites) {
-        this.allowWrites = allowWrites;
+    public GraphHopper setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
         return this;
     }
 
@@ -491,8 +489,9 @@ public class GraphHopper {
 
         defaultSegmentSize = ghConfig.getInt("graph.dataaccess.segment_size", defaultSegmentSize);
 
-        String daTypeString = ghConfig.getString("graph.dataaccess.default_type", ghConfig.getString("graph.dataaccess", "RAM_STORE"));
+        String daTypeString = ghConfig.getString("graph.dataaccess.default_type", ghConfig.getString("graph.dataaccess", "RAM"));
         dataAccessDefaultType = DAType.fromString(daTypeString);
+        readOnly = ghConfig.getBool("graph.read_only", readOnly);
         for (Map.Entry<String, Object> entry : ghConfig.asPMap().toMap().entrySet()) {
             if (entry.getKey().startsWith("graph.dataaccess.type."))
                 dataAccessConfig.put(entry.getKey().substring("graph.dataaccess.type.".length()), entry.getValue().toString());
@@ -749,7 +748,7 @@ public class GraphHopper {
             if (baseURL.isEmpty() && ghConfig.has("graph.elevation.baseurl"))
                 throw new IllegalArgumentException("use graph.elevation.base_url not baseurl in configuration");
 
-            DAType elevationDAType = DAType.fromString(ghConfig.getString("graph.elevation.dataaccess", "MMAP"));
+            DAType elevationDAType = DAType.fromString(ghConfig.getString("graph.elevation.dataaccess", "FOREIGN_MMAP"));
 
             provider
                     .setAutoRemoveTemporaryFiles(removeTempElevationFiles)
@@ -825,6 +824,7 @@ public class GraphHopper {
         directory.configure(dataAccessConfig);
         baseGraph = new BaseGraph.Builder(getEncodingManager())
                 .setDir(directory)
+                .setFileBacked(fileBacked)
                 .set3D(hasElevation())
                 .withTurnCosts(encodingManager.needsTurnCostsSupport())
                 .build();
@@ -833,7 +833,7 @@ public class GraphHopper {
 
         GHLock lock = null;
         try {
-            if (directory.getDefaultType().isStoring()) {
+            if (fileBacked) {
                 lockFactory.setLockDir(new File(ghLocation));
                 lock = lockFactory.create(fileLockName, true);
                 if (!lock.tryLock())
@@ -947,25 +947,53 @@ public class GraphHopper {
         BooleanEncodedValue carAccess = encodingManager.getBooleanEncodedValue(VehicleAccess.key("car"));
 
         logger.info("Setting {}-captured edges to {}", access, access);
-        EdgeBasedTarjanSCC.ConnectedComponents components = EdgeBasedTarjanSCC.findComponents(baseGraph, (prevEdge, edgeState) -> edgeState.get(roadAccess) != access, false);
-        BitSet singleEdgeComponents = components.getSingleEdgeComponents();
-        AllEdgesIterator allEdges = baseGraph.getAllEdges();
-        while (allEdges.next()) {
-            if (singleEdgeComponents.get(allEdges.getEdge() * 2) || singleEdgeComponents.get(allEdges.getEdge() * 2 + 1))
-                allEdges.set(roadAccess, access);
-        }
-        for (IntArrayList component : components.getComponents()) {
-            logger.info("Size {} component", component.size());
-            if (component.size() < 100) {
-                for (IntCursor edgeKey : component) {
-                    EdgeIteratorState edge = baseGraph.getEdgeIteratorStateForKey( (edgeKey.value / 2) * 2);
-                    edge.set(roadAccess, access);
-                }
-            }
-        }
+        EdgeBasedTarjanSCC.findComponentsStreaming(baseGraph,
+                (prevEdge, edgeState) -> edgeState.get(roadAccess) != access,
+                new EdgeBasedTarjanSCC.SCCConsumer() {
+                    IntArrayList buffer;
+                    boolean overflowed;
+                    int currentSize;
+
+                    @Override
+                    public void beginComponent() {
+                        buffer = new IntArrayList();
+                        overflowed = false;
+                        currentSize = 0;
+                    }
+
+                    @Override
+                    public void edgeKey(int key) {
+                        currentSize++;
+                        if (!overflowed) {
+                            buffer.add(key);
+                            if (buffer.size() >= 100) {
+                                buffer = null;
+                                overflowed = true;
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void endComponent() {
+                        logger.info("Size {} component", currentSize);
+                        if (buffer != null) {
+                            for (IntCursor edgeKey : buffer) {
+                                EdgeIteratorState edge = baseGraph.getEdgeIteratorStateForKey((edgeKey.value / 2) * 2);
+                                edge.set(roadAccess, access);
+                            }
+                        }
+                        buffer = null;
+                    }
+
+                    @Override
+                    public void singleEdgeComponent(int key) {
+                        EdgeIteratorState edge = baseGraph.getEdgeIteratorStateForKey((key / 2) * 2);
+                        edge.set(roadAccess, access);
+                    }
+                });
 
         logger.info("Softblocking {} edges by setting an entry penalty bit", access);
-        allEdges = baseGraph.getAllEdges();
+        AllEdgesIterator allEdges = baseGraph.getAllEdges();
         while (allEdges.next()) {
             if (allEdges.get(roadAccess) == access) {
                 EdgeExplorer edgeExplorer = baseGraph.createEdgeExplorer();
@@ -1037,7 +1065,6 @@ public class GraphHopper {
     }
 
     protected void createBaseGraphAndProperties() {
-        baseGraph.getDirectory().create();
         baseGraph.create(100);
         properties.create(100);
         if (maxSpeedCalculator != null)
@@ -1187,21 +1214,17 @@ public class GraphHopper {
             }
         }
 
-        // todo: this does not really belong here, we abuse the load method to derive the dataAccessDefaultType setting from others
-        if (!allowWrites && dataAccessDefaultType.isMMap())
-            dataAccessDefaultType = DAType.MMAP_RO;
-
         if (!new File(ghLocation).exists())
             // there is just nothing to load
             return false;
 
-        GHDirectory directory = new GHDirectory(ghLocation, dataAccessDefaultType);
+        GHDirectory directory = new GHDirectory(ghLocation, dataAccessDefaultType).setReadOnly(readOnly);
         directory.configure(dataAccessConfig);
         GHLock lock = null;
         try {
             // create locks only if writes are allowed, if they are not allowed a lock cannot be created
             // (e.g. on a read only filesystem locks would fail)
-            if (directory.getDefaultType().isStoring() && isAllowWrites()) {
+            if (fileBacked && !readOnly) {
                 lockFactory.setLockDir(new File(ghLocation));
                 lock = lockFactory.create(fileLockName, false);
                 if (!lock.tryLock())
@@ -1215,6 +1238,7 @@ public class GraphHopper {
             encodingManager = EncodingManager.fromProperties(properties);
             baseGraph = new BaseGraph.Builder(encodingManager)
                     .setDir(directory)
+                    .setFileBacked(fileBacked)
                     .set3D(hasElevation())
                     .withTurnCosts(encodingManager.needsTurnCostsSupport())
                     .build();
@@ -1364,7 +1388,7 @@ public class GraphHopper {
             if (!includesCustomProfiles)
                 // when there are custom profiles we must not close way geometry or KVStorage, because
                 // they might be needed to evaluate the custom weightings for the following preparations
-                baseGraph.flushAndCloseGeometryAndNameStorage();
+                baseGraph.closeGeometryAndNameStorage(fileBacked);
         }
 
         if (lmPreparationHandler.isEnabled())
@@ -1385,6 +1409,10 @@ public class GraphHopper {
         if (encodingManager.hasEncodedValue(RoadEnvironment.KEY)) {
             EnumEncodedValue<RoadEnvironment> roadEnvEnc = encodingManager.getEnumEncodedValue(RoadEnvironment.KEY, RoadEnvironment.class);
             StopWatch sw = new StopWatch().start();
+            // first step: fix the tower-end elevation values using the surrounding road network
+            new BridgeTunnelTowerCorrection(baseGraph.getBaseGraph(), roadEnvEnc).execute();
+            float towerCorrection = sw.stop().getSeconds();
+            sw = new StopWatch().start();
             new EdgeElevationInterpolator(baseGraph.getBaseGraph(), roadEnvEnc, RoadEnvironment.TUNNEL).execute();
             float tunnel = sw.stop().getSeconds();
             sw = new StopWatch().start();
@@ -1394,7 +1422,7 @@ public class GraphHopper {
             // See #2098 for mor information
             sw = new StopWatch().start();
             new EdgeElevationInterpolator(baseGraph.getBaseGraph(), roadEnvEnc, RoadEnvironment.FERRY).execute();
-            logger.info("Bridge interpolation " + (int) bridge + "s, " + "tunnel interpolation " + (int) tunnel + "s, ferry interpolation " + (int) sw.stop().getSeconds() + "s");
+            logger.info("Tower correction " + (int) towerCorrection + "s, bridge interpolation " + (int) bridge + "s, tunnel interpolation " + (int) tunnel + "s, ferry interpolation " + (int) sw.stop().getSeconds() + "s");
         }
     }
 
@@ -1441,6 +1469,8 @@ public class GraphHopper {
         if (!tmpIndex.loadExisting()) {
             ensureWriteAccess();
             tmpIndex.prepareIndex();
+            if (fileBacked)
+                tmpIndex.flush();
         }
 
         return tmpIndex;
@@ -1540,7 +1570,7 @@ public class GraphHopper {
             ensureWriteAccess();
         if (!baseGraph.isFrozen())
             baseGraph.freeze();
-        return chPreparationHandler.prepare(baseGraph, properties, configsToPrepare, closeEarly);
+        return chPreparationHandler.prepare(baseGraph, properties, configsToPrepare, closeEarly, fileBacked);
     }
 
     /**
@@ -1581,7 +1611,7 @@ public class GraphHopper {
             ensureWriteAccess();
         if (!baseGraph.isFrozen())
             baseGraph.freeze();
-        return lmPreparationHandler.prepare(configsToPrepare, baseGraph, encodingManager, properties, locationIndex, closeEarly);
+        return lmPreparationHandler.prepare(configsToPrepare, baseGraph, encodingManager, properties, locationIndex, closeEarly, fileBacked);
     }
 
     /**
@@ -1606,11 +1636,13 @@ public class GraphHopper {
     }
 
     protected void flush() {
-        logger.info("flushing graph " + getBaseGraphString() + ", details:" + baseGraph.toDetailsString() + ", "
-                + getMemInfo() + ")");
-        baseGraph.flush();
-        properties.flush();
-        logger.info("flushed graph " + getMemInfo() + ")");
+        if (fileBacked) {
+            logger.info("flushing graph " + getBaseGraphString() + ", details:" + baseGraph.toDetailsString() + ", "
+                    + getMemInfo() + ")");
+            baseGraph.flush();
+            properties.flush();
+            logger.info("flushed graph " + getMemInfo() + ")");
+        }
         setFullyLoaded();
     }
 
@@ -1655,8 +1687,8 @@ public class GraphHopper {
     }
 
     protected void ensureWriteAccess() {
-        if (!allowWrites)
-            throw new IllegalStateException("Writes are not allowed!");
+        if (readOnly)
+            throw new IllegalStateException("Writes are not allowed: read-only mode was explicitly enabled");
     }
 
     private void setFullyLoaded() {

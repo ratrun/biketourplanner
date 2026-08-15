@@ -37,9 +37,8 @@ public class RoundaboutInstruction extends Instruction {
         super(sign, name, pl);
     }
 
-    public RoundaboutInstruction increaseExitNumber() {
+    public void increaseExitNumber() {
         this.exitNumber += 1;
-        return this;
     }
 
     public RoundaboutInstruction setDirOfRotation(double deltaIn) {
@@ -59,13 +58,7 @@ public class RoundaboutInstruction extends Instruction {
         return this;
     }
 
-    public boolean isExited() {
-        return exited;
-    }
-
     public int getExitNumber() {
-        if (exited && exitNumber == 0)
-            return 1; // special case: we leave at a way without car_access
         return exitNumber;
     }
 
@@ -100,7 +93,7 @@ public class RoundaboutInstruction extends Instruction {
     @Override
     public Map<String, Object> getExtraInfoJSON() {
         Map<String, Object> tmpMap = new HashMap<>(3);
-        tmpMap.put("exit_number", getExitNumber());
+        if (getSign() == ROUNDABOUT_USE) tmpMap.put("exit_number", getExitNumber());
         tmpMap.put("exited", this.exited);
         double tmpAngle = getTurnAngle();
         if (!Double.isNaN(tmpAngle))
@@ -120,9 +113,9 @@ public class RoundaboutInstruction extends Instruction {
 
         String destination = extraInfo != null ? (String) extraInfo.get(STREET_DESTINATION) : null;
         String ref = extraInfo != null ? (String) extraInfo.get(STREET_REF) : null;
-        int indi = getSign();
-        if (indi == Instruction.USE_ROUNDABOUT) {
-            if (!exited) {
+        int sign = getSign();
+        if (sign == Instruction.ROUNDABOUT_USE) {
+            if (exitNumber == 0) {
                 str = tr.tr("roundabout_enter");
             } else {
                 if (!Helper.isEmpty(streetName) && !streetName.equals(ref)) {
@@ -139,8 +132,11 @@ public class RoundaboutInstruction extends Instruction {
                     str = tr.tr("roundabout_exit", getExitNumber());
                 }
             }
+        } else if (sign == Instruction.ROUNDABOUT_EXIT) {
+            str = Helper.isEmpty(streetName) ? tr.tr("roundabout_exit_now")
+                    : tr.tr("roundabout_exit_onto_now", streetName);
         } else {
-            throw new IllegalStateException(indi + "no roundabout indication");
+            throw new IllegalStateException(sign + " no roundabout indication");
         }
         return str;
     }
