@@ -2777,8 +2777,7 @@ public class GraphHopperTest {
                 setGraphHopperLocation(GH_LOCATION).
                 setOSMFile(HOYERSWERDA).
                 setEncodedValuesString("bike_access, bike_priority, bike_average_speed, noisy_road_nearby").
-                setProfiles(TestProfiles.accessSpeedAndPriority(profileName, "bike")).
-                setStoreOnFlush(true);
+                setProfiles(TestProfiles.accessSpeedAndPriority(profileName, "bike"));
         hopper.importOrLoad();
 
         Profile profile = TestProfiles.accessSpeedAndPriority(profileName, "bike");
