@@ -30,6 +30,7 @@ public class OSMRoadAccessParser<T extends Enum> implements TagParser {
     private final List<String> restrictions;
     private final Function<String, T> valueFinder;
     private final RoadAccessDefaultHandler<T> roadAccessDefaultHandler;
+    private static Set<String> SIDEWALKS_NO_VALS = Set.of("no", "none", "separate");
 
     public OSMRoadAccessParser(EnumEncodedValue<T> accessEnc, List<String> restrictions,
                                RoadAccessDefaultHandler<T> roadAccessDefaultHandler,
@@ -297,14 +298,23 @@ public class OSMRoadAccessParser<T extends Enum> implements TagParser {
     }
 
     public static OSMRoadAccessParser<BikeRoadAccess> forBike(EnumEncodedValue<BikeRoadAccess> roadAccessEnc) {
-        return new OSMRoadAccessParser<>(roadAccessEnc, toOSMRestrictions(TransportationMode.BIKE), BIKE_HANDLER, BikeRoadAccess::find);
+        return new OSMRoadAccessParser<>(roadAccessEnc, toOSMRestrictions(TransportationMode.BIKE), BIKE_HANDLER, BikeRoadAccess::find) {
+            @Override
+            public void handleWayTags(int edgeId, EdgeIntAccess edgeIntAccess, ReaderWay way, IntsRef relationFlags) {
+                if (way.hasTag("cycleway", "separate")
+                        || way.hasTag("cycleway:both", "separate")
+                        || (way.hasTag("cycleway:left", "separate") && way.hasTag("cycleway:right", SIDEWALKS_NO_VALS))
+                        || (way.hasTag("cycleway:right", "separate") && way.hasTag("cycleway:left", SIDEWALKS_NO_VALS)))
+                    accessEnc.setEnum(false, edgeId, edgeIntAccess, BikeRoadAccess.USE_SIDEPATH);
+                else
+                    super.handleWayTags(edgeId, edgeIntAccess, way, relationFlags);
+            }
+        };
     }
 
     public static OSMRoadAccessParser<FootRoadAccess> forFoot(EnumEncodedValue<FootRoadAccess> roadAccessEnc) {
         return new OSMRoadAccessParser<>(roadAccessEnc, toOSMRestrictions(TransportationMode.FOOT), FOOT_HANDLER, FootRoadAccess::find)
         {
-            private final Set<String> SIDEWALKS_NO_VALS = Set.of("no", "none", "separate");
-
             @Override
             public void handleWayTags(int edgeId, EdgeIntAccess edgeIntAccess, ReaderWay way, IntsRef relationFlags) {
                 if (way.hasTag("sidewalk", "separate")
