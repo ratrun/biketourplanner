@@ -304,8 +304,16 @@ public class OSMRoadAccessParser<T extends Enum> implements TagParser {
                 if (way.hasTag("cycleway", "separate")
                         || way.hasTag("cycleway:both", "separate")
                         || (way.hasTag("cycleway:left", "separate") && way.hasTag("cycleway:right", SIDEWALKS_NO_VALS))
-                        || (way.hasTag("cycleway:right", "separate") && way.hasTag("cycleway:left", SIDEWALKS_NO_VALS)))
-                    accessEnc.setEnum(false, edgeId, edgeIntAccess, BikeRoadAccess.USE_SIDEPATH);
+                        || (way.hasTag("cycleway:right", "separate") && way.hasTag("cycleway:left", SIDEWALKS_NO_VALS))) {
+                    if (way.hasTag("cycleway", "separate") || way.hasTag("cycleway:both", "separate")) {
+                        accessEnc.setEnum(false, edgeId, edgeIntAccess, BikeRoadAccess.USE_SIDEPATH);
+                        accessEnc.setEnum(true, edgeId, edgeIntAccess, BikeRoadAccess.USE_SIDEPATH);
+                    }
+                    if (way.hasTag("cycleway:left", "separate") && way.hasTag("cycleway:right", SIDEWALKS_NO_VALS))
+                        accessEnc.setEnum(false, edgeId, edgeIntAccess, BikeRoadAccess.USE_SIDEPATH);
+                    if (way.hasTag("cycleway:right", "separate") && way.hasTag("cycleway:left", SIDEWALKS_NO_VALS))
+                        accessEnc.setEnum(true, edgeId, edgeIntAccess, BikeRoadAccess.USE_SIDEPATH);
+                    }
                 else
                     super.handleWayTags(edgeId, edgeIntAccess, way, relationFlags);
             }

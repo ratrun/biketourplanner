@@ -25,7 +25,7 @@ public enum BikeRoadAccess {
     public static final String KEY = "bike_road_access";
 
     public static EnumEncodedValue<BikeRoadAccess> create() {
-        return new EnumEncodedValue<>(BikeRoadAccess.KEY, BikeRoadAccess.class);
+        return new EnumEncodedValue<>(BikeRoadAccess.KEY, BikeRoadAccess.class, true);
     }
 
     @Override
